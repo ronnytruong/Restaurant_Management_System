@@ -22,7 +22,7 @@
                           </c:url>" method="get" class="search-box input-group">
                         <div class="search-box input-group">
                             <span class="input-group-text"><i class="bi bi-search"></i></span>
-                            <input type="search" name="keyword" class="form-control" placeholder="Search by customer or ID">
+                            <input type="search" name="keyword" class="form-control" placeholder="Search employee">
                         </div>
                     </form>
                     <a class="btn btn-primary add-btn" href="<c:url value="employee">
@@ -40,13 +40,13 @@
                         <th width="10%" scope="col">Account</th>
                         <th width="15%" scope="col">Full Name</th>
                         <th width="5%" scope="col">Gender</th>
-                        <th width="15%" scope="col">Date of Birth</th>
+                        <th width="10%" scope="col">Date of Birth</th>
                         <th width="5%" scope="col">Phone</th>
                         <th width="5%" scope="col">Email</th>
                         <th width="5%" scope="col">Address</th>
                         <th width="10%" scope="col">Role</th>
                         <th width="5%" scope="col">Status</th>
-                        <th width="15%" scope="col" class="text-end">Action</th>
+                        <th width="20%" scope="col" class="text-end">Action</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -80,6 +80,16 @@
                                                </c:url>">
                                                 <i class="bi bi-pencil"></i>
                                             </a>
+
+<!--                                            <button type="button" class="btn btn-outline-secondary btn-icon btn-delete"
+                                                    title="Ban" aria-label="Ban" onclick="">
+                                                <i class="bi bi-person-x"></i>
+                                            </button>-->
+                                            
+                                            <button type="button" class="btn btn-outline-secondary btn-icon btn-edit"
+                                                    title="Unban" aria-label="Unban" onclick="">
+                                                <i class="bi bi-person-check"></i>
+                                            </button>
 
                                             <button type="button" class="btn btn-outline-secondary btn-icon btn-delete"
                                                     title="Delete" aria-label="Delete" onclick="showDeletePopup('${emp.empId}')">

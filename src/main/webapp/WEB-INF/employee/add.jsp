@@ -12,7 +12,7 @@
     <div class="content-card shadow-sm">
         <div class="card-header border-0 px-4 py-3 d-flex flex-column flex-md-row gap-3 gap-md-0 justify-content-between align-items-md-center">
             <div>
-                <h1 class="section-title mb-1">Add new Employee</h1>
+                <h1 class="section-title mb-1">Add Employee</h1>
             </div>
         </div>
         <div class="container">
@@ -33,7 +33,7 @@
                     <tr>
                         <th><label for="roleId">Role ID</label></th>
                         <td>
-                            <select name="roleId" id="roleId" class="form-control" required>
+                            <select name="roleId" id="roleId" class="form-select" required>
                                 <c:forEach var="role" items="${rolesList}">
                                     <option value="${role.id}">${role.name}</option>
                                 </c:forEach>

@@ -12,7 +12,7 @@
     <div class="content-card shadow-sm">
         <div class="card-header border-0 px-4 py-3 d-flex flex-column flex-md-row gap-3 gap-md-0 justify-content-between align-items-md-center">
             <div>
-                <h1 class="section-title mb-1">Add new Role</h1>
+                <h1 class="section-title mb-1">Add Role</h1>
             </div>
         </div>
 
