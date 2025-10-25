@@ -40,13 +40,13 @@
                         <th width="10%" scope="col">Account</th>
                         <th width="15%" scope="col">Full Name</th>
                         <th width="5%" scope="col">Gender</th>
-                        <th width="15%" scope="col">Date of Birth</th>
+                        <th width="10%" scope="col">Date of Birth</th>
                         <th width="5%" scope="col">Phone</th>
                         <th width="5%" scope="col">Email</th>
                         <th width="5%" scope="col">Address</th>
                         <th width="10%" scope="col">Role</th>
                         <th width="5%" scope="col">Status</th>
-                        <th width="15%" scope="col" class="text-end">Action</th>
+                        <th width="20%" scope="col" class="text-end">Action</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -80,6 +80,27 @@
                                                </c:url>">
                                                 <i class="bi bi-pencil"></i>
                                             </a>
+
+                                            <form action="<c:url value='employee'>
+                                                      <c:param name="id" value="${emp.empId}"/>
+                                                  </c:url>" method="post" style="display:inline;">
+                                                <c:choose>
+                                                    <c:when test="${emp.status ne 'Active'}">
+                                                        <button type="submit" class="btn btn-outline-primary btn-icon"
+                                                                name="action" value="unban"
+                                                                title="Unban" aria-label="Unban">
+                                                            <i class="bi-person-check"></i>
+                                                        </button>
+                                                    </c:when>
+                                                    <c:otherwise>
+                                                        <button type="submit" class="btn btn-outline-secondary btn-icon btn-delete"
+                                                                name="action" value="ban"
+                                                                title="Ban" aria-label="Ban">
+                                                            <i class="bi-person-x"></i>
+                                                        </button>
+                                                    </c:otherwise>
+                                                </c:choose>
+                                            </form>
 
                                             <button type="button" class="btn btn-outline-secondary btn-icon btn-delete"
                                                     title="Delete" aria-label="Delete" onclick="showDeletePopup('${emp.empId}')">
