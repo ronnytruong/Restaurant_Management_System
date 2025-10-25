@@ -158,40 +158,25 @@ public class CustomerServlet extends HttpServlet {
                         popupMessage = "The add action is NOT successfull. The object has " + getSqlErrorCode(checkError) + " error.";
                     }
                 }
-            } else if (action.equalsIgnoreCase("edit")) {
-                int customerId;
-                String customerAccount = request.getParameter("customerAccount");
-                String customerName = request.getParameter("customerName");
-                String gender = request.getParameter("gender");
-                String phoneNumber = request.getParameter("phoneNumber");
-                String email = request.getParameter("email");
-                String address = request.getParameter("address");
-                java.sql.Date dob = null;
+            } else if (action.equalsIgnoreCase("updateStatus")) {
+                int id;
                 try {
-                    dob = java.sql.Date.valueOf(request.getParameter("dateOfBirth"));
-                } catch (Exception e) {
-                    dob = null;
+                    id = Integer.parseInt(request.getParameter("id"));
+                } catch (NumberFormatException e) {
+                    id = -1;
                 }
 
-                try {
-                    customerId = Integer.parseInt(request.getParameter("id"));
-                } catch (Exception e) {
-                    customerId = -1;
-                }
-
-                if (!validateInteger(customerId, false, false, true)) {
+                if (!validateInteger(id, false, false, true)) {
                     popupStatus = false;
-                    popupMessage = "The edit action is NOT successfull. The input has some error.";
+                    popupMessage = "Invalid ID.";
                 } else {
-                    popupMessage = "The object with id=" + customerId + " edited successfully.";
-                }
-
-                if (popupStatus == true) {
-                    int checkError = customerDAO.edit(customerId, customerAccount, customerName, gender, phoneNumber, email, address, dob);
-
-                    if (checkError < 1) {
+                    int checkError = customerDAO.updateStatus(id);
+                    if (checkError >= 1) {
+                        popupStatus = true;
+                        popupMessage = "Customer status updated successfully!";
+                    } else {
                         popupStatus = false;
-                        popupMessage = "The edit action is NOT successfull. The object has " + getSqlErrorCode(checkError) + " error.";
+                        popupMessage = "Failed to update status. SQL error: " + getSqlErrorCode(checkError);
                     }
                 }
             } else if (action.equalsIgnoreCase("delete")) {

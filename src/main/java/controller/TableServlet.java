@@ -4,11 +4,7 @@
  */
 package controller;
 
-import static constant.CommonFunction.addEDtoEverything;
-import static constant.CommonFunction.getTotalPages;
-import static constant.CommonFunction.stringConvertDateTime;
-import static constant.CommonFunction.validateInteger;
-import static constant.CommonFunction.validateString;
+import static constant.CommonFunction.*;
 import constant.Constants;
 import dao.TableDAO;
 import java.io.IOException;
@@ -40,7 +36,7 @@ public class TableServlet extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
-        try ( PrintWriter out = response.getWriter()) {
+        try (PrintWriter out = response.getWriter()) {
             /* TODO output your page here. You may use following sample code. */
             out.println("<!DOCTYPE html>");
             out.println("<html>");
@@ -68,6 +64,10 @@ public class TableServlet extends HttpServlet {
             throws ServletException, IOException {
         String namepage = "";
         String view = request.getParameter("view");
+        String keyword = request.getParameter("keyword");
+        if (keyword == null) {
+            keyword = "";
+        }
 
         if (!validateString(view, -1) || view.equalsIgnoreCase("list")) {
             namepage = "list";
@@ -75,15 +75,12 @@ public class TableServlet extends HttpServlet {
             namepage = "add";
         } else if (view.equalsIgnoreCase("edit")) {
             namepage = "edit";
-
             int id;
-
             try {
                 id = Integer.parseInt(request.getParameter("id"));
             } catch (NumberFormatException e) {
                 id = -1;
             }
-
             request.setAttribute("currentTable", tableDAO.getElementByID(id));
         } else if (view.equalsIgnoreCase("delete")) {
             namepage = "delete";
@@ -99,9 +96,13 @@ public class TableServlet extends HttpServlet {
         }
 
         request.setAttribute("totalPages", totalPages);
-        request.setAttribute("tablesList", tableDAO.getAll(page));
+        request.setAttribute("keyword", keyword);
+        request.setAttribute("tablesList", tableDAO.getAll(page, keyword));
 
         request.getRequestDispatcher("/WEB-INF/table/" + namepage + ".jsp").forward(request, response);
+
+        // Xóa popup sau khi hiển thị
+        removePopup(request);
     }
 
     /**
@@ -116,120 +117,89 @@ public class TableServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         String action = request.getParameter("action");
+        boolean popupStatus = true;
+        String popupMessage = "";
 
-        boolean passValidation = true;
         if (action != null && !action.isEmpty()) {
-
             if (action.equalsIgnoreCase("add")) {
                 String number = request.getParameter("number");
                 int capacity;
-
                 try {
                     capacity = Integer.parseInt(request.getParameter("table_capacity"));
                 } catch (NumberFormatException e) {
                     capacity = -1;
-
-                    passValidation = false;
                 }
 
-//validate
-                if (!validateString(number, 10)
-                        || !validateInteger(capacity, false, false, true)) {
-                    passValidation = false;
-                }
-//end
-                if (passValidation == true) {
-                    if (tableDAO.add(number, capacity) >= 1) {
+                // validate
+                if (!validateString(number, 10) || !validateInteger(capacity, false, false, true)) {
+                    popupStatus = false;
+                    popupMessage = "The add action is NOT successful. Invalid input.";
+                } else {
+                    int result = tableDAO.add(number, capacity);
+                    if (result >= 1) {
+                        popupMessage = "Table " + number + " added successfully.";
                     } else {
-                        passValidation = false;
+                        popupStatus = false;
+                        popupMessage = "The add action failed. SQL Error: " + getSqlErrorCode(result);
                     }
                 }
 
             } else if (action.equalsIgnoreCase("edit")) {
-
                 int id;
                 String number = request.getParameter("number");
                 int capacity;
 
-                try {
-
-                } catch (NumberFormatException e) {
-                    id = -1;
-
-                    passValidation = false;
-                }
                 try {
                     id = Integer.parseInt(request.getParameter("id"));
                     capacity = Integer.parseInt(request.getParameter("table_capacity"));
                 } catch (NumberFormatException e) {
                     id = -1;
                     capacity = -1;
-
-                    passValidation = false;
                 }
 
-//validate
+                // validate
                 if (!validateInteger(id, false, false, true)
                         || !validateString(number, 10)
                         || !validateInteger(capacity, false, false, true)) {
-                    passValidation = false;
-                }
-//end
-                if (passValidation == true) {
-                    int checkError = tableDAO.edit(id, number, capacity);
-
-                    if (checkError >= 1) {
-
+                    popupStatus = false;
+                    popupMessage = "The edit action is NOT successful. Invalid input.";
+                } else {
+                    int result = tableDAO.edit(id, number, capacity);
+                    if (result >= 1) {
+                        popupMessage = "Table with ID=" + id + " edited successfully.";
                     } else {
-                        if (checkError - Constants.DUPLICATE_KEY == 0) {                //check trung code/key
-                            System.err.println("DUPLICATE_KEY");
-                        } else if (checkError - Constants.FOREIGN_KEY_VIOLATION == 0) {
-                            System.err.println("FOREIGN_KEY_VIOLATION");
-                        } else if (checkError - Constants.NULL_INSERT_VIOLATION == 0) {
-                            System.err.println("NULL_INSERT_VIOLATION");
-                        }
-
-                        passValidation = false;
+                        popupStatus = false;
+                        popupMessage = "The edit action failed. SQL Error: " + getSqlErrorCode(result);
                     }
                 }
 
             } else if (action.equalsIgnoreCase("delete")) {
                 int id;
-
                 try {
                     id = Integer.parseInt(request.getParameter("id"));
                 } catch (NumberFormatException e) {
                     id = -1;
-
-                    passValidation = false;
                 }
 
-//validate
+                // validate
                 if (!validateInteger(id, false, false, true)) {
-                    passValidation = false;
-                }
-//end
-
-                int checkError = tableDAO.delete(id);
-
-                if (checkError >= 1) {
-
+                    popupStatus = false;
+                    popupMessage = "The delete action is NOT successful. Invalid ID.";
                 } else {
-                    if (checkError - Constants.DUPLICATE_KEY == 0) {                //check trung code/key
-                        System.err.println("DUPLICATE_KEY");
-                    } else if (checkError - Constants.FOREIGN_KEY_VIOLATION == 0) {
-                        System.err.println("FOREIGN_KEY_VIOLATION");
-                    } else if (checkError - Constants.NULL_INSERT_VIOLATION == 0) {
-                        System.err.println("NULL_INSERT_VIOLATION");
+                    int result = tableDAO.delete(id);
+                    if (result >= 1) {
+                        popupMessage = "Table with ID=" + id + " deleted successfully.";
+                    } else {
+                        popupStatus = false;
+                        popupMessage = "The delete action failed. SQL Error: " + getSqlErrorCode(result);
                     }
-
-                    passValidation = false;
                 }
             }
         }
 
-        response.sendRedirect(request.getContextPath() + "/table?" + "status=" + (passValidation ? "success" : "fail") + "&lastAction=" + addEDtoEverything(action));
-    }
+        setPopup(request, popupStatus, popupMessage);
+        response.sendRedirect(request.getContextPath() + "/table");
+        }
 
     /**
      * Returns a short description of the servlet.

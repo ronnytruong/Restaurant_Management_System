@@ -21,67 +21,101 @@ import model.Table;
  */
 public class TableDAO extends DBContext {
 
-    public static void main(String[] args) {
-    }
-
+    /**
+     * Lấy toàn bộ bàn (không phân trang)
+     */
     public List<Table> getAll() {
         List<Table> list = new ArrayList<>();
-
         try {
-            String query = "SELECT table_id, table_number, table_capacity, status\n"
-                    + "FROM     [table]\n"
-                    + "WHERE  (LOWER(status) <> LOWER(N'Deleted'))\n"
+            String query = "SELECT table_id, table_number, table_capacity, status "
+                    + "FROM [table] "
+                    + "WHERE LOWER(status) <> 'deleted' "
                     + "ORDER BY table_id";
-
             ResultSet rs = this.executeSelectionQuery(query, null);
-
             while (rs.next()) {
                 int id = rs.getInt(1);
                 String number = rs.getString(2);
                 int capacity = rs.getInt(3);
                 String status = rs.getString(4);
-
-                Table item = new Table(id, number, capacity, status);
-
-                list.add(item);
+                list.add(new Table(id, number, capacity, status));
             }
         } catch (SQLException ex) {
             Logger.getLogger(TableDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
-
         return list;
     }
 
+    /**
+     * Lấy bàn theo trang
+     */
     public List<Table> getAll(int page) {
         List<Table> list = new ArrayList<>();
-
         try {
-            String query = "SELECT table_id, table_number, table_capacity, status\n"
-                    + "FROM     [table]\n"
-                    + "WHERE  (LOWER(status) <> LOWER(N'Deleted'))\n"
-                    + "ORDER BY table_id\n"
-                    + "OFFSET ? ROWS \n"
-                    + "FETCH NEXT ? ROWS ONLY;";
+            String query = "SELECT table_id, table_number, table_capacity, status "
+                    + "FROM [table] "
+                    + "WHERE LOWER(status) <> 'deleted' "
+                    + "ORDER BY table_id "
+                    + "OFFSET ? ROWS FETCH NEXT ? ROWS ONLY;";
+            ResultSet rs = this.executeSelectionQuery(query, new Object[]{
+                (page - 1) * MAX_ELEMENTS_PER_PAGE,
+                MAX_ELEMENTS_PER_PAGE
+            });
+            while (rs.next()) {
+                int id = rs.getInt(1);
+                String number = rs.getString(2);
+                int capacity = rs.getInt(3);
+                String status = rs.getString(4);
+                list.add(new Table(id, number, capacity, status));
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(TableDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return list;
+    }
 
-            ResultSet rs = this.executeSelectionQuery(query, new Object[]{(page - 1) * MAX_ELEMENTS_PER_PAGE, MAX_ELEMENTS_PER_PAGE});
+    /**
+     * Lấy bàn theo trang + tìm kiếm (theo số bàn, sức chứa, trạng thái)
+     */
+    public List<Table> getAll(int page, String keyword) {
+        List<Table> list = new ArrayList<>();
+        try {
+            String base = "SELECT table_id, table_number, table_capacity, status "
+                    + "FROM [table] "
+                    + "WHERE LOWER(status) <> 'deleted' ";
+            String orderOffset = "ORDER BY table_id OFFSET ? ROWS FETCH NEXT ? ROWS ONLY;";
+
+            ResultSet rs;
+            if (keyword == null || keyword.trim().isEmpty()) {
+                rs = this.executeSelectionQuery(base + orderOffset, new Object[]{
+                    (page - 1) * MAX_ELEMENTS_PER_PAGE,
+                    MAX_ELEMENTS_PER_PAGE
+                });
+            } else {
+                String query = base + "AND (LOWER(table_number) LIKE ? "
+                        + "OR CAST(table_capacity AS NVARCHAR(50)) LIKE ? "
+                        + "OR LOWER(status) LIKE ?) "
+                        + orderOffset;
+                String key = "%" + keyword.toLowerCase() + "%";
+                rs = this.executeSelectionQuery(query, new Object[]{
+                    key, key, key,
+                    (page - 1) * MAX_ELEMENTS_PER_PAGE,
+                    MAX_ELEMENTS_PER_PAGE
+                });
+            }
 
             while (rs.next()) {
                 int id = rs.getInt(1);
                 String number = rs.getString(2);
                 int capacity = rs.getInt(3);
                 String status = rs.getString(4);
-
-                Table item = new Table(id, number, capacity, status);
-
-                list.add(item);
+                list.add(new Table(id, number, capacity, status));
             }
         } catch (SQLException ex) {
             Logger.getLogger(TableDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
-
         return list;
     }
-
+    
     public Table getElementByID(int id) {
 
         try {

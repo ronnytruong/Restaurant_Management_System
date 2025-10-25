@@ -6,50 +6,40 @@
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
-<%@include file="/WEB-INF/include/header.jsp" %>
-<main>
+<%@include file="/WEB-INF/include/headerDashboard.jsp" %>
 
-    <div class="container">
-        <h1 class="mt-5">Add new Table</h1>
-        <form method="post" action="<c:url value="table"/>">
-            <table class="table">
-                <tr>
-                    <td>
-                    </td>
-                    <td>
-                    </td>
-                </tr>
+<section class="col-12 col-lg-9 col-xxl-10 table-section" aria-label="Form section">
+    <div class="content-card shadow-sm">
+        <div class="card-header border-0 px-4 py-3 d-flex flex-column flex-md-row justify-content-between align-items-center">
+            <h1 class="section-title mb-1">Add new Table</h1>
+        </div>
 
-                <tr>
-                    <th>
-                        <label for="number">Number</label>
-                    </th>
-                    <td>
-                        <input type="text" name="number" id="number" class="form-control" required>
-                    </td>
-                </tr>
+        <div class="container">
+            <form method="post" action="<c:url value='table'/>">
+                <table class="table">
+                    <tr><td></td><td></td></tr>
 
-                <tr>
-                    <th>
-                        <label for="table_capacity">Capacity</label>
-                    </th>
-                    <td>
-                        <input type="number" name="table_capacity" id="table_capacity" class="form-control" required>
-                    </td>
-                </tr>
+                    <tr>
+                        <th><label for="number">Number</label></th>
+                        <td><input type="text" name="number" id="number" class="form-control" required></td>
+                    </tr>
 
-                <tr>
-                    <td>
-                    </td>
-                    <td>
-                        <button class="btn btn-outline-dark" type="submit" name="action" value="add">Save</button>
-                        <a class="btn btn-outline-dark" href="<c:url value="table"/>">Cancel</a>
-                    </td>
-                </tr>
-            </table>
-        </form>
+                    <tr>
+                        <th><label for="table_capacity">Capacity</label></th>
+                        <td><input type="number" name="table_capacity" id="table_capacity" class="form-control" required></td>
+                    </tr>
 
+                    <tr>
+                        <td></td>
+                        <td>
+                            <button class="btn btn-outline-success" type="submit" name="action" value="add">Save</button>
+                            <a class="btn btn-outline-dark" href="<c:url value='table'/>">Cancel</a>
+                        </td>
+                    </tr>
+                </table>
+            </form>
+        </div>
     </div>
+</section>
 
-</main>
-<%@include file="/WEB-INF/include/footer.jsp" %>
+<%@include file="/WEB-INF/include/footerDashboard.jsp" %>
