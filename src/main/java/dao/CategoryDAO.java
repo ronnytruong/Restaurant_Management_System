@@ -13,7 +13,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import model.Category;
 
-
 public class CategoryDAO extends DBContext {
 
     public static void main(String[] args) {
@@ -75,6 +74,39 @@ public class CategoryDAO extends DBContext {
             Logger.getLogger(CategoryDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
 
+        return list;
+    }
+
+    public List<Category> getAll(int page, String keyword) {
+        List<Category> list = new ArrayList<>();
+        try {
+            String query = "SELECT c.category_id, c.category_name, c.description, c.status "
+                    + "FROM category AS c "
+                    + "WHERE LOWER(c.status) <> 'deleted' "
+                    + "AND (LOWER(c.category_name) LIKE LOWER(?) OR "
+                    + "LOWER(c.description) LIKE LOWER(?) OR "
+                    + "LOWER(c.status) LIKE LOWER(?)) "
+                    + "ORDER BY c.category_id "
+                    + "OFFSET ? ROWS FETCH NEXT ? ROWS ONLY;";
+
+            keyword = "%" + keyword + "%";
+
+            ResultSet rs = this.executeSelectionQuery(query,
+                    new Object[]{keyword, keyword, keyword,
+                        (page - 1) * MAX_ELEMENTS_PER_PAGE, MAX_ELEMENTS_PER_PAGE});
+
+            while (rs.next()) {
+                int categoryId = rs.getInt(1);
+                String categoryName = rs.getString(2);
+                String description = rs.getString(3);
+                String status = rs.getString(4);
+
+                Category category = new Category(categoryId, categoryName, description, status);
+                list.add(category);
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(CategoryDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
         return list;
     }
 
@@ -172,5 +204,3 @@ public class CategoryDAO extends DBContext {
         return 0;
     }
 }
-
-
