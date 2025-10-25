@@ -303,6 +303,40 @@ public class CustomerDAO extends DBContext {
                 Date dob = rs.getDate(9);
                 String status = rs.getString(10);
 
+    public boolean checkAccountExist(String customerAccount) {
+        try {
+            String query = "SELECT c.customer_id FROM customer AS c "
+                    + "WHERE LOWER(c.status) <> 'deleted' AND c.customer_account = ?";
+            ResultSet rs = this.executeSelectionQuery(query, new Object[]{customerAccount});
+
+            return rs.next();
+        } catch (SQLException ex) {
+            Logger.getLogger(CustomerDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return false;
+    }
+
+    public Customer authenticate(String customerAccount, String hashedPassword) {
+        try {
+            String query = "SELECT c.customer_id, c.customer_account, c.password, c.customer_name, "
+                    + "c.gender, c.phone_number, c.email, c.address, c.dob, c.status "
+                    + "FROM customer AS c "
+                    + "WHERE c.customer_account = ? AND c.password = ? AND LOWER(c.status) = 'active'";
+
+            ResultSet rs = this.executeSelectionQuery(query, new Object[]{customerAccount, hashedPassword});
+
+            if (rs.next()) {
+                int customerId = rs.getInt(1);
+                String account = rs.getString(2);
+                String password = rs.getString(3);
+                String customerName = rs.getString(4);
+                String gender = rs.getString(5);
+                String phoneNumber = rs.getString(6);
+                String email = rs.getString(7);
+                String address = rs.getString(8);
+                Date dob = rs.getDate(9);
+                String status = rs.getString(10);
+
                 return new Customer(customerId, account, password, customerName, gender, phoneNumber, email, address, dob, status);
             }
         } catch (SQLException ex) {
