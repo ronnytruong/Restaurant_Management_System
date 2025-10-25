@@ -22,7 +22,7 @@
                           </c:url>" method="get" class="search-box input-group">
                         <div class="search-box input-group">
                             <span class="input-group-text"><i class="bi bi-search"></i></span>
-                            <input type="search" name="keyword" class="form-control" placeholder="Search by customer or ID">
+                            <input type="search" name="keyword" class="form-control" placeholder="Search employee">
                         </div>
                     </form>
                     <a class="btn btn-primary add-btn" href="<c:url value="employee">
