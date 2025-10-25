@@ -316,39 +316,4 @@ public class EmployeeDAO extends DBContext {
         }
         return 0;
     }
-    
-    public Employee authenticate(String empAccount, String hashedPassword) {
-        try {
-            String query = "SELECT e.emp_id, e.emp_account, e.password, e.emp_name, "
-                    + "e.gender, e.dob, e.phone_number, e.email, e.address, "
-                    + "e.role_id, r.role_name, e.status "
-                    + "FROM employee AS e "
-                    + "JOIN role AS r ON e.role_id = r.role_id "
-                    + "WHERE e.emp_account = ? AND e.password = ? AND LOWER(e.status) = 'active'";
-
-            ResultSet rs = this.executeSelectionQuery(query, new Object[]{empAccount, hashedPassword});
-
-            if (rs.next()) {
-                int empId = rs.getInt("emp_id");
-                String account = rs.getString("emp_account");
-                String password = rs.getString("password");
-                String empName = rs.getString("emp_name");
-                String gender = rs.getString("gender");
-                Date dob = rs.getDate("dob");
-                String phone = rs.getString("phone_number");
-                String email = rs.getString("email");
-                String address = rs.getString("address");
-                int roleId = rs.getInt("role_id");
-                String roleName = rs.getString("role_name");
-                String status = rs.getString("status");
-
-                return new Employee(empId, account, password, empName, gender, dob,
-                        phone, email, address, roleId, roleName, status);
-            }
-
-        } catch (SQLException ex) {
-            Logger.getLogger(EmployeeDAO.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return null;
-    }
 }

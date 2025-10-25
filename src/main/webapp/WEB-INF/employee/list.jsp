@@ -81,15 +81,26 @@
                                                 <i class="bi bi-pencil"></i>
                                             </a>
 
-<!--                                            <button type="button" class="btn btn-outline-secondary btn-icon btn-delete"
-                                                    title="Ban" aria-label="Ban" onclick="">
-                                                <i class="bi bi-person-x"></i>
-                                            </button>-->
-                                            
-                                            <button type="button" class="btn btn-outline-secondary btn-icon btn-edit"
-                                                    title="Unban" aria-label="Unban" onclick="">
-                                                <i class="bi bi-person-check"></i>
-                                            </button>
+                                            <form action="<c:url value='employee'>
+                                                      <c:param name="id" value="${emp.empId}"/>
+                                                  </c:url>" method="post" style="display:inline;">
+                                                <c:choose>
+                                                    <c:when test="${emp.status ne 'Active'}">
+                                                        <button type="submit" class="btn btn-outline-primary btn-icon"
+                                                                name="action" value="unban"
+                                                                title="Unban" aria-label="Unban">
+                                                            <i class="bi-person-check"></i>
+                                                        </button>
+                                                    </c:when>
+                                                    <c:otherwise>
+                                                        <button type="submit" class="btn btn-outline-secondary btn-icon btn-delete"
+                                                                name="action" value="ban"
+                                                                title="Ban" aria-label="Ban">
+                                                            <i class="bi-person-x"></i>
+                                                        </button>
+                                                    </c:otherwise>
+                                                </c:choose>
+                                            </form>
 
                                             <button type="button" class="btn btn-outline-secondary btn-icon btn-delete"
                                                     title="Delete" aria-label="Delete" onclick="showDeletePopup('${emp.empId}')">
