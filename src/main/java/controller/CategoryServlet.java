@@ -6,6 +6,7 @@ package controller;
 
 import static constant.CommonFunction.addEDtoEverything;
 import static constant.CommonFunction.getTotalPages;
+import static constant.CommonFunction.removePopup;
 import static constant.CommonFunction.validateInteger;
 import static constant.CommonFunction.validateString;
 import constant.Constants;
@@ -69,8 +70,13 @@ public class CategoryServlet extends HttpServlet {
             throws ServletException, IOException {
         String namepage = "";
         String view = request.getParameter("view");
+        
+        String keyword = request.getParameter("keyword");
+        if (keyword == null) {
+            keyword = "";
+        }
 
-        if (!validateString(view, -1)) {
+        if (!validateString(view, -1) || view.equalsIgnoreCase("list")) {
             namepage = "list";
         } else if (view.equalsIgnoreCase("add")) {
             namepage = "add";
@@ -98,11 +104,12 @@ public class CategoryServlet extends HttpServlet {
         } catch (NumberFormatException e) {
             page = 1;
         }
-
+        
         request.setAttribute("totalPages", totalPages);
-        request.setAttribute("categoryList", categoryDAO.getAll(page));
+        request.setAttribute("categoryList", categoryDAO.getAll(page, keyword));
 
         request.getRequestDispatcher("/WEB-INF/category/" + namepage + ".jsp").forward(request, response);
+        removePopup(request);
     }
 
     /**
@@ -117,6 +124,7 @@ public class CategoryServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         String action = request.getParameter("action");
+        
 
         boolean passValidation = true;
         if (action != null && !action.isEmpty()) {

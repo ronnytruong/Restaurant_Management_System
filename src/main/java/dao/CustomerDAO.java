@@ -283,4 +283,26 @@ public class CustomerDAO extends DBContext {
         return -1;
     }
 
+
+    public boolean checkAccountExist(String customerAccount) {
+        try {
+            String query = "SELECT c.customer_id FROM customer AS c "
+                    + "WHERE LOWER(c.status) <> 'deleted' AND c.customer_account = ?";
+            ResultSet rs = this.executeSelectionQuery(query, new Object[]{customerAccount});
+
+            return rs.next();
+        } catch (SQLException ex) {
+            Logger.getLogger(CustomerDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return false;
+    }
+
+    public Customer authenticate(String customerAccount, String hashedPassword) {
+        try {
+            String query = "SELECT c.customer_id, c.customer_account, c.password, c.customer_name, "
+                    + "c.gender, c.phone_number, c.email, c.address, c.dob, c.status "
+                    + "FROM customer AS c "
+                    + "WHERE c.customer_account = ? AND c.password = ? AND LOWER(c.status) = 'active'";
+
+
 }

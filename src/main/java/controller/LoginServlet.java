@@ -6,7 +6,7 @@ package controller;
 
 import constant.HashUtil;
 import dao.CustomerDAO;
-import dao.EmployeeDAO;
+import model.Customer;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -15,8 +15,6 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import model.Customer;
-import model.Employee;
 
 /**
  *
@@ -24,10 +22,11 @@ import model.Employee;
  */
 @WebServlet(name = "LoginServlet", urlPatterns = {"/login"})
 public class LoginServlet extends HttpServlet {
+
     private CustomerDAO customerDAO = new CustomerDAO();
-    private EmployeeDAO employeeDAO = new EmployeeDAO();
+
     /**
-     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
+     * * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
      *
      * @param request servlet request
@@ -38,7 +37,7 @@ public class LoginServlet extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
-        try (PrintWriter out = response.getWriter()) {
+        try ( PrintWriter out = response.getWriter()) {
             /* TODO output your page here. You may use following sample code. */
             out.println("<!DOCTYPE html>");
             out.println("<html>");
@@ -54,7 +53,7 @@ public class LoginServlet extends HttpServlet {
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
-     * Handles the HTTP <code>GET</code> method.
+     * * Handles the HTTP <code>GET</code> method. Hiển thị trang đăng nhập.
      *
      * @param request servlet request
      * @param response servlet response
@@ -64,12 +63,12 @@ public class LoginServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        request.getRequestDispatcher("/WEB-INF/authentication/login.jsp").forward(request, response);
 
+        request.getRequestDispatcher("/WEB-INF/authentication/login.jsp").forward(request, response);
     }
 
     /**
-     * Handles the HTTP <code>POST</code> method.
+     * * Handles the HTTP <code>POST</code> method.
      *
      * @param request servlet request
      * @param response servlet response
@@ -79,59 +78,50 @@ public class LoginServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-//        HttpSession session = request.getSession();
-//        response.sendRedirect(request.getContextPath() + "/homepage");
-
         request.setCharacterEncoding("UTF-8");
 
-        String account = request.getParameter("account");
+        String customerAccount = request.getParameter("account");
         String password = request.getParameter("password");
+
         String errorMessage = "";
 
-        if (account == null || account.isEmpty() || password == null || password.isEmpty()) {
+        if (customerAccount == null || customerAccount.isEmpty() || password == null || password.isEmpty()) {
             errorMessage = "Please enter valid Username and Password.";
         } else {
+
             String hashedPassword = HashUtil.toMD5(password);
 
-            // Kiểm tra Customer trước
-            Customer customer = customerDAO.authenticate(account, hashedPassword);
+            Customer customer = customerDAO.authenticate(customerAccount, hashedPassword);
 
             if (customer != null) {
+
                 HttpSession session = request.getSession();
+
                 session.setAttribute("customerSession", customer);
                 session.setMaxInactiveInterval(30 * 60);
+
                 response.sendRedirect(request.getContextPath() + "/homepage");
                 return;
+            } else {
+
+                errorMessage = "Incorrect username or password. Your account might also be banned. Please try again.";
             }
-
-            // Nếu không phải Customer thì thử Employee
-            Employee employee = employeeDAO.authenticate(account, hashedPassword);
-
-            if (employee != null) {
-                HttpSession session = request.getSession();
-                session.setAttribute("employeeSession", employee);
-                session.setMaxInactiveInterval(30 * 60);
-                response.sendRedirect(request.getContextPath() + "/profileEmployee?action=view");
-                return;
-            }
-
-            // Nếu cả 2 đều sai
-            errorMessage = "Incorrect username or password. Please try again.";
         }
 
         request.setAttribute("error", errorMessage);
-        request.setAttribute("account", account);
+        request.setAttribute("account", customerAccount);
+
         request.getRequestDispatcher("/WEB-INF/authentication/login.jsp").forward(request, response);
     }
 
     /**
-     * Returns a short description of the servlet.
+     * * Returns a short description of the servlet.
      *
      * @return a String containing servlet description
      */
     @Override
     public String getServletInfo() {
-        return "Short description";
+        return "Handles customer login and authentication";
     }// </editor-fold>
 
 }

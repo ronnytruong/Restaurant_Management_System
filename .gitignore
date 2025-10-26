@@ -27,6 +27,8 @@ tomcat/apache-tomcat-*/conf/Catalina/localhost/*.xml
 nbactions.xml
 
 tomcat/
+/tomcat/
+/apache-tomcat-*/
 apache-tomcat-*/
 logs/
 work/
