@@ -304,5 +304,25 @@ public class CustomerDAO extends DBContext {
                     + "FROM customer AS c "
                     + "WHERE c.customer_account = ? AND c.password = ? AND LOWER(c.status) = 'active'";
 
+            ResultSet rs = this.executeSelectionQuery(query, new Object[]{customerAccount, hashedPassword});
 
+            if (rs.next()) {
+                int customerId = rs.getInt(1);
+                String account = rs.getString(2);
+                String password = rs.getString(3);
+                String customerName = rs.getString(4);
+                String gender = rs.getString(5);
+                String phoneNumber = rs.getString(6);
+                String email = rs.getString(7);
+                String address = rs.getString(8);
+                Date dob = rs.getDate(9);
+                String status = rs.getString(10);
+
+                return new Customer(customerId, account, password, customerName, gender, phoneNumber, email, address, dob, status);
+}
+        } catch (SQLException ex) {
+            Logger.getLogger(CustomerDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
+    }
 }
