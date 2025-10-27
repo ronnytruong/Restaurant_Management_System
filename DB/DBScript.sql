@@ -15,7 +15,7 @@ GO
 
 CREATE TABLE type(
     type_id INT IDENTITY(1,1) NOT NULL,
-    type_name NVARCHAR(100) NOT NULL,
+    type_name NVARCHAR(100) NOT NULL UNIQUE,
     description NVARCHAR(255) NULL,
     status NVARCHAR(20) NOT NULL DEFAULT 'Active',
     CONSTRAINT PK_type PRIMARY KEY (type_id)
@@ -23,7 +23,7 @@ CREATE TABLE type(
 
 CREATE TABLE category (
     category_id INT IDENTITY(1,1) NOT NULL,
-    category_name NVARCHAR(100) NOT NULL,
+    category_name NVARCHAR(100) NOT NULL ,
     description NVARCHAR(255) NULL,
     status NVARCHAR(20) NOT NULL DEFAULT 'Active',
     CONSTRAINT PK_category PRIMARY KEY (category_id)
@@ -31,7 +31,7 @@ CREATE TABLE category (
 
 CREATE TABLE role (
     role_id INT IDENTITY(1,1) NOT NULL,
-    role_name NVARCHAR(50) NOT NULL,
+    role_name NVARCHAR(50) NOT NULL UNIQUE,
     description NVARCHAR(255) NULL,
     status NVARCHAR(20) NOT NULL DEFAULT 'Active',
     CONSTRAINT PK_role PRIMARY KEY (role_id),
@@ -40,6 +40,8 @@ CREATE TABLE role (
 
 CREATE TABLE customer (
     customer_id INT IDENTITY(1,1) NOT NULL,
+	customer_account NVARCHAR(50) NOT NULL UNIQUE,
+    password NVARCHAR(255) NOT NULL,
     customer_name NVARCHAR(100) NOT NULL,
     phone_number VARCHAR(19) NOT NULL,
     email NVARCHAR(255) NULL,
@@ -69,7 +71,7 @@ CREATE TABLE ingredient (
 
 CREATE TABLE employee (
     emp_id INT IDENTITY(1,1) NOT NULL,
-    emp_account NVARCHAR(50) NOT NULL,
+    emp_account NVARCHAR(50) NOT NULL UNIQUE,
     password NVARCHAR(255) NOT NULL,
     emp_name NVARCHAR(100) NOT NULL,
     gender NVARCHAR(10) NULL,
@@ -214,7 +216,8 @@ CREATE TABLE import_detail (
     import_id INT NOT NULL,
     ingredient_id INT NOT NULL,
     quantity INT NOT NULL,
-    unit_price DECIMAL(10,2) NOT NULL,
+	unit NVARCHAR(20) NOT NULL,
+    unit_price DECIMAL(10) NOT NULL,
     total_price AS (quantity * unit_price) PERSISTED,
     CONSTRAINT FK_ImportDetail_Import FOREIGN KEY (import_id)
         REFERENCES Import(import_id),

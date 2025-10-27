@@ -82,36 +82,6 @@ public class ImportDAO extends DBContext {
         return list;
     }
 
-    public List<Category> getAll(int page) {
-        List<Category> list = new ArrayList<>();
-
-        try {
-            String query = "SELECT category_id, category_name, description, status\n"
-                    + "FROM     category\n"
-                    + "WHERE  (LOWER(status) = LOWER(N'Active'))\n"
-                    + "ORDER BY category_id\n"
-                    + "OFFSET ? ROWS \n"
-                    + "FETCH NEXT ? ROWS ONLY;";
-
-            ResultSet rs = this.executeSelectionQuery(query, new Object[]{(page - 1) * MAX_ELEMENTS_PER_PAGE, MAX_ELEMENTS_PER_PAGE});
-
-            while (rs.next()) {
-                int categoryId = rs.getInt(1);
-                String categoryName = rs.getString(2);
-                String description = rs.getString(3);
-                String status = rs.getString(4);
-
-                Category category = new Category(categoryId, categoryName, description, status);
-
-                list.add(category);
-            }
-        } catch (SQLException ex) {
-            Logger.getLogger(ImportDAO.class.getName()).log(Level.SEVERE, null, ex);
-        }
-
-        return list;
-    }
-
     public Import getElementByID(int id) {
 
         try {
@@ -180,52 +150,52 @@ public class ImportDAO extends DBContext {
         return -1;
     }
 
-    public int edit(int categoryId, String categoryName, String description) {
-        try {
+    // public int edit(int categoryId, String categoryName, String description) {
+    //     try {
 
-            String query = "UPDATE category\n"
-                    + "SET category_name = ?, description = ?\n"
-                    + "WHERE  (category_id = ?)";
+    //         String query = "UPDATE category\n"
+    //                 + "SET category_name = ?, description = ?\n"
+    //                 + "WHERE  (category_id = ?)";
 
-            return this.executeQuery(query, new Object[]{categoryName, description, categoryId});
+    //         return this.executeQuery(query, new Object[]{categoryName, description, categoryId});
 
-        } catch (SQLException ex) {
+    //     } catch (SQLException ex) {
 
-            int sqlError = checkErrorSQL(ex);
-            if (sqlError != 0) {
-                return sqlError;
-            }
+    //         int sqlError = checkErrorSQL(ex);
+    //         if (sqlError != 0) {
+    //             return sqlError;
+    //         }
 
-            Logger.getLogger(ImportDAO.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return -1;
-    }
+    //         Logger.getLogger(ImportDAO.class.getName()).log(Level.SEVERE, null, ex);
+    //     }
+    //     return -1;
+    // }
 
-    public int delete(int id) {
-        try {
-            String query = "UPDATE category\n"
-                    + "SET status = 'Deleted'\n"
-                    + "WHERE  (category_id = ?)";
+    // public int delete(int id) {
+    //     try {
+    //         String query = "UPDATE category\n"
+    //                 + "SET status = 'Deleted'\n"
+    //                 + "WHERE  (category_id = ?)";
 
-            return this.executeQuery(query, new Object[]{id});
+    //         return this.executeQuery(query, new Object[]{id});
 
-        } catch (SQLException ex) {
+    //     } catch (SQLException ex) {
 
-        }
-        return -1;
-    }
+    //     }
+    //     return -1;
+    // }
 
-    public int countItem() {
-        try {
-            String query = "select count(category_id) as numrow from [dbo].[category]";
-            ResultSet rs = this.executeSelectionQuery(query, null);
-            if (rs.next()) {
-                return rs.getInt(1);
-            }
-        } catch (SQLException ex) {
-            System.out.println("Error");
-        }
+    // public int countItem() {
+    //     try {
+    //         String query = "select count(category_id) as numrow from [dbo].[category]";
+    //         ResultSet rs = this.executeSelectionQuery(query, null);
+    //         if (rs.next()) {
+    //             return rs.getInt(1);
+    //         }
+    //     } catch (SQLException ex) {
+    //         System.out.println("Error");
+    //     }
 
-        return 0;
-    }
+    //     return 0;
+    // }
 }

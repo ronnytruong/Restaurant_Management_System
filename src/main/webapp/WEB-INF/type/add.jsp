@@ -41,7 +41,7 @@
                             <td>
                             </td>
                             <td>
-                                <button class="btn btn-outline-dark" type="submit" name="action" value="add">Add</button>
+                                <button class="btn btn-success" type="submit" name="action" value="edit">Save</button>
                                 <a class="btn btn-outline-dark" href="<c:url value='type'/>">Cancel</a>
                             </td>
                         </tr>

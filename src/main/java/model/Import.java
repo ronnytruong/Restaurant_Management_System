@@ -22,8 +22,7 @@ public class Import {
     private String supplierName;
     private Date importDate;
 
-    public Import() {
-    }
+
 
     public Import(String ingredientName, int quantity, String unit, int unitPrice, int totalPrice) {
         this.ingredientName = ingredientName;

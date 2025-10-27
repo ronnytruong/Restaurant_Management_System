@@ -66,19 +66,19 @@
                         <nav class="menu-panel">
                             <h1 class="menu-title">Browse Lists</h1>
                             <ul class="menu-links list-unstyled mb-0">
-                                <li><a href="#"><i class="bi bi-receipt"></i> Order List</a></li>
-                                <li><a href="#"><i class="bi bi-calendar-check"></i> Reservation List</a></li>
-                                <li><a href="#"><i class="bi bi-grid-3x3"></i> Table List</a></li>
-                                <li><a href="#"><i class="bi bi-tags"></i> Category List</a></li>
-                                <li><a href="#"><i class="bi bi-list-ul"></i> Menu Item List</a></li>
+                                <li><a href="order"><i class="bi bi-receipt"></i> Order List</a></li>
+                                <li><a href="reservation"><i class="bi bi-calendar-check"></i> Reservation List</a></li>
+                                <li><a href="table"><i class="bi bi-grid-3x3"></i> Table List</a></li>
+                                <li><a href="category"><i class="bi bi-tags"></i> Category List</a></li>
+                                <li><a href="menuitem"><i class="bi bi-list-ul"></i> Menu Item List</a></li>
                                 <li><a href="type"><i class="bi bi-diagram-2"></i> Type List</a></li>
                                 <li><a href="ingredient"><i class="bi bi-basket"></i> Ingredient List</a></li>
-                                <li><a href="#"><i class="bi bi-book"></i> Recipe List</a></li>
-                                <li><a href="#"><i class="bi bi-download"></i> Import List</a></li>
+                                <li><a href="recipe"><i class="bi bi-book"></i> Recipe List</a></li>
+                                <li><a href="import"><i class="bi bi-download"></i> Import List</a></li>
                                 <li><a href="supplier"><i class="bi bi-truck"></i> Supplier List</a></li>
-                                <li><a href="#"><i class="bi bi-person-badge"></i> Account List</a></li>
-                                <li><a href="#"><i class="bi bi-shield-lock"></i> Role List</a></li>
-                                <li><a href="#"><i class="bi bi-ticket-perforated"></i> Voucher List</a></li>
+                                <li><a href="account"><i class="bi bi-person-badge"></i> Account List</a></li>
+                                <li><a href="role"><i class="bi bi-shield-lock"></i> Role List</a></li>
+                                <li><a href="voucher"><i class="bi bi-ticket-perforated"></i> Voucher List</a></li>
                             </ul>
                         </nav>
                     </aside>
@@ -93,7 +93,7 @@
                                     <div class="filters d-flex flex-wrap gap-2 justify-content-end">
                                         <div class="search-box input-group">
                                             <span class="input-group-text"><i class="bi bi-search"></i></span>
-                                            <input type="search" class="form-control" placeholder="Search by customer or ID">
+                                            <input type="search" class="form-control" placeholder="Search">
                                         </div>
                                         <a class="btn btn-primary add-btn" href="<c:url value="supplier">
                                                <c:param name="view" value="add"/>
@@ -107,7 +107,6 @@
                                 <table class="table align-middle admin-table">
                                     <thead>
                                         <tr>
-                                            <th scope="col">No.</th>
                                             <th scope="col">ID</th>
                                             <th scope="col">Name</th>
                                             <th scope="col">Phone Number</th>
@@ -127,7 +126,6 @@
                                             <c:otherwise>
                                                 <c:forEach var="supplier" items="${suppliersList}" varStatus="loop">
                                                     <tr>
-                                                        <td><c:out value="${loop.index + 1}"/></td>
                                                         <td><c:out value="${supplier.supplierId}"/></td>
                                                         <td><c:out value="${supplier.supplierName}"/></td>
                                                         <td><c:out value="${supplier.phoneNumber}"/></td>
