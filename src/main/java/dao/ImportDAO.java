@@ -135,7 +135,7 @@ public class ImportDAO extends DBContext {
                     + "INSERT INTO import_detail (import_id, ingredient_id, quantity, unit, unit_price, total_price) "
                     + "VALUES (?, ?, ?, ?, ?, ?)";
 
-            return this.executeQuery(query, new Object[]{ingredientName, typeId, "Active", importId, 
+            return this.executeQuery(query, new Object[]{ingredientName, typeId, "Active", importId,
                 ingredientId, quantity, unit, unitPrice, totalPrice});
 
         } catch (SQLException ex) {
@@ -150,52 +150,52 @@ public class ImportDAO extends DBContext {
         return -1;
     }
 
-    // public int edit(int categoryId, String categoryName, String description) {
-    //     try {
+    public int edit(int categoryId, String categoryName, String description) {
+        try {
 
-    //         String query = "UPDATE category\n"
-    //                 + "SET category_name = ?, description = ?\n"
-    //                 + "WHERE  (category_id = ?)";
+            String query = "UPDATE category\n"
+                    + "SET category_name = ?, description = ?\n"
+                    + "WHERE  (category_id = ?)";
 
-    //         return this.executeQuery(query, new Object[]{categoryName, description, categoryId});
+            return this.executeQuery(query, new Object[]{categoryName, description, categoryId});
 
-    //     } catch (SQLException ex) {
+        } catch (SQLException ex) {
 
-    //         int sqlError = checkErrorSQL(ex);
-    //         if (sqlError != 0) {
-    //             return sqlError;
-    //         }
+            int sqlError = checkErrorSQL(ex);
+            if (sqlError != 0) {
+                return sqlError;
+            }
 
-    //         Logger.getLogger(ImportDAO.class.getName()).log(Level.SEVERE, null, ex);
-    //     }
-    //     return -1;
-    // }
+            Logger.getLogger(ImportDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return -1;
+    }
 
-    // public int delete(int id) {
-    //     try {
-    //         String query = "UPDATE category\n"
-    //                 + "SET status = 'Deleted'\n"
-    //                 + "WHERE  (category_id = ?)";
+    public int delete(int id) {
+        try {
+            String query = "UPDATE category\n"
+                    + "SET status = 'Deleted'\n"
+                    + "WHERE  (category_id = ?)";
 
-    //         return this.executeQuery(query, new Object[]{id});
+            return this.executeQuery(query, new Object[]{id});
 
-    //     } catch (SQLException ex) {
+        } catch (SQLException ex) {
 
-    //     }
-    //     return -1;
-    // }
+        }
+        return -1;
+    }
 
-     public int countItem() {
-         try {
-             String query = "select count(import_id) as numrow from [dbo].[import]";
-             ResultSet rs = this.executeSelectionQuery(query, null);
-             if (rs.next()) {
-                 return rs.getInt(1);
-             }
-         } catch (SQLException ex) {
-             System.out.println("Error");
-         }
+    public int countItem() {
+        try {
+            String query = "select count(import_id) as numrow from [dbo].[import]";
+            ResultSet rs = this.executeSelectionQuery(query, null);
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        } catch (SQLException ex) {
+            System.out.println("Error");
+        }
 
-         return 0;
-     }
+        return 0;
+    }
 }
