@@ -61,7 +61,7 @@
                                 <li><a href="#"><i class="bi bi-list-ul"></i> Menu Item List</a></li>
                                 <li><a href="#"><i class="bi bi-diagram-2"></i> Type List</a></li>
                                 <li><a href="#"><i class="bi bi-basket"></i> Ingredient List</a></li>
-                                <li><a href="#"><i class="bi bi-book"></i> Recipe List</a></li>
+                                <li><a href="recipe"><i class="bi bi-book"></i> Recipe List</a></li>
                                 <li><a href="#"><i class="bi bi-download"></i> Import List</a></li>
                                 <li><a href="supplier"><i class="bi bi-truck"></i> Supplier List</a></li>
                                 <li><a href="#"><i class="bi bi-person-badge"></i> Account List</a></li>
