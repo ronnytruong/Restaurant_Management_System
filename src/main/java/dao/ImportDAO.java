@@ -185,17 +185,17 @@ public class ImportDAO extends DBContext {
     //     return -1;
     // }
 
-    // public int countItem() {
-    //     try {
-    //         String query = "select count(category_id) as numrow from [dbo].[category]";
-    //         ResultSet rs = this.executeSelectionQuery(query, null);
-    //         if (rs.next()) {
-    //             return rs.getInt(1);
-    //         }
-    //     } catch (SQLException ex) {
-    //         System.out.println("Error");
-    //     }
+     public int countItem() {
+         try {
+             String query = "select count(import_id) as numrow from [dbo].[import]";
+             ResultSet rs = this.executeSelectionQuery(query, null);
+             if (rs.next()) {
+                 return rs.getInt(1);
+             }
+         } catch (SQLException ex) {
+             System.out.println("Error");
+         }
 
-    //     return 0;
-    // }
+         return 0;
+     }
 }
