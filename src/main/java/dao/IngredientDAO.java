@@ -1,6 +1,5 @@
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package dao;
 
@@ -25,24 +24,25 @@ public class IngredientDAO extends DBContext {
         List<Ingredient> list = new ArrayList<>();
 
         try {
-            String query
-                    = "SELECT * "
-                    + "FROM ingredient i "
-                    + "JOIN type t ON i.type_id = t.type_id "
-                    + "WHERE LOWER(i.status) != LOWER(N'Deleted') "
+            String query = "SELECT i.ingredient_id, i.ingredient_name, i.type_id, t.type_name, i.price, i.status\n"
+                    + "FROM ingredient AS i\n"
+                    + "LEFT JOIN type AS t ON i.type_id = t.type_id\n"
+                    + "WHERE LOWER(i.status) != LOWER(N'Deleted')\n"
                     + "ORDER BY i.ingredient_id";
 
             ResultSet rs = this.executeSelectionQuery(query, null);
 
             while (rs.next()) {
-                Ingredient ingredient = new Ingredient(
+                Ingredient ing = new Ingredient(
                         rs.getInt("ingredient_id"),
                         rs.getString("ingredient_name"),
+                        rs.getInt("type_id"),
                         rs.getString("type_name"),
+                        rs.getDouble("price"),
                         rs.getString("status")
                 );
 
-                list.add(ingredient);
+                list.add(ing);
             }
         } catch (SQLException ex) {
             Logger.getLogger(IngredientDAO.class.getName()).log(Level.SEVERE, null, ex);
@@ -55,24 +55,27 @@ public class IngredientDAO extends DBContext {
         List<Ingredient> list = new ArrayList<>();
 
         try {
-            String query = "SELECT *\n"
-                    + "FROM     ingredient\n"
-                    + "WHERE  (LOWER(status) != LOWER(N'Deleted'))\n"
-                    + "ORDER BY ingredient_id\n"
+            String query = "SELECT i.ingredient_id, i.ingredient_name, i.type_id, t.type_name, i.price, i.status\n"
+                    + "FROM ingredient AS i\n"
+                    + "LEFT JOIN type AS t ON i.type_id = t.type_id\n"
+                    + "WHERE LOWER(i.status) != LOWER(N'Deleted')\n"
+                    + "ORDER BY i.ingredient_id\n"
                     + "OFFSET ? ROWS \n"
                     + "FETCH NEXT ? ROWS ONLY;";
 
             ResultSet rs = this.executeSelectionQuery(query, new Object[]{(page - 1) * MAX_ELEMENTS_PER_PAGE, MAX_ELEMENTS_PER_PAGE});
 
             while (rs.next()) {
-                Ingredient ingredient = new Ingredient(
+                Ingredient ing = new Ingredient(
                         rs.getInt("ingredient_id"),
                         rs.getString("ingredient_name"),
-                        rs.getString("typeName"),
+                        rs.getInt("type_id"),
+                        rs.getString("type_name"),
+                        rs.getDouble("price"),
                         rs.getString("status")
                 );
 
-                list.add(ingredient);
+                list.add(ing);
             }
         } catch (SQLException ex) {
             Logger.getLogger(IngredientDAO.class.getName()).log(Level.SEVERE, null, ex);
@@ -84,22 +87,25 @@ public class IngredientDAO extends DBContext {
     public Ingredient getElementByID(int id) {
 
         try {
-            String query = "SELECT *\n"
-                    + "FROM     ingredient\n"
-                    + "WHERE  (ingredient_id = ? and LOWER(status) != LOWER(N'Deleted'))\n";
+            String query = "SELECT i.ingredient_id, i.ingredient_name, i.type_id, t.type_name, i.price, i.status\n"
+                    + "FROM ingredient AS i\n"
+                    + "LEFT JOIN type AS t ON i.type_id = t.type_id\n"
+                    + "WHERE (i.ingredient_id = ? and LOWER(i.status) != LOWER(N'Deleted'))\n";
 
             ResultSet rs = this.executeSelectionQuery(query, new Object[]{id});
 
             while (rs.next()) {
 
-                Ingredient ingredient = new Ingredient(
-                        rs.getInt(1),
-                        rs.getString(2),
-                        rs.getString(3),
-                        rs.getString(4)
+                Ingredient ing = new Ingredient(
+                        rs.getInt("ingredient_id"),
+                        rs.getString("ingredient_name"),
+                        rs.getInt("type_id"),
+                        rs.getString("type_name"),
+                        rs.getDouble("price"),
+                        rs.getString("status")
                 );
 
-                return ingredient;
+                return ing;
             }
         } catch (SQLException ex) {
             Logger.getLogger(IngredientDAO.class.getName()).log(Level.SEVERE, null, ex);
@@ -107,6 +113,7 @@ public class IngredientDAO extends DBContext {
 
         return null;
     }
+
 
     public int getLastId() {
 
@@ -124,12 +131,14 @@ public class IngredientDAO extends DBContext {
         return -1;
     }
 
-    public int add(String ingredient_name, String type_name) {
-        try {
-            String query = "INSERT INTO ingredient (ingredient_name, type_name, status)\n"
-                    + "VALUES (?, ?, ?)";
 
-            return this.executeQuery(query, new Object[]{ingredient_name, type_name, "Active"});
+    public int add(String ingredient_name, int type_id, double price) {
+
+        try {
+            String query = "INSERT INTO ingredient (ingredient_name, type_id, price, status)\n"
+                    + "VALUES (?, ?, ?, ?)";
+
+            return this.executeQuery(query, new Object[]{ingredient_name, type_id, price, "Active"});
 
         } catch (SQLException ex) {
 
@@ -143,14 +152,14 @@ public class IngredientDAO extends DBContext {
         return -1;
     }
 
-    public int edit(int ingredient_id, String ingredient_name, String type_name) {
+    public int edit(int ingredient_id, String ingredient_name, int type_id, double price) {
         try {
 
             String query = "UPDATE ingredient\n"
-                    + "SET ingredient_name = ?, type_name = ?\n"
+                    + "SET ingredient_name = ?, type_id = ?, price = ?\n"
                     + "WHERE  (ingredient_id = ?)";
 
-            return this.executeQuery(query, new Object[]{ingredient_name, type_name, ingredient_id});
+            return this.executeQuery(query, new Object[]{ingredient_name, type_id, price, ingredient_id});
 
         } catch (SQLException ex) {
 
@@ -173,14 +182,14 @@ public class IngredientDAO extends DBContext {
             return this.executeQuery(query, new Object[]{id});
 
         } catch (SQLException ex) {
-
+            Logger.getLogger(IngredientDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
         return -1;
     }
 
     public int countItem() {
         try {
-            String query = "select count(ingredient_id) as numrow from [dbo].[ingredient]";
+            String query = "select count(ingredient_id) as numrow from [dbo].[ingredient] where LOWER(status) != LOWER(N'Deleted')";
             ResultSet rs = this.executeSelectionQuery(query, null);
             if (rs.next()) {
                 return rs.getInt(1);
@@ -191,4 +200,35 @@ public class IngredientDAO extends DBContext {
 
         return 0;
     }
+    public List<Ingredient> search(String keyword) {
+    List<Ingredient> list = new ArrayList<>();
+    try {
+        String query = "SELECT i.ingredient_id, i.ingredient_name, i.type_id, t.type_name, i.price, i.status " +
+                       "FROM ingredient AS i " +
+                       "LEFT JOIN type AS t ON i.type_id = t.type_id " +
+                       "WHERE LOWER(i.status) != LOWER(N'Deleted') " +
+                       "AND (CAST(i.ingredient_id AS VARCHAR) LIKE ? OR LOWER(i.ingredient_name) LIKE ?) " +
+                       "ORDER BY i.ingredient_id";
+
+        String searchKeyword = "%" + keyword.toLowerCase() + "%";
+        ResultSet rs = this.executeSelectionQuery(query, new Object[]{searchKeyword, searchKeyword});
+
+        while (rs.next()) {
+            Ingredient ing = new Ingredient(
+                rs.getInt("ingredient_id"),
+                rs.getString("ingredient_name"),
+                rs.getInt("type_id"),
+                rs.getString("type_name"),
+                rs.getDouble("price"),
+                rs.getString("status")
+            );
+            list.add(ing);
+        }
+
+    } catch (SQLException ex) {
+        Logger.getLogger(IngredientDAO.class.getName()).log(Level.SEVERE, null, ex);
+    }
+    return list;
+}
+
 }

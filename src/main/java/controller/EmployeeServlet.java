@@ -228,6 +228,60 @@ public class EmployeeServlet extends HttpServlet {
                         popupMessage = "The delete action is NOT successfull. The object has " + getSqlErrorCode(checkError) + " error.";
                     }
                 }
+            } else if (action.equalsIgnoreCase("ban")) {
+                int id;
+
+                try {
+                    id = Integer.parseInt(request.getParameter("id"));
+                } catch (NumberFormatException e) {
+                    id = -1;
+                }
+
+//validate
+                if (!validateInteger(id, false, false, true)) {
+                    popupStatus = false;
+                    popupMessage = "The ban action is NOT successfull.";
+                } else {
+                    popupMessage = "The object with id=" + id + " banned successfull.";
+                }
+//end
+                if (popupStatus == true) {
+                    int checkError = employeeDAO.ban(id);
+
+                    if (checkError >= 1) {
+
+                    } else {
+                        popupStatus = false;
+                        popupMessage = "The ban action is NOT successfull. The object has " + getSqlErrorCode(checkError) + " error.";
+                    }
+                }
+            } else if (action.equalsIgnoreCase("unban")) {
+                int id;
+
+                try {
+                    id = Integer.parseInt(request.getParameter("id"));
+                } catch (NumberFormatException e) {
+                    id = -1;
+                }
+
+//validate
+                if (!validateInteger(id, false, false, true)) {
+                    popupStatus = false;
+                    popupMessage = "The unban action is NOT successfull.";
+                } else {
+                    popupMessage = "The object with id=" + id + " unbanned successfull.";
+                }
+//end
+                if (popupStatus == true) {
+                    int checkError = employeeDAO.unban(id);
+
+                    if (checkError >= 1) {
+
+                    } else {
+                        popupStatus = false;
+                        popupMessage = "The unban action is NOT successfull. The object has " + getSqlErrorCode(checkError) + " error.";
+                    }
+                }
             }
             setPopup(request, popupStatus, popupMessage);
             response.sendRedirect(request.getContextPath() + "/employee");

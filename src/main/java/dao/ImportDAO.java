@@ -5,7 +5,6 @@
 package dao;
 
 import static constant.CommonFunction.checkErrorSQL;
-import static constant.Constants.MAX_ELEMENTS_PER_PAGE;
 import db.DBContext;
 import java.sql.Date;
 import java.sql.ResultSet;
@@ -14,7 +13,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import model.Category;
 import model.Import;
 
 /**

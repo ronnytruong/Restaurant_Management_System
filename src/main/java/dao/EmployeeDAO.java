@@ -280,6 +280,26 @@ public class EmployeeDAO extends DBContext {
         }
         return -1;
     }
+    
+    public int ban(int id) {
+        try {
+            String query = "UPDATE Employee SET status = 'Banned' WHERE emp_id = ?";
+            return this.executeQuery(query, new Object[]{id});
+        } catch (SQLException ex) {
+            Logger.getLogger(EmployeeDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return -1;
+    }
+    
+    public int unban(int id) {
+        try {
+            String query = "UPDATE Employee SET status = 'Active' WHERE emp_id = ?";
+            return this.executeQuery(query, new Object[]{id});
+        } catch (SQLException ex) {
+            Logger.getLogger(EmployeeDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return -1;
+    }
 
     public int countItem() {
         try {
