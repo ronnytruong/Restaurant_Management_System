@@ -13,7 +13,7 @@
     <div class="content-card shadow-sm">
         <div class="card-header border-0 px-4 py-3 d-flex flex-column flex-md-row gap-3 gap-md-0 justify-content-between align-items-md-center">
             <div>
-                <h1 class="section-title mb-1">category List</h1>
+                <h1 class="section-title mb-1">Category List</h1>
             </div>
             <div class="actions d-flex flex-column flex-md-row gap-2 align-items-md-center justify-content-md-end">
                 <div class="filters d-flex flex-wrap gap-2 justify-content-end">
@@ -25,9 +25,7 @@
                             <input type="search" name="keyword" class="form-control" placeholder="Search by customer or ID">
                         </div>
                     </form>
-                    <a class="btn btn-primary add-btn" href="<c:url value="category">
-                           <c:param name="view" value="add"/>
-                       </c:url>"><i class="bi bi-plus-circle"></i>Add</a>
+
 
                 </div>
             </div>
@@ -39,7 +37,7 @@
                         <th>ID</th>
                         <th>Name</th>
                         <th>Description</th>
-                        <th>Action</th>
+                        
                     </tr>
                 </thead>
                 <tbody>
