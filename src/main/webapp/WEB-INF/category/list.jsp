@@ -25,7 +25,9 @@
                             <input type="search" name="keyword" class="form-control" placeholder="Search by customer or ID">
                         </div>
                     </form>
-
+                    <a class="btn btn-primary add-btn" href="<c:url value='category'>
+                           <c:param name='view' value='add'/>
+                       </c:url>"><i class="bi bi-plus-circle"></i>Add</a>
 
                 </div>
             </div>
