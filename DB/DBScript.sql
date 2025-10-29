@@ -66,7 +66,7 @@ CREATE TABLE ingredient (
     price DECIMAL(10,2) NOT NULL DEFAULT 0.00,
     status NVARCHAR(20) NOT NULL DEFAULT 'Active',
     CONSTRAINT PK_ingredient PRIMARY KEY (ingredient_id),
-    CONSTRAINT FK_type FOREIGN KEY (type_id) REFERENCES type(type_id)
+    CONSTRAINT FK_type FOREIGN KEY (type_id) REFERENCES type(type_id),
 );
 
 CREATE TABLE employee (

@@ -125,6 +125,7 @@ public class ImportServlet extends HttpServlet {
             if (id > 0) {
                 request.setAttribute("currentImport", importDAO.getElementByID(id));
                 request.setAttribute("typeList", typeDAO.getAll());
+                request.setAttribute("ingredientList", ingredientDAO.getAll());
             }
 
         } else if (view.equalsIgnoreCase("delete")) {
