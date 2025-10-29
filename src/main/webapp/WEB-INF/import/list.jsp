@@ -69,12 +69,12 @@
                                 <li><a href="#"><i class="bi bi-receipt"></i> Order List</a></li>
                                 <li><a href="#"><i class="bi bi-calendar-check"></i> Reservation List</a></li>
                                 <li><a href="#"><i class="bi bi-grid-3x3"></i> Table List</a></li>
-                                <li><a href="#"><i class="bi bi-tags"></i> Category List</a></li>
+                                <li><a href="category"><i class="bi bi-tags"></i> Category List</a></li>
                                 <li><a href="#"><i class="bi bi-list-ul"></i> Menu Item List</a></li>
-                                <li><a href="#"><i class="bi bi-diagram-2"></i> Type List</a></li>
+                                <li><a href="type"><i class="bi bi-diagram-2"></i> Type List</a></li>
                                 <li><a href="#"><i class="bi bi-basket"></i> Ingredient List</a></li>
                                 <li><a href="#"><i class="bi bi-book"></i> Recipe List</a></li>
-                                <li><a href="#"><i class="bi bi-download"></i> Import List</a></li>
+                                <li><a href="import"><i class="bi bi-download"></i> Import List</a></li>
                                 <li><a href="supplier"><i class="bi bi-truck"></i> Supplier List</a></li>
                                 <li><a href="#"><i class="bi bi-person-badge"></i> Account List</a></li>
                                 <li><a href="#"><i class="bi bi-shield-lock"></i> Role List</a></li>
@@ -87,22 +87,15 @@
                         <div class="content-card shadow-sm">
                             <div class="card-header border-0 px-4 py-3 d-flex flex-column flex-md-row gap-3 gap-md-0 justify-content-between align-items-md-center">
                                 <div>
-                                    <h1 class="section-title mb-1">Supplier List</h1>
+                                    <h1 class="section-title mb-1">Import List</h1>
                                 </div>
                                 <div class="actions d-flex flex-column flex-md-row gap-2 align-items-md-center justify-content-md-end">
                                     <div class="filters d-flex flex-wrap gap-2 justify-content-end">
                                         <div class="search-box input-group">
                                             <span class="input-group-text"><i class="bi bi-search"></i></span>
-                                            <input type="search" class="form-control" placeholder="Search by customer or ID">
+                                            <input type="search" class="form-control" placeholder="Search">
                                         </div>
-                                        <select class="form-select">
-                                            <option selected>All statuses</option>
-                                            <option>Pending</option>
-                                            <option>Preparing</option>
-                                            <option>Completed</option>
-                                            <option>Cancelled</option>
-                                        </select>
-                                        <a class="btn btn-primary add-btn" href="<c:url value="supplier">
+                                        <a class="btn btn-primary add-btn" href="<c:url value="import">
                                                <c:param name="view" value="add"/>
                                            </c:url>"><i class="bi bi-plus-circle"></i> Add</a>
 
@@ -114,37 +107,45 @@
                                 <table class="table align-middle admin-table">
                                     <thead>
                                         <tr>
-                                            <th scope="col">No.</th>
-                                            <th scope="col">Name</th>
-                                            <th scope="col">Phone Number</th>
-                                            <th scope="col">Email</th>
-                                            <th scope="col">Address</th>
+                                            <th scope="col">ID</th>
+                                            <th scope="col">Manager</th>
                                             <th scope="col">Contact Person</th>
+                                            <th scope="col">Supplier</th>
+                                            <th scope="col">Date</th>
                                             <th scope="col" class="text-end">Actions</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         <c:choose>
-                                            <c:when test="${suppliersList == null || empty suppliersList}">
+                                            <c:when test="${importList == null || empty importList}">
                                                 <tr>
                                                     <td colspan="9" style="color:red;">No data to display</td>
                                                 </tr>   
                                             </c:when>
                                             <c:otherwise>
-                                                <c:forEach var="supplier" items="${suppliersList}" varStatus="loop">
+                                                <c:forEach var="imp" items="${importList}" varStatus="loop">
                                                     <tr>
-                                                        <td><c:out value="${loop.index + 1}"/></td>
-                                                        <td><c:out value="${supplier.supplierName}"/></td>
-                                                        <td><c:out value="${supplier.phoneNumber}"/></td>
-                                                        <td><c:out value="${supplier.email}"/></td>
-                                                        <td><c:out value="${supplier.address}"/></td>
-                                                        <td><c:out value="${supplier.contactPerson}"/></td>
-
+                                                        <td><c:out value="${imp.importId}"/></td>
+                                                        <td><c:out value="${imp.empName}"/></td>
+                                                        <td><c:out value="${imp.contactPerson}"/></td>
+                                                        <td><c:out value="${imp.supplierName}"/></td>
+                                                        <td><c:out value="${imp.importDate}"/></td>
+                                                        
                                                         <td class="text-end">
                                                             <div class="action-button-group d-flex justify-content-end gap-2">
-                                                                <c:url var="edit" value="supplier">
+                                                                <c:url var="detail" value="import">
+                                                                    <c:param name="view" value="detail"/>
+                                                                    <c:param name="id" value="${imp.importId}"/>
+                                                                </c:url>
+                                                                <a class="btn btn-outline-success btn-icon btn-view"
+                                                                   title="View details"
+                                                                   aria-label="View details"
+                                                                   href="${detail}">
+                                                                    <i class="bi bi-eye"></i>
+                                                                </a>
+                                                                <c:url var="edit" value="import">
                                                                     <c:param name="view" value="edit"/>
-                                                                    <c:param name="id" value="${supplier.supplierId}"/>
+                                                                    <c:param name="id" value="${imp.importId}"/>
                                                                 </c:url>
                                                                 <a class="btn btn-outline-secondary btn-icon btn-edit"
                                                                    title="Edit"
@@ -153,7 +154,7 @@
                                                                     <i class="bi bi-pencil"></i>
                                                                 </a>
 
-                                                                <button type="button" class="btn btn-outline-secondary btn-icon btn-delete" title="Delete" aria-label="Delete" onclick="showDeletePopup('${supplier.supplierId}')">
+                                                                <button type="button" class="btn btn-outline-secondary btn-icon btn-delete" title="Delete" aria-label="Delete" onclick="showDeletePopup('${imp.importId}')">
                                                                     <i class="bi bi-x-circle"></i>
                                                                 </button>
                                                             </div>
@@ -179,10 +180,10 @@
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body text-danger">
-                        <h6 id="idForDeletePopup">Are you sure you want to delete this supplier?</h6>
+                        <h6 id="idForDeletePopup">Are you sure you want to delete this import?</h6>
                         <small class="text-muted">This action cannot be undone.</small>
                     </div>
-                    <form method="post" action="<c:url value="supplier"/>">
+                    <form method="post" action="<c:url value="imp"/>">
                         <input type="hidden" id="hiddenInputIdDelete" name="id" value="">
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -215,7 +216,7 @@
                                 <p style="color: green">The supplier <c:out value="${param.lastAction}"/> successfully.</p>
                             </c:when>
                             <c:otherwise>
-                                <p style="color: red">Failed to <c:out value="${param.lastAction}"/> the supplier. Please check the information.</p>
+                                <p style="color: red">Failed to <c:out value="${param.lastAction}"/> the import. Please check the information.</p>
                             </c:otherwise>
                         </c:choose>
                     </div>
@@ -237,7 +238,7 @@
     <script>
         function showDeletePopup(id) {
             document.getElementById("hiddenInputIdDelete").value = id;
-            document.getElementById("idForDeletePopup").textContent = "Are you sure you want to delete the supplier with id = " + id + "?";
+            document.getElementById("idForDeletePopup").textContent = "Are you sure you want to delete the import with id = " + id + "?";
             var myModal = new bootstrap.Modal(document.getElementById('deletePopup'));
             myModal.show();
         }

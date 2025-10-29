@@ -5,7 +5,6 @@
 package dao;
 
 import static constant.CommonFunction.checkErrorSQL;
-import static constant.Constants.MAX_ELEMENTS_PER_PAGE;
 import db.DBContext;
 import java.sql.Date;
 import java.sql.ResultSet;
@@ -14,7 +13,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import model.Category;
 import model.Import;
 
 /**
@@ -27,61 +25,56 @@ public class ImportDAO extends DBContext {
         List<Import> list = new ArrayList<>();
 
         try {
-            String query = "SELECT i.import_id, igd.ingredient_name, id.quantity, id.unit_price, id.total_price, e.emp_name, s.contact_person, s.supplier_name, i.import_date FROM import i \n"
-                    + "JOIN import_detail id ON i.import_id = id.import_id \n"
-                    + "JOIN ingredient igd ON id.ingredient_id = igd.ingredient_id\n"
-                    + "JOIN employee e ON e.emp_id = i.emp_id\n"
-                    + "JOIN supplier s ON s.supplier_id = i.supplier_id";
+            String query = "SELECT i.import_id, e.emp_name, s.contact_person, s.supplier_name, i.import_date "
+                    + "FROM import i "
+                    + "JOIN employee e ON e.emp_id = i.emp_id "
+                    + "JOIN supplier s ON s.supplier_id = i.supplier_id	";
 
             ResultSet rs = this.executeSelectionQuery(query, null);
 
             while (rs.next()) {
                 int importId = rs.getInt(1);
-                String ingredientName = rs.getString(2);
-                int quantity = rs.getInt(3);
-                int unitPrice = rs.getInt(4);
-                int totalPrice = rs.getInt(5);
-                String empName = rs.getString(6);
-                String contactPerson = rs.getString(7);
-                String supplierName = rs.getString(8);
-                Date importDate = rs.getDate(9);
+                String empName = rs.getString(2);
+                String contactPerson = rs.getString(3);
+                String supplierName = rs.getString(4);
+                Date importDate = rs.getDate(5);
 
-                Import imp = new Import(importId, ingredientName, quantity, unitPrice, totalPrice, empName, contactPerson, supplierName, importDate);
+                Import imp = new Import(importId, empName, contactPerson, supplierName, importDate);
 
                 list.add(imp);
             }
         } catch (SQLException ex) {
-            Logger.getLogger(CategoryDAO.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ImportDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
 
         return list;
     }
 
-    public List<Category> getAll(int page) {
-        List<Category> list = new ArrayList<>();
+    public List<Import> getImportDetails(int importId) {
+        List<Import> list = new ArrayList<>();
 
         try {
-            String query = "SELECT category_id, category_name, description, status\n"
-                    + "FROM     category\n"
-                    + "WHERE  (LOWER(status) = LOWER(N'Active'))\n"
-                    + "ORDER BY category_id\n"
-                    + "OFFSET ? ROWS \n"
-                    + "FETCH NEXT ? ROWS ONLY;";
+            String query = "SELECT igd.ingredient_name, id.quantity, id.unit, id.unit_price, id.total_price "
+                    + "FROM import i "
+                    + "JOIN import_detail id ON i.import_id = id.import_id "
+                    + "JOIN ingredient igd ON id.ingredient_id = igd.ingredient_id "
+                    + "WHERE i.import_id = ?";
 
-            ResultSet rs = this.executeSelectionQuery(query, new Object[]{(page - 1) * MAX_ELEMENTS_PER_PAGE, MAX_ELEMENTS_PER_PAGE});
+            ResultSet rs = this.executeSelectionQuery(query, new Object[]{importId});
 
             while (rs.next()) {
-                int categoryId = rs.getInt(1);
-                String categoryName = rs.getString(2);
-                String description = rs.getString(3);
-                String status = rs.getString(4);
+                String ingredientName = rs.getString(1);
+                int quantity = rs.getInt(2);
+                String unit = rs.getString(3);
+                int unitPrice = rs.getInt(4);
+                int totalPrice = rs.getInt(5);
 
-                Category category = new Category(categoryId, categoryName, description, status);
+                Import imp = new Import(ingredientName, quantity, unit, unitPrice, totalPrice);
 
-                list.add(category);
+                list.add(imp);
             }
         } catch (SQLException ex) {
-            Logger.getLogger(CategoryDAO.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ImportDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
 
         return list;
@@ -90,44 +83,35 @@ public class ImportDAO extends DBContext {
     public Import getElementByID(int id) {
 
         try {
-            String query = "SELECT i.import_id, igd.ingredient_name, id.quantity, id.unit_price, id.total_price, e.emp_name, s.contact_person, s.supplier_name, i.import_date FROM import i \n"
-                    + "JOIN import_detail id ON i.import_id = id.import_id \n"
-                    + "JOIN ingredient igd ON id.ingredient_id = igd.ingredient_id\n"
-                    + "JOIN employee e ON e.emp_id = i.emp_id\n"
-                    + "JOIN supplier s ON s.supplier_id = i.supplier_id"
-                    + "WHERE  (import_id = ? and LOWER(status) = LOWER(N'Active'))\n";
+            String query = "SELECT i.import_id, e.emp_name, s.contact_person, s.supplier_name, i.import_date "
+                    + "FROM import i "
+                    + "JOIN employee e ON e.emp_id = i.emp_id "
+                    + "JOIN supplier s ON s.supplier_id = i.supplier_id  "
+                    + "WHERE i.import_id = ?";
 
             ResultSet rs = this.executeSelectionQuery(query, new Object[]{id});
 
-            while (rs.next()) {
+            if (rs.next()) {
                 int importId = rs.getInt(1);
-                String ingredientName = rs.getString(2);
-                int quantity = rs.getInt(3);
-                int unitPrice = rs.getInt(4);
-                int totalPrice = rs.getInt(5);
-                String empName = rs.getString(6);
-                String contactPerson = rs.getString(7);
-                String supplierName = rs.getString(8);
-                Date importDate = rs.getDate(9);
+                String empName = rs.getString(2);
+                String contactPerson = rs.getString(3);
+                String supplierName = rs.getString(4);
+                Date importDate = rs.getDate(5);
 
-                Import imp = new Import(importId, ingredientName, quantity, unitPrice, totalPrice, empName, contactPerson, supplierName, importDate);
-
-
-                return imp;
+                return new Import(importId, empName, contactPerson, supplierName, importDate);
             }
         } catch (SQLException ex) {
-            Logger.getLogger(CategoryDAO.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ImportDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
 
         return null;
     }
 
-    public int add(String categoryName, String description) {
+    public int add(int supplierId, int empId) {
         try {
-            String query = "INSERT INTO category (category_name, description, status)\n"
-                    + "VALUES (?, ?, ?)";
+            String query = "INSERT INTO import (supplierId, empId, status) VALUES (? , ?, ?)";
 
-            return this.executeQuery(query, new Object[]{categoryName, description, "Active"});
+            return this.executeQuery(query, new Object[]{supplierId, empId, "Active"});
 
         } catch (SQLException ex) {
 
@@ -136,7 +120,30 @@ public class ImportDAO extends DBContext {
                 return sqlError;
             }
 
-            Logger.getLogger(CategoryDAO.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ImportDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return -1;
+    }
+
+    public int addDetail(String ingredientName, int typeId, String status, int importId,
+            int ingredientId, int quantity, String unit, int unitPrice, int totalPrice) {
+        try {
+            String query = "INSERT INTO ingredient (ingredient_name, type_id, status) "
+                    + "VALUES (?, ?, ?) "
+                    + "INSERT INTO import_detail (import_id, ingredient_id, quantity, unit, unit_price, total_price) "
+                    + "VALUES (?, ?, ?, ?, ?, ?)";
+
+            return this.executeQuery(query, new Object[]{ingredientName, typeId, "Active", importId,
+                ingredientId, quantity, unit, unitPrice, totalPrice});
+
+        } catch (SQLException ex) {
+
+            int sqlError = checkErrorSQL(ex);
+            if (sqlError != 0) {
+                return sqlError;
+            }
+
+            Logger.getLogger(ImportDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
         return -1;
     }
@@ -157,7 +164,7 @@ public class ImportDAO extends DBContext {
                 return sqlError;
             }
 
-            Logger.getLogger(CategoryDAO.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ImportDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
         return -1;
     }
@@ -178,7 +185,7 @@ public class ImportDAO extends DBContext {
 
     public int countItem() {
         try {
-            String query = "select count(category_id) as numrow from [dbo].[category]";
+            String query = "select count(import_id) as numrow from [dbo].[import]";
             ResultSet rs = this.executeSelectionQuery(query, null);
             if (rs.next()) {
                 return rs.getInt(1);

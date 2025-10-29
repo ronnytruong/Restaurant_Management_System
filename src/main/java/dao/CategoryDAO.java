@@ -3,8 +3,6 @@ package dao;
 import static constant.CommonFunction.checkErrorSQL;
 import static constant.Constants.MAX_ELEMENTS_PER_PAGE;
 import db.DBContext;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
