@@ -180,8 +180,70 @@ public class ReservationServlet extends HttpServlet {
                     + "/reservation?view=mylist&customerId=" + request.getParameter("customerId"));
             return;
         }
+        if (action.equalsIgnoreCase("add")) {
+            // Add Reservation (customer self-create)
+            int customerId, tableId, partySize;
+            Date date;
+            Time time;
+            try {
+                customerId = Integer.parseInt(request.getParameter("customerId"));
+                tableId = Integer.parseInt(request.getParameter("tableId"));
+                partySize = Integer.parseInt(request.getParameter("partySize"));
+                date = Date.valueOf(request.getParameter("reservationDate"));
+                // UI gửi HH:mm -> thêm :00 để parse Time
+                time = Time.valueOf(request.getParameter("reservationTime") + ":00");
+            } catch (Exception e) {
+                popupStatus = false;
+                popupMessage = "Invalid input for Add Reservation.";
+                setPopup(request, popupStatus, popupMessage);
+                response.sendRedirect(request.getContextPath() + "/reservation?view=mylist");
+                return;
+            }
 
-        if (action.equalsIgnoreCase("edit")) {
+            int check = reservationDAO.add(customerId, tableId, date, time, partySize);
+            if (check < 1) {
+                popupStatus = false;
+                popupMessage = "Add failed. SQL error: " + getSqlErrorCode(check);
+            } else {
+                popupMessage = "Reservation created successfully. Status = Pending.";
+            }
+            setPopup(request, popupStatus, popupMessage);
+            response.sendRedirect(request.getContextPath()
+                    + "/reservation?view=mylist&customerId=" + request.getParameter("customerId"));
+            return;
+        }
+        if (action.equalsIgnoreCase("add")) {
+            // Add Reservation (customer self-create)
+            int customerId, tableId, partySize;
+            Date date;
+            Time time;
+            try {
+                customerId = Integer.parseInt(request.getParameter("customerId"));
+                tableId = Integer.parseInt(request.getParameter("tableId"));
+                partySize = Integer.parseInt(request.getParameter("partySize"));
+                date = Date.valueOf(request.getParameter("reservationDate"));
+                // UI gửi HH:mm -> thêm :00 để parse Time
+                time = Time.valueOf(request.getParameter("reservationTime") + ":00");
+            } catch (Exception e) {
+                popupStatus = false;
+                popupMessage = "Invalid input for Add Reservation.";
+                setPopup(request, popupStatus, popupMessage);
+                response.sendRedirect(request.getContextPath() + "/reservation?view=mylist");
+                return;
+            }
+
+            int check = reservationDAO.add(customerId, tableId, date, time, partySize);
+            if (check < 1) {
+                popupStatus = false;
+                popupMessage = "Add failed. SQL error: " + getSqlErrorCode(check);
+            } else {
+                popupMessage = "Reservation created successfully. Status = Pending.";
+            }
+            setPopup(request, popupStatus, popupMessage);
+            response.sendRedirect(request.getContextPath()
+                    + "/reservation?view=mylist&customerId=" + request.getParameter("customerId"));
+            return;
+        } else if (action.equalsIgnoreCase("edit")) {
             // Admin edit reservation
             int id, tableId, party;
             Date date;
@@ -228,9 +290,7 @@ public class ReservationServlet extends HttpServlet {
             }
 
             return;
-        }
-
-        if (action.equalsIgnoreCase("approve") || action.equalsIgnoreCase("reject")) {
+        } else if (action.equalsIgnoreCase("approve") || action.equalsIgnoreCase("reject")) {
             int id;
             try {
                 id = Integer.parseInt(request.getParameter("id"));
@@ -254,9 +314,7 @@ public class ReservationServlet extends HttpServlet {
             setPopup(request, popupStatus, popupMessage);
             response.sendRedirect(request.getContextPath() + "/reservation");
             return;
-        }
-
-        if (action.equalsIgnoreCase("cancel")) {
+        } else if (action.equalsIgnoreCase("cancel")) {
             int id, customerId;
             try {
                 id = Integer.parseInt(request.getParameter("id"));

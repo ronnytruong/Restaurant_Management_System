@@ -36,7 +36,6 @@
                         <div class="col-12 col-md-3">
                             <label class="form-label">Customer ID</label>
                             <input type="number" class="form-control" value="${currentReservation.customerId}" disabled>
-                            <div class="form-text">Không chỉnh customer ở đây.</div>
                         </div>
 
                         <div class="col-12 col-md-3">
