@@ -14,6 +14,7 @@ public class Import {
     private int importId;
     private String ingredientName;
     private int quantity;
+    private String unit;
     private int unitPrice;
     private int totalPrice;
     private String empName;
@@ -21,15 +22,20 @@ public class Import {
     private String supplierName;
     private Date importDate;
 
-    public Import() {
-    }
 
-    public Import(int importId, String ingredientName, int quantity, int unitPrice, int totalPrice, String empName, String contactPerson, String supplierName, Date importDate) {
-        this.importId = importId;
+
+    public Import(String ingredientName, int quantity, String unit, int unitPrice, int totalPrice) {
         this.ingredientName = ingredientName;
         this.quantity = quantity;
+        this.unit = unit;
         this.unitPrice = unitPrice;
         this.totalPrice = totalPrice;
+    }
+
+    
+
+    public Import(int importId, String empName, String contactPerson, String supplierName, Date importDate) {
+        this.importId = importId;
         this.empName = empName;
         this.contactPerson = contactPerson;
         this.supplierName = supplierName;
@@ -58,6 +64,14 @@ public class Import {
 
     public void setQuantity(int quantity) {
         this.quantity = quantity;
+    }
+
+    public String getUnit() {
+        return unit;
+    }
+
+    public void setUnit(String unit) {
+        this.unit = unit;
     }
 
     public int getUnitPrice() {

@@ -12,7 +12,7 @@
     <head>
         <meta charset="utf-8">
         <meta content="width=device-width, initial-scale=1.0" name="viewport">
-        <title>Edit Import</title>
+        <title>Edit Supplier</title>
         <meta name="description" content="Form to edit supplier information in the Yummy Restaurant admin panel.">
         <meta name="keywords" content="supplier edit, admin, restaurant management">
 
@@ -23,7 +23,7 @@
         <!-- Fonts -->
         <link href="https://fonts.googleapis.com" rel="preconnect">
         <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
-        <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 
         <!-- Vendor CSS Files -->
         <link href="assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
@@ -76,17 +76,28 @@
 
                                 <tr>
                                     <th>
-                                        <label for="name">Manager</label>
+                                        <label for="id">ID</label>
                                     </th>
                                     <td>
-                                        <select name="empName">    
-                                            <c:forEach var="emp" items="${employeeList}">
-                                                <option value="${emp.empName}"
-                                                        <c:if test="${emp.empName == currentImport.empName}">selected</c:if>>
-                                                    ${emp.empName}
-                                                </option>
-                                            </c:forEach>
-                                        </select>
+                                        <label name="id" id="id"><c:out value="${currentImport.importId}"/></label>
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <th>
+                                        <label for="manager">Manager</label>
+                                    </th>
+                                    <td>
+                                        <input type="text" name="manager" id="manager" value="<c:out value='${currentImport.empName}'/>" class="form-control" required>
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <th>
+                                        <label for="supplierName">Supplier</label>
+                                    </th>
+                                    <td>
+                                        <input type="text" name="supplierName" id="supplierName" value="<c:out value='${currentImport.supplierName}'/>" class="form-control">
                                     </td>
                                 </tr>
 
@@ -95,32 +106,43 @@
                                         <label for="contactPerson">Contact Person</label>
                                     </th>
                                     <td>
-                                        <input type="text" name="contactPerson" id="contactPerson" value="<c:out value='${currentImport.contactPerson}'/>" class="form-control" readonly>
+                                        <input type="text" name="contactPerson" id="contactPerson" value="<c:out value='${currentImport.contactPerson}'/>" class="form-control">
                                     </td>
                                 </tr>
 
                                 <tr>
                                     <th>
-                                        <label for="name">Supplier Name</label>
+                                        <label for="ingredient">Ingredient</label>
                                     </th>
                                     <td>
-                                        <select name="supplierName">    
-                                            <c:forEach var="supplier" items="${supplierList}">
-                                                <option value="${supplier.supplierName}"
-                                                        <c:if test="${supplier.supplierName == currentImport.supplierName}">selected</c:if>>
-                                                    ${supplier.supplierName}
-                                                </option>
-                                            </c:forEach>
-                                        </select>
+                                        <input type="text" name="ingredient" id="ingredient" value="<c:out value='${currentImport.ingredient}'/>" class="form-control">
                                     </td>
                                 </tr>
 
                                 <tr>
                                     <th>
-                                        <label for="importDate">Date</label>
+                                        <label for="quantity">Quantity</label>
                                     </th>
                                     <td>
-                                        <input type="text" name="importDate" id="importDate" value="<c:out value='${currentImport.importDate}'/>" class="form-control">
+                                        <input type="text" name="quantity" id="quantity" value="<c:out value='${currentImport.quantity}'/>" class="form-control">
+                                    </td>
+                                </tr>
+                                
+                                <tr>
+                                    <th>
+                                        <label for="unitPrice">Unit Price</label>
+                                    </th>
+                                    <td>
+                                        <input type="text" name="unitPrice" id="unitPrice" value="<c:out value='${currentImport.unitPrice}'/>" class="form-control">
+                                    </td>
+                                </tr>
+                                
+                                <tr>
+                                    <th>
+                                        <label for="totalPrice">Total Price</label>
+                                    </th>
+                                    <td>
+                                        <input type="text" name="totalPrice" id="totalPrice" value="<c:out value='${currentImport.totalPrice}'/>" class="form-control">
                                     </td>
                                 </tr>
 
@@ -132,7 +154,7 @@
                                     </td>
                                     <td>
                                         <button class="btn btn-success" type="submit" name="action" value="edit">Save</button>
-                                        <a class="btn btn-outline-dark" href="<c:url value='import'/>">Cancel</a>
+                                        <a class="btn btn-outline-dark" href="<c:url value='supplier'/>">Cancel</a>
                                     </td>
                                 </tr>
                             </table>

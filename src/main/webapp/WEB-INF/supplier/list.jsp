@@ -23,7 +23,7 @@
         <!-- Fonts -->
         <link href="https://fonts.googleapis.com" rel="preconnect">
         <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
-        <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&family=Inter:wght@100;200;300;400;500;600;700;800;900&family=Amatic+SC:wght@400;700&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 
         <!-- Vendor CSS Files -->
         <link href="assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
@@ -66,19 +66,19 @@
                         <nav class="menu-panel">
                             <h1 class="menu-title">Browse Lists</h1>
                             <ul class="menu-links list-unstyled mb-0">
-                                <li><a href="#"><i class="bi bi-receipt"></i> Order List</a></li>
-                                <li><a href="#"><i class="bi bi-calendar-check"></i> Reservation List</a></li>
-                                <li><a href="#"><i class="bi bi-grid-3x3"></i> Table List</a></li>
-                                <li><a href="#"><i class="bi bi-tags"></i> Category List</a></li>
-                                <li><a href="#"><i class="bi bi-list-ul"></i> Menu Item List</a></li>
-                                <li><a href="#"><i class="bi bi-diagram-2"></i> Type List</a></li>
-                                <li><a href="#"><i class="bi bi-basket"></i> Ingredient List</a></li>
-                                <li><a href="#"><i class="bi bi-book"></i> Recipe List</a></li>
-                                <li><a href="#"><i class="bi bi-download"></i> Import List</a></li>
+                                <li><a href="order"><i class="bi bi-receipt"></i> Order List</a></li>
+                                <li><a href="reservation"><i class="bi bi-calendar-check"></i> Reservation List</a></li>
+                                <li><a href="table"><i class="bi bi-grid-3x3"></i> Table List</a></li>
+                                <li><a href="category"><i class="bi bi-tags"></i> Category List</a></li>
+                                <li><a href="menuitem"><i class="bi bi-list-ul"></i> Menu Item List</a></li>
+                                <li><a href="type"><i class="bi bi-diagram-2"></i> Type List</a></li>
+                                <li><a href="ingredient"><i class="bi bi-basket"></i> Ingredient List</a></li>
+                                <li><a href="recipe"><i class="bi bi-book"></i> Recipe List</a></li>
+                                <li><a href="import"><i class="bi bi-download"></i> Import List</a></li>
                                 <li><a href="supplier"><i class="bi bi-truck"></i> Supplier List</a></li>
-                                <li><a href="#"><i class="bi bi-person-badge"></i> Account List</a></li>
-                                <li><a href="#"><i class="bi bi-shield-lock"></i> Role List</a></li>
-                                <li><a href="#"><i class="bi bi-ticket-perforated"></i> Voucher List</a></li>
+                                <li><a href="account"><i class="bi bi-person-badge"></i> Account List</a></li>
+                                <li><a href="role"><i class="bi bi-shield-lock"></i> Role List</a></li>
+                                <li><a href="voucher"><i class="bi bi-ticket-perforated"></i> Voucher List</a></li>
                             </ul>
                         </nav>
                     </aside>
@@ -93,15 +93,8 @@
                                     <div class="filters d-flex flex-wrap gap-2 justify-content-end">
                                         <div class="search-box input-group">
                                             <span class="input-group-text"><i class="bi bi-search"></i></span>
-                                            <input type="search" class="form-control" placeholder="Search by customer or ID">
+                                            <input type="search" class="form-control" placeholder="Search">
                                         </div>
-                                        <select class="form-select">
-                                            <option selected>All statuses</option>
-                                            <option>Pending</option>
-                                            <option>Preparing</option>
-                                            <option>Completed</option>
-                                            <option>Cancelled</option>
-                                        </select>
                                         <a class="btn btn-primary add-btn" href="<c:url value="supplier">
                                                <c:param name="view" value="add"/>
                                            </c:url>"><i class="bi bi-plus-circle"></i> Add</a>
@@ -114,7 +107,7 @@
                                 <table class="table align-middle admin-table">
                                     <thead>
                                         <tr>
-                                            <th scope="col">No.</th>
+                                            <th scope="col">ID</th>
                                             <th scope="col">Name</th>
                                             <th scope="col">Phone Number</th>
                                             <th scope="col">Email</th>
@@ -133,7 +126,7 @@
                                             <c:otherwise>
                                                 <c:forEach var="supplier" items="${suppliersList}" varStatus="loop">
                                                     <tr>
-                                                        <td><c:out value="${loop.index + 1}"/></td>
+                                                        <td><c:out value="${supplier.supplierId}"/></td>
                                                         <td><c:out value="${supplier.supplierName}"/></td>
                                                         <td><c:out value="${supplier.phoneNumber}"/></td>
                                                         <td><c:out value="${supplier.email}"/></td>
@@ -142,18 +135,15 @@
 
                                                         <td class="text-end">
                                                             <div class="action-button-group d-flex justify-content-end gap-2">
-                                                                <c:url var="edit" value="supplier">
-                                                                    <c:param name="view" value="edit"/>
-                                                                    <c:param name="id" value="${supplier.supplierId}"/>
-                                                                </c:url>
-                                                                <a class="btn btn-outline-secondary btn-icon btn-edit"
-                                                                   title="Edit"
-                                                                   aria-label="Edit"
-                                                                   href="${edit}">
+                                                                <a href="<c:url value='/supplier'>
+                                                                       <c:param name='view' value='edit'/>
+                                                                       <c:param name='id' value='${supplier.supplierId}'/>
+                                                                   </c:url>"
+                                                                   class="btn btn-outline-secondary btn-icon btn-edit"
+                                                                   title="Edit" aria-label="Edit">
                                                                     <i class="bi bi-pencil"></i>
                                                                 </a>
-
-                                                                <button type="button" class="btn btn-outline-secondary btn-icon btn-delete" title="Delete" aria-label="Delete" onclick="showDeletePopup('${supplier.supplierId}')">
+                                                                <button type="button" class="btn btn-outline-secondary btn-icon btn-delete" title="Delete" aria-label="Delete" onclick="showDeletePopup(${supplier.supplierId})">
                                                                     <i class="bi bi-x-circle"></i>
                                                                 </button>
                                                             </div>
@@ -165,6 +155,34 @@
                                     </tbody>
                                 </table>
                             </div>
+
+                            <nav aria-label="Page navigation example">
+                                <ul class="pagination">
+                                    <li class="page-item ${((empty param.page) || param.page <= 1)?"disabled":""}">
+                                        <a class="page-link" href="<c:url value="/supplier">
+                                               <c:param name="view" value="list"/>
+                                               <c:param name="page" value="${param.page - 1}"/>
+                                           </c:url>" aria-label="Previous">
+                                            <span aria-hidden="true">&laquo;</span>
+                                        </a>
+                                    </li>
+                                    <c:forEach begin="1" end="${requestScope.totalPages}" var="i">
+                                        <li class="page-item ${((empty param.page && i == 1) || param.page == i)?"active":""}">
+                                            <a class="page-link" href="<c:url value="/supplier">
+                                                   <c:param name="view" value="list"/>
+                                                   <c:param name="page" value="${i}"/>
+                                               </c:url>">${i}</a></li>
+                                        </c:forEach>
+                                    <li class="page-item ${(requestScope.totalPages <= param.page || requestScope.totalPages eq 1 )?"disabled":""}">
+                                        <a class="page-link" href="<c:url value="/supplier">
+                                               <c:param name="view" value="list"/>
+                                               <c:param name="page" value="${(empty param.page)?2:param.page + 1}"/>
+                                           </c:url>" aria-label="Next">
+                                            <span aria-hidden="true">&raquo;</span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </nav>
                         </div>
                     </section>
                 </div>

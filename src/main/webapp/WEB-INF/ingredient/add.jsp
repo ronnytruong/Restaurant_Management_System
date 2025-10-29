@@ -13,7 +13,6 @@
     <div class="content-card shadow-sm">
         <div class="card-header border-0 px-4 py-3 d-flex justify-content-between align-items-center">
             <h1 class="section-title mb-0">Add New Ingredient</h1>
-         
         </div>
 
         <div class="container px-4 py-3">
@@ -44,33 +43,15 @@
                             </select>
                         </td>
                     </tr>
-                    
-                    <%-- Ingredient Price (Now just a standard number input) --%>
-                    <tr>
-                        <th>
-                            <label for="priceInput">Price</label>
-                        </th>
-                        <td>
-                            <input type="number" 
-                                   name="price" 
-                                   id="priceInput" 
-                                   class="form-control" 
-                                   step="0.01"
-                                   min="0.00"
-                                   required>
-                        </td>
-                    </tr>
+                   
 
                     <%-- Action Buttons --%>
                     <tr>
                         <td></td>
                         <td>
-                            <button class="btn btn-primary me-2" type="submit" name="action" value="add">
-                                <i class="bi bi-check-circle"></i> Add
-                            </button>
-                            <a class="btn btn-outline-dark" href="<c:url value='ingredient'/>">
-                                <i class="bi bi-x-lg"></i> Cancel
-                            </a>
+                            
+                            <button class="btn btn-outline-dark" type="submit" name="action" value="add">Add</button>
+                                <a class="btn btn-outline-dark" href="<c:url value='ingredient'/>">Cancel</a>
                         </td>
                     </tr>
                 </table>
