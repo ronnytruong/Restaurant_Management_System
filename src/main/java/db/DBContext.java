@@ -4,6 +4,8 @@
  */
 package db;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -57,6 +59,25 @@ public class DBContext {
         }
 
         return statement.executeUpdate();
+    }
+    public String hashToMD5(String input) {
+        try {
+            // Sử dụng thuật toán MD5
+            MessageDigest md = MessageDigest.getInstance("MD5");
+            byte[] digest = md.digest(input.getBytes());
+            
+            // Chuyển đổi byte array sang chuỗi Hex
+            StringBuilder sb = new StringBuilder();
+            for (byte b : digest) {
+                String hex = Integer.toHexString(0xff & b);
+                if (hex.length() == 1) sb.append('0');
+                sb.append(hex);
+            }
+            return sb.toString();
+        } catch (NoSuchAlgorithmException e) {
+            // Xử lý ngoại lệ nếu thuật toán MD5 không khả dụng
+            throw new RuntimeException("MD5 algorithm not found!", e);
+        }
     }
 
 }

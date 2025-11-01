@@ -114,7 +114,26 @@ public class IngredientDAO extends DBContext {
         return null;
     }
 
+
+    public int getLastId() {
+
+        try {
+            String query = "SELECT TOP (1) i.ingredient_id FROM ingredient i ORDER BY i.ingredient_id DESC";
+
+            ResultSet rs = this.executeSelectionQuery(query, null);
+            if (rs.next()) {
+                return rs.getInt("ingredient_id");
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(IngredientDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        return -1;
+    }
+
+
     public int add(String ingredient_name, int type_id, double price) {
+
         try {
             String query = "INSERT INTO ingredient (ingredient_name, type_id, price, status)\n"
                     + "VALUES (?, ?, ?, ?)";

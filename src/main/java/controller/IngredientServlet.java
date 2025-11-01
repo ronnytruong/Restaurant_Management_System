@@ -8,6 +8,7 @@ import static constant.CommonFunction.getTotalPages;
 import static constant.CommonFunction.validateInteger;
 import static constant.CommonFunction.validateString;
 import constant.Constants;
+import dao.ImportDAO;
 import dao.IngredientDAO;
 import dao.TypeDAO;
 import java.io.IOException;
@@ -28,6 +29,7 @@ import model.Ingredient;
 public class IngredientServlet extends HttpServlet {
     IngredientDAO ingredientDAO = new IngredientDAO();
     TypeDAO typeDAO = new TypeDAO();
+    ImportDAO importDAO = new ImportDAO();
 
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -75,7 +77,9 @@ public class IngredientServlet extends HttpServlet {
       
 
         if (!validateString(view, -1) || view.equalsIgnoreCase("list")) {
+            int id = 0;
             namepage = "list";
+            request.setAttribute("importList", importDAO.getImportDetails(id));
         } else if (view.equalsIgnoreCase("add")) {
             namepage = "add";
         } else if (view.equalsIgnoreCase("edit")) {

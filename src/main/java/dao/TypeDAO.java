@@ -13,7 +13,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import model.Supplier;
 import model.Type;
 
 /**
@@ -26,9 +25,9 @@ public class TypeDAO extends DBContext {
 
         try {
             String query = "SELECT *"
-                    + "FROM type AS s\n"
-                    + "WHERE LOWER(s.status) != LOWER(N'Deleted')\n"
-                    + "ORDER BY s.type_id";
+                    + "FROM type AS t\n"
+                    + "WHERE LOWER(t.status) != LOWER(N'Deleted')\n"
+                    + "ORDER BY t.type_id";
 
             ResultSet rs = this.executeSelectionQuery(query, null);
 
