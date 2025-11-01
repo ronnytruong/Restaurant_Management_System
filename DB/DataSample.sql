@@ -200,26 +200,6 @@ SELECT @res1 = reservation_id FROM reservation WHERE customer_id = @cust_1 AND t
 SELECT @res2 = reservation_id FROM reservation WHERE customer_id = @cust_2 AND table_id = @table_2;
 
 ------------------------------------------------------------
--- 13) orders
-------------------------------------------------------------
-INSERT INTO [order] (reservation_id, table_id, customer_id, emp_id, voucher_id, order_date, order_time, order_status, subtotal, discount, total_amount, payment_method, status)
-VALUES
-(@res1, @table_3, @cust_1, @emp_waiter, @voucher1, '2025-10-30', '19:05', N'Completed', 270000.00, 27000.00, 243000.00, N'Cash', N'Completed'),
-(NULL, @table_1, @cust_2, @emp_chef, NULL, '2025-10-25', '12:35', N'Pending', 150000.00, 0.00, 150000.00, N'CreditCard', N'Pending');
-
-SELECT @order1 = order_id FROM [order] WHERE reservation_id = @res1;
-SELECT @order2 = order_id FROM [order] WHERE reservation_id IS NULL AND table_id = @table_1;
-
-------------------------------------------------------------
--- 14) order_item
-------------------------------------------------------------
-INSERT INTO order_item (order_id, menu_item_id, unit_price, discount_amount, total_amount, description, status)
-VALUES
-(@order1, @item_grilled, 120000.00, 12000.00, 108000.00, N'Grilled chicken - 10% off', N'Active'),
-(@order1, @item_coffee, 30000.00, 0.00, 30000.00, N'Black coffee', N'Active'),
-(@order2, @item_beef, 150000.00, 0.00, 150000.00, N'Beef stew', N'Active');
-
-------------------------------------------------------------
 -- 15) recipe_item
 ------------------------------------------------------------
 INSERT INTO recipe_item (recipe_id, ingredient_id, quantity, unit, note, status)
