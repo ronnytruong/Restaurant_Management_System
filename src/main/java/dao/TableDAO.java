@@ -79,9 +79,8 @@ public class TableDAO extends DBContext {
     public List<Table> getAll(int page, String keyword) {
         List<Table> list = new ArrayList<>();
         try {
-            String base = "SELECT table_id, table_number, table_capacity, status "
-                    + "FROM [table] "
-                    + "WHERE LOWER(status) <> 'deleted' ";
+            String base = "SELECT table_id, table_number, table_capacity, status FROM [table] t "
+                    + "WHERE LOWER(t.status) <> 'deleted'  ";
             String orderOffset = "ORDER BY table_id OFFSET ? ROWS FETCH NEXT ? ROWS ONLY;";
 
             ResultSet rs;

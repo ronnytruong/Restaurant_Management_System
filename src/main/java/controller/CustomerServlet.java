@@ -173,7 +173,7 @@ public class CustomerServlet extends HttpServlet {
                     int checkError = customerDAO.updateStatus(id);
                     if (checkError >= 1) {
                         popupStatus = true;
-                        popupMessage = "Customer status updated successfully!";
+                        popupMessage = "Customer status (ID: " + id + ") updated successfully!";
                     } else {
                         popupStatus = false;
                         popupMessage = "Failed to update status. SQL error: " + getSqlErrorCode(checkError);

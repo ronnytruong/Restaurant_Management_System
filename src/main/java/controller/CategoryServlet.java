@@ -157,7 +157,7 @@ public class CategoryServlet extends HttpServlet {
 
                     passValidation = false;
                 }
-
+ 
 //validate
                 if (!validateString(name, -1)
                         || !validateInteger(id, false, false, true)) {
