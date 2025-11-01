@@ -4,8 +4,9 @@
  */
 package controller;
 
-import constant.HashUtil;
+
 import dao.CustomerDAO;
+import db.DBContext;
 import model.Customer;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -24,7 +25,7 @@ import jakarta.servlet.http.HttpSession;
 public class LoginServlet extends HttpServlet {
 
     private CustomerDAO customerDAO = new CustomerDAO();
-
+private DBContext dbContext = new DBContext();
     /**
      * * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -89,8 +90,8 @@ public class LoginServlet extends HttpServlet {
             errorMessage = "Please enter valid Username and Password.";
         } else {
 
-            String hashedPassword = HashUtil.toMD5(password);
-
+           //////////
+String hashedPassword = dbContext.hashToMD5(password);
             Customer customer = customerDAO.authenticate(customerAccount, hashedPassword);
 
             if (customer != null) {
