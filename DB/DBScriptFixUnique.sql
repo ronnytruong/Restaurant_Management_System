@@ -167,22 +167,16 @@ WHERE status <> 'deleted';
 CREATE TABLE [order] (
     order_id INT IDENTITY(1,1) NOT NULL,
     reservation_id INT NULL,
-    table_id INT NOT NULL,
-    customer_id INT NOT NULL,
     emp_id INT NOT NULL,
     voucher_id INT NULL,
     order_date DATE NOT NULL DEFAULT CAST(GETDATE() AS DATE),
     order_time TIME NOT NULL DEFAULT CAST(GETDATE() AS TIME),
-    total INT NOT NULL DEFAULT 0,
     payment_method NVARCHAR(20) NULL,
     status NVARCHAR(20) NOT NULL DEFAULT 'Pending',
     CONSTRAINT PK_order PRIMARY KEY (order_id),
-    CONSTRAINT FK_order_customer FOREIGN KEY (customer_id) REFERENCES customer(customer_id),
-    CONSTRAINT FK_order_table FOREIGN KEY (table_id) REFERENCES [table](table_id),
     CONSTRAINT FK_order_reservation FOREIGN KEY (reservation_id) REFERENCES reservation(reservation_id),
-    CONSTRAINT FK_order_employee FOREIGN KEY (emp_id) REFERENCES employee(emp_id), -- Khóa ngoại employee
+    CONSTRAINT FK_order_employee FOREIGN KEY (emp_id) REFERENCES employee(emp_id),
 	CONSTRAINT FK_order_voucher FOREIGN KEY (voucher_id) REFERENCES voucher(voucher_id)
-
 );
 
 CREATE TABLE order_item (

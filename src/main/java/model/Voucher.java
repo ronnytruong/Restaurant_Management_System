@@ -111,4 +111,17 @@ public class Voucher {
         this.status = status;
     }
 
+    public String getCurrentDiscount() {
+        if (discountType == null || discountValue == null) {
+            return "N/A";
+        }
+
+        if (discountType.equalsIgnoreCase("Percent")) {
+            return discountValue.stripTrailingZeros().toPlainString() + "%";
+        } else if (discountType.equalsIgnoreCase("Amount")) {
+            return discountValue + " VND";
+        } else {
+            return discountValue.toPlainString();
+        }
+    }
 }

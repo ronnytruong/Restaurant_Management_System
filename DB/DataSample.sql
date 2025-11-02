@@ -135,10 +135,10 @@ SELECT @sup_2 = supplier_id FROM supplier WHERE supplier_name = N'FarmFresh';
 ------------------------------------------------------------
 INSERT INTO employee (emp_account, password, emp_name, gender, dob, phone_number, email, address, role_id, status)
 VALUES
-(N'admin', CONVERT(NVARCHAR(255), HASHBYTES('SHA2_256', N'admin123'), 2), N'Nguyễn Quản Trị', N'Male', '1988-01-01', '0901112222', N'admin@rms.com', N'Hà Nội', @role_admin, N'Active'),
-(N'chef1', CONVERT(NVARCHAR(255), HASHBYTES('SHA2_256', N'chef123'), 2), N'Phạm Đầu Bếp', N'Male', '1990-03-15', '0902223333', N'chef@rms.com', N'Đà Nẵng', @role_chef, N'Active'),
-(N'waiter1', CONVERT(NVARCHAR(255), HASHBYTES('SHA2_256', N'waiter123'), 2), N'Trần Phục Vụ', N'Female', '1995-07-07', '0903334444', N'waiter@rms.com', N'Hải Phòng', @role_waiter, N'Active'),
-(N'cashier1', CONVERT(NVARCHAR(255), HASHBYTES('SHA2_256', N'cashier123'), 2), N'Ngô Thu Ngân', N'Female', '1992-09-15', '0909990000', N'cashier@rms.com', N'Cần Thơ', @role_cashier, N'Active');
+(N'admin', CONVERT(NVARCHAR(255), HASHBYTES('MD5', N'admin123'), 2), N'Nguyễn Quản Trị', N'Male', '1988-01-01', '0901112222', N'admin@rms.com', N'Hà Nội', @role_admin, N'Active'),
+(N'chef1', CONVERT(NVARCHAR(255), HASHBYTES('MD5', N'chef123'), 2), N'Phạm Đầu Bếp', N'Male', '1990-03-15', '0902223333', N'chef@rms.com', N'Đà Nẵng', @role_chef, N'Active'),
+(N'waiter1', CONVERT(NVARCHAR(255), HASHBYTES('MD5', N'waiter123'), 2), N'Trần Phục Vụ', N'Female', '1995-07-07', '0903334444', N'waiter@rms.com', N'Hải Phòng', @role_waiter, N'Active'),
+(N'cashier1', CONVERT(NVARCHAR(255), HASHBYTES('MD5', N'cashier123'), 2), N'Ngô Thu Ngân', N'Female', '1992-09-15', '0909990000', N'cashier@rms.com', N'Cần Thơ', @role_cashier, N'Active');
 
 SELECT @emp_admin = emp_id FROM employee WHERE emp_account = N'admin';
 SELECT @emp_chef  = emp_id FROM employee WHERE emp_account = N'chef1';
@@ -227,28 +227,30 @@ VALUES
 (@import1, @ing_lettuce, 50, 12000.00),
 (@import2, @ing_shrimp, 10, 155000.00);
 
+------------------------------------------------------------
+-- 17) order
+------------------------------------------------------------
+INSERT INTO [order] (reservation_id, emp_id, voucher_id, order_date, order_time, payment_method, status)
+VALUES
+(@res1, @emp_waiter, @voucher1, CAST(GETDATE() AS DATE), CAST(GETDATE() AS TIME), N'Cash', N'Completed'),
+(@res2, @emp_cashier, @voucher2, CAST(GETDATE() AS DATE), CAST(GETDATE() AS TIME), N'Credit Card', N'Pending');
+
+SELECT @order1 = order_id FROM [order] WHERE reservation_id = @res1;
+SELECT @order2 = order_id FROM [order] WHERE reservation_id = @res2;
+
+------------------------------------------------------------
+-- 18) order_item
+------------------------------------------------------------
+INSERT INTO order_item (order_id, menu_item_id, unit_price, quantity)
+VALUES
+(@order1, @item_grilled, 120000, 2),  -- 2 phần gà nướng
+(@order1, @item_spring, 45000, 3),    -- 3 phần gỏi cuốn
+(@order1, @item_coffee, 30000, 2),    -- 2 ly cà phê đen
+(@order2, @item_beef, 150000, 1),     -- 1 tô bò hầm
+(@order2, @item_cake, 45000, 2);      -- 2 miếng bánh cà rốt
+
 COMMIT TRANSACTION;
 GO
 
 PRINT N'✅ Dữ liệu mẫu cho database RestaurantManagement đã được chèn thành công!';
-GO
-
--- Một vài SELECT để kiểm tra nhanh
-SELECT TOP 10 * FROM [type];
-SELECT TOP 10 * FROM category;
-SELECT TOP 10 * FROM role;
-SELECT TOP 10 * FROM customer;
-SELECT TOP 10 * FROM [table];
-SELECT TOP 10 * FROM ingredient;
-SELECT TOP 10 * FROM supplier;
-SELECT TOP 10 * FROM employee;
-SELECT TOP 10 * FROM recipe;
-SELECT TOP 10 * FROM menu_item;
-SELECT TOP 10 * FROM voucher;
-SELECT TOP 10 * FROM reservation;
-SELECT TOP 10 * FROM [order];
-SELECT TOP 10 * FROM order_item;
-SELECT TOP 10 * FROM recipe_item;
-SELECT TOP 10 * FROM [import];
-SELECT TOP 10 * FROM import_detail;
 GO
