@@ -15,8 +15,8 @@
         <div class="card-header border-0 px-4 py-3 d-flex justify-content-between align-items-center">
             <h1 class="section-title mb-0">Add Reservation</h1>
             <a class="btn btn-outline-secondary" href="<c:url value='/reservation'>
-               <c:param name='view' value='list'/>
-               <c:param name='page' value='${empty param.page ? 1 : param.page}'/>
+                   <c:param name='view' value='list'/>
+                   <c:param name='page' value='${empty param.page ? 1 : param.page}'/>
                </c:url>">
                 <i class="bi bi-arrow-left"></i> Back
             </a>
@@ -26,14 +26,17 @@
             <form class="row g-3" method="post" action="<c:url value='/reservation'/>">
                 <input type="hidden" name="action" value="add"/>
 
+                <!-- ✅ Customer ID -->
                 <div class="col-12 col-md-3">
                     <label class="form-label">Customer ID</label>
                     <input type="number" name="customerId" class="form-control" required placeholder="e.g. 1">
                 </div>
 
+                <!-- ✅ Table -->
                 <div class="col-12 col-md-3">
                     <label class="form-label">Table ID</label>
                     <input type="number" name="tableId" class="form-control" required placeholder="e.g. 3">
+                    <small class="text-muted">Enter Table ID (T1 = 1, T2 = 2...)</small>
                 </div>
 
                 <div class="col-12 col-md-3">
@@ -56,7 +59,7 @@
                         <i class="bi bi-save2"></i> Save
                     </button>
                     <a class="btn btn-outline-secondary" href="<c:url value='/reservation'>
-                       <c:param name='view' value='list'/>
+                           <c:param name='view' value='list'/>
                        </c:url>">Cancel</a>
                 </div>
             </form>

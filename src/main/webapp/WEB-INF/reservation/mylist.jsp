@@ -51,8 +51,8 @@
                         <c:otherwise>
                             <c:forEach var="r" items="${reservationList}">
                                 <tr>
-                                    <td>${r.reservationId}</td>
-                                    <td>${r.tableId}</td>
+                                    <td><c:out value="${r.customer.customerName}"/></td>
+                                    <td><c:out value="${r.table.number}"/></td>
                                     <td>${r.reservationDate}</td>
                                     <td>${r.reservationTime}</td>
                                     <td>${r.partySize}</td>
