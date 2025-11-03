@@ -259,5 +259,19 @@ public class ReservationDAO extends DBContext {
 
         return new Reservation(id, customer, table, date, time, party, status);
     }
+    
+    public boolean hasActiveReservationForTable(int tableId) {
+    try {
+        String sql = "SELECT COUNT(*) FROM reservation "
+                   + "WHERE table_id = ? AND LOWER(status) IN ('approved', 'seated')";
+        ResultSet rs = this.executeSelectionQuery(sql, new Object[]{tableId});
+        if (rs.next()) {
+            return rs.getInt(1) > 0;
+        }
+    } catch (SQLException ex) {
+        Logger.getLogger(ReservationDAO.class.getName()).log(Level.SEVERE, null, ex);
+    }
+    return false;
+}
 
 }

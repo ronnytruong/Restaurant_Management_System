@@ -270,14 +270,18 @@ public class ReservationServlet extends HttpServlet {
                         popupMessage = "Update status failed. SQL error: " + getSqlErrorCode(check);
                     } else {
                         popupMessage = "Reservation (ID: " + id + ") -> " + status;
-
-                        // Update table status accordingly
+                        
                         int tableId = current.getTable().getId();
                         if (status.equalsIgnoreCase("Approved")) {
                             tableDAO.updateStatus(tableId, "Reserved");
                         } else if (status.equalsIgnoreCase("Rejected")) {
-                            tableDAO.updateStatus(tableId, "Available");
+                            // Chỉ set lại Available nếu KHÔNG có reservation nào khác đang Approved/Seated cho cùng bàn
+                            boolean hasActive = reservationDAO.hasActiveReservationForTable(tableId);
+                            if (!hasActive) {
+                                tableDAO.updateStatus(tableId, "Available");
+                            }
                         }
+
                     }
 
                 }

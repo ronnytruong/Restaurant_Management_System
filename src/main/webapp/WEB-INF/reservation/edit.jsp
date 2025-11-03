@@ -16,8 +16,8 @@
                 <small class="text-muted">#<c:out value="${currentReservation.reservationId}"/></small>
             </h1>
             <a class="btn btn-outline-secondary" href="<c:url value='/reservation'>
-               <c:param name='view' value='list'/>
-               <c:param name='page' value='${empty param.page ? 1 : param.page}'/>
+                   <c:param name='view' value='list'/>
+                   <c:param name='page' value='${empty param.page ? 1 : param.page}'/>
                </c:url>">
                 <i class="bi bi-arrow-left"></i> Back
             </a>
@@ -33,15 +33,19 @@
                         <input type="hidden" name="action" value="edit"/>
                         <input type="hidden" name="reservationId" value="${currentReservation.reservationId}"/>
 
+                        <!-- ✅ Customer info (read-only) -->
                         <div class="col-12 col-md-3">
-                            <label class="form-label">Customer ID</label>
-                            <input type="number" class="form-control" value="${currentReservation.customerId}" disabled>
+                            <label class="form-label">Customer</label>
+                            <input type="text" class="form-control" 
+                                   value="${currentReservation.customer.customerName}" disabled>
                         </div>
 
+                        <!-- ✅ Table info -->
                         <div class="col-12 col-md-3">
-                            <label class="form-label">Table ID</label>
+                            <label class="form-label">Table</label>
                             <input type="number" name="tableId" class="form-control" required
-                                   value="${currentReservation.tableId}">
+                                   value="${currentReservation.table.id}">
+                            <small class="text-muted">Current: ${currentReservation.table.number}</small>
                         </div>
 
                         <div class="col-12 col-md-3">
@@ -77,7 +81,7 @@
                                 <i class="bi bi-save2"></i> Save Changes
                             </button>
                             <a class="btn btn-outline-secondary" href="<c:url value='/reservation'>
-                               <c:param name='view' value='list'/>
+                                   <c:param name='view' value='list'/>
                                </c:url>">Cancel</a>
                         </div>
                     </form>

@@ -27,31 +27,31 @@ public class OrderItemDAO extends DBContext {
     private final EmployeeDAO employeeDAO = new EmployeeDAO();
     private final VoucherDAO voucherDAO = new VoucherDAO();
 
-    public List<OrderItem> getAll() {
-        List<OrderItem> list = new ArrayList<>();
-        try {
-            String query = "SELECT order_item_id, order_id, menu_item_id, unit_price, quantity\n"
-                    + "FROM     order_item";
-
-            ResultSet rs = this.executeSelectionQuery(query, null);
-
-            while (rs.next()) {
-                int orderItemId = rs.getInt(1);
-                int orderId = rs.getInt(2);
-                int menuItemId = rs.getInt(3);
-                int unitPrice = rs.getInt(4);
-                int quantity = rs.getInt(5);
-
-                OrderItem orderItem = new OrderItem(orderItemId, orderDAO.getElementByID(orderId), menuItemDAO.get, unitPrice, quantity);
-
-                list.add(order);
-            }
-        } catch (SQLException ex) {
-            System.out.println("Can't not load list");
-        }
-
-        return list;
-    }
+//    public List<OrderItem> getAll() {
+//        List<OrderItem> list = new ArrayList<>();
+//        try {
+//            String query = "SELECT order_item_id, order_id, menu_item_id, unit_price, quantity\n"
+//                    + "FROM     order_item";
+//
+//            ResultSet rs = this.executeSelectionQuery(query, null);
+//
+//            while (rs.next()) {
+//                int orderItemId = rs.getInt(1);
+//                int orderId = rs.getInt(2);
+//                int menuItemId = rs.getInt(3);
+//                int unitPrice = rs.getInt(4);
+//                int quantity = rs.getInt(5);
+//
+//                OrderItem orderItem = new OrderItem(orderItemId, orderDAO.getElementByID(orderId), menuItemDAO.get, unitPrice, quantity);
+//
+//                list.add(order);
+//            }
+//        } catch (SQLException ex) {
+//            System.out.println("Can't not load list");
+//        }
+//
+//        return list;
+//    }
 
     public List<Order> getAll(int page, int maxElement) {
 
