@@ -48,8 +48,8 @@
                             <c:forEach var="r" items="${reservationList}">
                                 <tr>
                                     <td><c:out value="${r.reservationId}"/></td>
-                                    <td><c:out value="${r.customerId}"/></td>
-                                    <td><c:out value="${r.tableId}"/></td>
+                                    <td><c:out value="${r.customer.customerName}"/></td>
+                                    <td><c:out value="${r.table.number}"/></td>
                                     <td><c:out value="${r.reservationDate}"/></td>
                                     <td><c:out value="${r.reservationTime}"/></td>
                                     <td><c:out value="${r.partySize}"/></td>
@@ -85,7 +85,7 @@
                                                     <i class="bi bi-x-octagon"></i>
                                                 </button>
                                             </form>
-                             
+
                                         </div>
                                     </td>
                                 </tr>

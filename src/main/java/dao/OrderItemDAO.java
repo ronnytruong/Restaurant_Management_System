@@ -23,6 +23,9 @@ public class OrderItemDAO extends DBContext {
 
     private final OrderDAO orderDAO = new OrderDAO();
     private final MenuItemDAO menuItemDAO = new MenuItemDAO();
+    private final ReservationDAO reservationDAO = new ReservationDAO();
+    private final EmployeeDAO employeeDAO = new EmployeeDAO();
+    private final VoucherDAO voucherDAO = new VoucherDAO();
 
     public List<OrderItem> getAll() {
         List<OrderItem> list = new ArrayList<>();

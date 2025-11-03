@@ -272,7 +272,7 @@ public class ReservationServlet extends HttpServlet {
                         popupMessage = "Reservation (ID: " + id + ") -> " + status;
 
                         // Update table status accordingly
-                        int tableId = current.getTableId();
+                        int tableId = current.getTable().getId();
                         if (status.equalsIgnoreCase("Approved")) {
                             tableDAO.updateStatus(tableId, "Reserved");
                         } else if (status.equalsIgnoreCase("Rejected")) {

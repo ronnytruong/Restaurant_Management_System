@@ -14,17 +14,17 @@ import java.sql.Time;
 public class Reservation {
 
     private int reservationId;
-    private int customerId;
-    private int TableId;
+    private Customer customer;
+    private Table table;
     private Date reservationDate;
     private Time reservationTime;
     private int partySize;
     private String Status;
 
-    public Reservation(int reservationId, int customerId, int TableId, Date reservationDate, Time reservationTime, int partySize, String Status) {
+    public Reservation(int reservationId, Customer customer, Table table, Date reservationDate, Time reservationTime, int partySize, String Status) {
         this.reservationId = reservationId;
-        this.customerId = customerId;
-        this.TableId = TableId;
+        this.customer = customer;
+        this.table = table;
         this.reservationDate = reservationDate;
         this.reservationTime = reservationTime;
         this.partySize = partySize;
@@ -39,20 +39,20 @@ public class Reservation {
         this.reservationId = reservationId;
     }
 
-    public int getCustomerId() {
-        return customerId;
+    public Customer getCustomer() {
+        return customer;
     }
 
-    public void setCustomerId(int customerId) {
-        this.customerId = customerId;
+    public void setCustomer(Customer customer) {
+        this.customer = customer;
     }
 
-    public int getTableId() {
-        return TableId;
+    public Table getTable() {
+        return table;
     }
 
-    public void setTableId(int TableId) {
-        this.TableId = TableId;
+    public void setTable(Table table) {
+        this.table = table;
     }
 
     public Date getReservationDate() {
@@ -87,5 +87,4 @@ public class Reservation {
         this.Status = Status;
     }
 
-    
 }

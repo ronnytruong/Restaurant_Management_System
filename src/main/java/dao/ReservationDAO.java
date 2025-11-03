@@ -15,7 +15,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import model.Customer;
 import model.Reservation;
+import model.Table;
 
 /**
  * @author You
@@ -240,13 +242,22 @@ public class ReservationDAO extends DBContext {
 
     /* ===================== helper ===================== */
     private Reservation extract(ResultSet rs) throws SQLException {
-        int id = rs.getInt(1);
-        int customerId = rs.getInt(2);
-        int tableId = rs.getInt(3);
-        Date date = rs.getDate(4);
-        Time time = rs.getTime(5);
-        int party = rs.getInt(6);
-        String status = rs.getString(7);
-        return new Reservation(id, customerId, tableId, date, time, party, status);
+        int id = rs.getInt("reservation_id");
+        int customerId = rs.getInt("customer_id");
+        int tableId = rs.getInt("table_id");
+        Date date = rs.getDate("reservation_date");
+        Time time = rs.getTime("reservation_time");
+        int party = rs.getInt("party_size");
+        String status = rs.getString("status");
+
+        // Gọi các DAO để lấy object
+        CustomerDAO customerDAO = new CustomerDAO();
+        TableDAO tableDAO = new TableDAO();
+
+        Customer customer = customerDAO.getElementByID(customerId);
+        Table table = tableDAO.getElementByID(tableId);
+
+        return new Reservation(id, customer, table, date, time, party, status);
     }
+
 }
