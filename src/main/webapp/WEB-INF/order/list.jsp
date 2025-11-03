@@ -89,6 +89,15 @@
                                                         <i class="bi bi-x-octagon"></i>
                                                     </button>
                                                 </form>
+                                                
+                                                <a class="btn btn-outline-secondary btn-icon btn-edit"
+                                               title="Edit" aria-label="Edit"
+                                               href="<c:url value="order">
+                                                   <c:param name="view" value="edit"/>
+                                                   <c:param name="id" value="${order.orderId}"/>
+                                               </c:url>">
+                                                <i class="bi bi-pencil"></i>
+                                            </a>
                                             </c:if>
                                             <c:if test="${order.status eq 'Approved'}">
                                                 <form action="<c:url value="order">
@@ -101,14 +110,6 @@
                                                     </button>
                                                 </form>
                                             </c:if>
-                                            <a class="btn btn-outline-secondary btn-icon btn-edit"
-                                               title="Edit" aria-label="Edit"
-                                               href="<c:url value="order">
-                                                   <c:param name="view" value="edit"/>
-                                                   <c:param name="id" value="${order.orderId}"/>
-                                               </c:url>">
-                                                <i class="bi bi-pencil"></i>
-                                            </a>
 
 <%--                                            <button type="button" class="btn btn-outline-secondary btn-icon btn-delete"
                                                     title="Delete" aria-label="Delete" onclick="showDeletePopup('${order.orderId}')">

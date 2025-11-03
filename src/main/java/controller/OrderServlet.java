@@ -153,7 +153,7 @@ public class OrderServlet extends HttpServlet {
 
 //validate
                 if (reservation == null || emp == null || paymentMethod == null
-                        || paymentMethod.isBlank()) {
+                        || paymentMethod.isBlank() || (!paymentMethod.equals("Cash") && !paymentMethod.equals("Pay later"))) {
                     popupStatus = false;
                     popupMessage = "The add action is NOT successfull. Check the information again.";
                 } else {
@@ -162,7 +162,8 @@ public class OrderServlet extends HttpServlet {
 //end
                 if (popupStatus == true) {
                     try {
-                        int checkError = orderDAO.add(reservation.getReservationId(), emp.getEmpId(), (voucher != null)?voucher.getVoucherId():null, paymentMethod);
+                        int checkError = orderDAO.add(reservation.getReservationId(), emp.getEmpId(), 
+                                (voucher != null) ? voucher.getVoucherId() : null, paymentMethod);
                         if (checkError >= 1) {
                         } else {
                             throw new Exception();
@@ -173,34 +174,51 @@ public class OrderServlet extends HttpServlet {
                     }
                 }
             } else if (action.equalsIgnoreCase("edit")) {
-//                int id;
-//                String name = request.getParameter("name");
-//                String description = request.getParameter("description");
-//
-//                try {
-//                    id = Integer.parseInt(request.getParameter("id"));
-//                } catch (NumberFormatException e) {
-//                    id = -1;
-//                }
-//
-////validate
-//                if (!validateString(name, -1)
-//                        || !validateInteger(id, false, false, true)) {
-//                    popupStatus = false;
-//                    popupMessage = "The edit action is NOT successfull. The input has some error.";
-//                } else {
-//                    popupMessage = "The object with id=" + id + " edited successfull.";
-//                }
-////end
-//                if (popupStatus == true) {
-//                    int checkError = roleDAO.edit(id, name, description);
-//
-//                    if (checkError >= 1) {
-//                    } else {
-//                        popupStatus = false;
-//                        popupMessage = "The edit action is NOT successfull. The object has " + getSqlErrorCode(checkError) + " error.";
-//                    }
-//                }
+                int orderId;
+                int empId;
+                int tableId;
+                int voucherId;
+                String paymentMethod = request.getParameter("paymentMethod");
+
+                try {
+                    orderId = Integer.parseInt(request.getParameter("orderId"));
+                    empId = Integer.parseInt(request.getParameter("empId"));
+                    tableId = Integer.parseInt(request.getParameter("tableId"));
+                    voucherId = Integer.parseInt(request.getParameter("voucherId"));
+                } catch (NumberFormatException e) {
+                    orderId = -1;
+                    empId = -1;
+                    tableId = -1;
+                    voucherId = -1;
+                }
+
+                Reservation reservation = reservationDAO.getElementByTableId(tableId);
+                Employee emp = employeeDAO.getElementByID(empId); // check available
+                Voucher voucher = voucherDAO.getById(voucherId); // check available
+
+                System.out.println((!paymentMethod.equals("Cash") && !paymentMethod.equals("Pay later")));
+                
+//validate
+                if (orderId <= 0
+                        || reservation == null || emp == null || paymentMethod == null
+                        || paymentMethod.isBlank() 
+                        || (!paymentMethod.equals("Cash") && !paymentMethod.equals("Pay later"))) {
+                    popupStatus = false;
+                    popupMessage = "The edit action is NOT successfull. The input has some error.";
+                } else {
+                    popupMessage = "The object edited successfull.";
+                }
+//end
+                if (popupStatus == true) {
+                    int checkError = orderDAO.edit(orderId, reservation.getReservationId(), emp.getEmpId(), 
+                            (voucher != null) ? voucher.getVoucherId() : null, paymentMethod);
+
+                    if (checkError >= 1) {
+                    } else {
+                        popupStatus = false;
+                        popupMessage = "The edit action is NOT successfull. Check the information again.";
+                    }
+                }
             } else if (action.equalsIgnoreCase("delete")) {
                 int id;
 
