@@ -15,6 +15,7 @@ public class Recipe {
 
     private int recipeId;
     private int menuItemId;
+    private String menuItemName;
     private String status;
     private List<RecipeItem> items;
 
@@ -26,8 +27,18 @@ public class Recipe {
         this.recipeId = recipeId;
         this.menuItemId = menuItemId;
         this.status = status;
-        this.items = new ArrayList<>();
+        
     }
+
+//    public Recipe(int recipeId, int menuItemId, String menuItemName, String status) {
+//        this.recipeId = recipeId;
+//        this.menuItemId = menuItemId;
+//        this.menuItemName = menuItemName;
+//        this.status = status;
+//        this.items = new ArrayList<>();
+//    }
+    
+    
 
     // getters & setters
     public int getRecipeId() {
@@ -46,6 +57,15 @@ public class Recipe {
         this.menuItemId = menuItemId;
     }
 
+    public String getMenuItemName() {
+        return menuItemName;
+    }
+
+    public void setMenuItemName(String menuItemName) {
+        this.menuItemName = menuItemName;
+    }
+
+    
     public String getStatus() {
         return status;
     }

@@ -35,7 +35,7 @@
                 <thead>
                     <tr>
                         <th width="7%" scope="col">ID</th>
-                        <th width="20%" scope="col">Menu Item ID</th>
+                        <th width="30%" scope="col">Menu Item</th>
                         <th width="15%" scope="col">Status</th>
                         <th width="15%" scope="col" class="text-end">Action</th>
                     </tr>
@@ -51,7 +51,12 @@
                             <c:forEach var="r" items="${recipesList}">
                                 <tr>
                                     <td><c:out value="${r.recipeId}"/></td>
-                                    <td><c:out value="${r.menuItemId}"/></td>
+                                    <td>
+                                        <c:out value="${r.menuItemName}"/>
+                                        <c:if test="${not empty r.menuItemId}">
+                                            <small class="text-muted"> (ID: <c:out value="${r.menuItemId}"/>)</small>
+                                        </c:if>
+                                    </td>
                                     <td><c:out value="${r.status}"/></td>
                                     <td class="text-end">
                                         <div class="action-button-group d-flex justify-content-end gap-2">

@@ -24,8 +24,12 @@
                         <input class="form-control" value="${currentRecipe.recipeId}" disabled/>
                     </div>
                     <div class="col-md-4">
-                        <label class="form-label">Menu Item ID</label>
-                        <input name="menu_item_id" type="number" class="form-control" value="${currentRecipe.menuItemId}" required />
+                        <label class="form-label">Menu Item</label>
+                        <select name="menu_item_id" class="form-select" required>
+                            <c:forEach var="mi" items="${menuItems}">
+                                <option value="${mi[0]}" ${mi[0] == currentRecipe.menuItemId ? 'selected' : ''}>${mi[1]}</option>
+                            </c:forEach>
+                        </select>
                     </div>
                     <div class="col-md-3">
                         <label class="form-label">Status</label>

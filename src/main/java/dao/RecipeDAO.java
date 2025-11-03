@@ -23,13 +23,21 @@ public class RecipeDAO extends DBContext {
     public List<Recipe> getAll() {
         List<Recipe> list = new ArrayList<>();
         try {
-            String query = "SELECT recipe_id, menu_item_id, status FROM recipe WHERE (LOWER(status) <> LOWER(N'Deleted')) ORDER BY recipe_id";
+            String query = "SELECT r.recipe_id, r.menu_item_id, mi.menu_item_name, r.status "
+                    + "FROM recipe r LEFT JOIN menu_item mi ON r.menu_item_id = mi.menu_item_id "
+                    + "WHERE (LOWER(r.status) <> LOWER(N'Deleted')) ORDER BY r.recipe_id";
             ResultSet rs = this.executeSelectionQuery(query, null);
             while (rs.next()) {
                 int id = rs.getInt("recipe_id");
                 int menuItemId = rs.getInt("menu_item_id");
+                String menuItemName = null;
+                try {
+                    menuItemName = rs.getString("menu_item_name");
+                } catch (SQLException ex) {
+                }
                 String status = rs.getString("status");
                 Recipe r = new Recipe(id, menuItemId, status);
+                r.setMenuItemName(menuItemName);
                 list.add(r);
             }
         } catch (SQLException ex) {
@@ -41,14 +49,22 @@ public class RecipeDAO extends DBContext {
     public List<Recipe> getAll(int page) {
         List<Recipe> list = new ArrayList<>();
         try {
-            String query = "SELECT recipe_id, menu_item_id, status FROM recipe WHERE (LOWER(status) <> LOWER(N'Deleted')) ORDER BY recipe_id "
+            String query = "SELECT r.recipe_id, r.menu_item_id, mi.menu_item_name, r.status "
+                    + "FROM recipe r LEFT JOIN menu_item mi ON r.menu_item_id = mi.menu_item_id "
+                    + "WHERE (LOWER(r.status) <> LOWER(N'Deleted')) ORDER BY r.recipe_id "
                     + "OFFSET ? ROWS FETCH NEXT ? ROWS ONLY;";
             ResultSet rs = this.executeSelectionQuery(query, new Object[]{(page - 1) * MAX_ELEMENTS_PER_PAGE, MAX_ELEMENTS_PER_PAGE});
             while (rs.next()) {
                 int id = rs.getInt("recipe_id");
                 int menuItemId = rs.getInt("menu_item_id");
+                String menuItemName = null;
+                try {
+                    menuItemName = rs.getString("menu_item_name");
+                } catch (SQLException ex) {
+                }
                 String status = rs.getString("status");
                 Recipe r = new Recipe(id, menuItemId, status);
+                r.setMenuItemName(menuItemName);
                 list.add(r);
             }
         } catch (SQLException ex) {
@@ -64,18 +80,25 @@ public class RecipeDAO extends DBContext {
     public List<Recipe> getAll(int page, String keyword) {
         List<Recipe> list = new ArrayList<>();
         try {
-            String query = "SELECT recipe_id, menu_item_id, status FROM recipe "
-                    + "WHERE (LOWER(status) <> LOWER(N'Deleted')) "
-                    + "AND (CAST(recipe_id AS VARCHAR) LIKE ? OR CAST(menu_item_id AS VARCHAR) LIKE ?) "
-                    + "ORDER BY recipe_id "
+            String query = "SELECT r.recipe_id, r.menu_item_id, mi.menu_item_name, r.status "
+                    + "FROM recipe r LEFT JOIN menu_item mi ON r.menu_item_id = mi.menu_item_id "
+                    + "WHERE (LOWER(r.status) <> LOWER(N'Deleted')) "
+                    + "AND (CAST(r.recipe_id AS VARCHAR) LIKE ? OR CAST(r.menu_item_id AS VARCHAR) LIKE ? OR LOWER(mi.menu_item_name) LIKE LOWER(?)) "
+                    + "ORDER BY r.recipe_id "
                     + "OFFSET ? ROWS FETCH NEXT ? ROWS ONLY;";
             keyword = "%" + keyword + "%";
-            ResultSet rs = this.executeSelectionQuery(query, new Object[]{keyword, keyword, (page - 1) * MAX_ELEMENTS_PER_PAGE, MAX_ELEMENTS_PER_PAGE});
+            ResultSet rs = this.executeSelectionQuery(query, new Object[]{keyword, keyword, keyword, (page - 1) * MAX_ELEMENTS_PER_PAGE, MAX_ELEMENTS_PER_PAGE});
             while (rs.next()) {
                 int id = rs.getInt("recipe_id");
                 int menuItemId = rs.getInt("menu_item_id");
+                String menuItemName = null;
+                try {
+                    menuItemName = rs.getString("menu_item_name");
+                } catch (SQLException ex) {
+                }
                 String status = rs.getString("status");
                 Recipe r = new Recipe(id, menuItemId, status);
+                r.setMenuItemName(menuItemName);
                 list.add(r);
             }
         } catch (SQLException ex) {
@@ -86,12 +109,20 @@ public class RecipeDAO extends DBContext {
 
     public Recipe getElementByID(int id) {
         try {
-            String query = "SELECT recipe_id, menu_item_id, status FROM recipe WHERE (recipe_id = ? and LOWER(status) <> LOWER(N'Deleted'))";
+            String query = "SELECT r.recipe_id, r.menu_item_id, mi.menu_item_name, r.status "
+                    + "FROM recipe r LEFT JOIN menu_item mi ON r.menu_item_id = mi.menu_item_id "
+                    + "WHERE (r.recipe_id = ? and LOWER(r.status) <> LOWER(N'Deleted'))";
             ResultSet rs = this.executeSelectionQuery(query, new Object[]{id});
             if (rs.next()) {
                 int menuItemId = rs.getInt("menu_item_id");
+                String menuItemName = null;
+                try {
+                    menuItemName = rs.getString("menu_item_name");
+                } catch (SQLException ex) {
+                }
                 String status = rs.getString("status");
                 Recipe r = new Recipe(id, menuItemId, status);
+                r.setMenuItemName(menuItemName);
                 // lấy recipe items
                 r.setItems(getItemsByRecipeId(id));
                 return r;
@@ -142,7 +173,7 @@ public class RecipeDAO extends DBContext {
 
     public int countItem() {
         try {
-            String query = "SELECT COUNT(recipe_id) AS numrow FROM recipe WHERE (LOWER(status) <> LOWER(N'Deleted'))";
+            String query = "SELECT COUNT(r.recipe_id) AS numrow FROM recipe r WHERE (LOWER(r.status) <> LOWER(N'Deleted'))";
             ResultSet rs = this.executeSelectionQuery(query, null);
             if (rs.next()) {
                 return rs.getInt(1);

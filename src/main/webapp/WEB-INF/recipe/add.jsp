@@ -18,8 +18,13 @@
             <form method="post" action="${pageContext.request.contextPath}/recipe" class="row g-3">
                 <input type="hidden" name="action" value="add" />
                 <div class="col-md-4">
-                    <label class="form-label">Menu Item ID</label>
-                    <input name="menu_item_id" type="number" class="form-control" required />
+                    <label class="form-label">Menu Item</label>
+                    <select name="menu_item_id" class="form-select" required>
+                        <option value="" disabled selected>-- Select menu item --</option>
+                        <c:forEach var="mi" items="${menuItems}">
+                            <option value="${mi[0]}">${mi[1]}</option>
+                        </c:forEach>
+                    </select>
                 </div>
                 <div class="col-md-4">
                     <label class="form-label">Status</label>
