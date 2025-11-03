@@ -172,6 +172,19 @@
                         <div class="info-value">${employee.empAccount}</div>
                     </div>
                     <div class="info-row">
+                        <div class="info-label">Role</div>
+                        <div class="info-value">
+                            <c:choose>  
+                                <c:when test="${not empty employee.roleName}">
+                                    ${employee.roleName}
+                                </c:when>
+                                <c:otherwise>
+                                    <span class="empty">Not provided</span>
+                                </c:otherwise>
+                            </c:choose>
+                        </div>
+                    </div>
+                    <div class="info-row">
                         <div class="info-label">Full Name</div>
                         <div class="info-value">
                             <c:choose>

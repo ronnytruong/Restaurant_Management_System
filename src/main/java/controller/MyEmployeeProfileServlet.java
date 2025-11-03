@@ -78,9 +78,9 @@ public class MyEmployeeProfileServlet extends HttpServlet {
             request.getRequestDispatcher("/WEB-INF/profile/view-emp.jsp").forward(request, response);
         } else if (action.equalsIgnoreCase("edit")) {
             request.setAttribute("employee", employee);
-            request.getRequestDispatcher("/WEB-INF/profile/edit.jsp").forward(request, response);
+            request.getRequestDispatcher("/WEB-INF/profile/edit-emp.jsp").forward(request, response);
         } else if (action.equalsIgnoreCase("change-password")) {
-            request.getRequestDispatcher("/WEB-INF/profile/changepassword.jsp").forward(request, response);
+            request.getRequestDispatcher("/WEB-INF/profile/changepassword-emp.jsp").forward(request, response);
         }
     }
 

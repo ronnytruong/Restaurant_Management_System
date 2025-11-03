@@ -17,7 +17,7 @@ public class RecipeItem {
     private String unit;
     private String note;
     private String status;
-    // optional display field
+    
     private String ingredientName;
 
     public RecipeItem() {
@@ -33,6 +33,18 @@ public class RecipeItem {
         this.status = status;
     }
 
+    public RecipeItem(int recipeItemId, int recipeId, int ingredientId, double quantity, String unit, String note, String status, String ingredientName) {
+        this.recipeItemId = recipeItemId;
+        this.recipeId = recipeId;
+        this.ingredientId = ingredientId;
+        this.quantity = quantity;
+        this.unit = unit;
+        this.note = note;
+        this.status = status;
+        this.ingredientName = ingredientName;
+    }
+
+    
     // getters & setters
     public int getRecipeItemId() {
         return recipeItemId;

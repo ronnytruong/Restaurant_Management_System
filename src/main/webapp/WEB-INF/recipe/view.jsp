@@ -12,7 +12,7 @@
     <div class="content-card shadow-sm px-4 py-3">
         <div class="d-flex justify-content-between align-items-center">
             <h2>Recipe Detail</h2>
-            <a class="btn btn-outline-secondary" href="${pageContext.request.contextPath}/recipe">Back to list</a>
+
         </div>
 
         <c:if test="${empty currentRecipe}">
@@ -25,11 +25,11 @@
                     <dt class="col-sm-3">Recipe ID</dt>
                     <dd class="col-sm-9"><c:out value="${currentRecipe.recipeId}" /></dd>
 
-                    <dt class="col-sm-3">Menu Item ID</dt>
-                    <dd class="col-sm-9"><c:out value="${currentRecipe.menuItemId}" /></dd>
+                    <dt class="col-sm-3">Recipe Name</dt>
+                    <dd class="col-sm-9"><c:out value="${currentRecipe.recipeName}" /></dd>
 
-                    <dt class="col-sm-3">Status</dt>
-                    <dd class="col-sm-9"><c:out value="${currentRecipe.status}" /></dd>
+<!--                    <dt class="col-sm-3">Status</dt>
+                    <dd class="col-sm-9"><c:out value="${currentRecipe.status}" /></dd>-->
                 </dl>
             </div>
 
@@ -49,7 +49,7 @@
                                 <th>Quantity</th>
                                 <th>Unit</th>
                                 <th>Note</th>
-                                <th>Status</th>
+<!--                                <th>Status</th>-->
                                 <th class="text-end">Actions</th>
                             </tr>
                         </thead>
@@ -76,7 +76,7 @@
                                             <td><c:out value="${it.quantity}" /></td>
                                             <td><c:out value="${it.unit}" /></td>
                                             <td><c:out value="${it.note}" /></td>
-                                            <td><c:out value="${it.status}" /></td>
+<%--                                            <td><c:out value="${it.status}" /></td>--%>
                                             <td class="text-end">
                                                 <div class="action-button-group d-flex justify-content-end gap-2">
                                                     <!-- Edit icon -->
@@ -109,8 +109,16 @@
                     <input type="hidden" name="action" value="add_item" />
                     <input type="hidden" name="recipe_id" value="${currentRecipe.recipeId}" />
                     <div class="col-md-3">
-                        <label class="form-label">Ingredient ID</label>
-                        <input name="ingredient_id" type="number" class="form-control" required />
+                        <label class="form-label">Ingredient</label>
+                        <select name="ingredient_id" class="form-select" required>
+                            <option value="">-- Select ingredient --</option>
+                            <c:forEach var="ing" items="${ingredients}">
+                                <option value="${ing.ingredientId}">${ing.ingredientName}</option>
+                            </c:forEach>
+                        </select>
+                        <c:if test="${empty ingredients}">
+                            <div class="form-text text-danger">No ingredients available. Please add ingredients first.</div>
+                        </c:if>
                     </div>
                     <div class="col-md-2">
                         <label class="form-label">Quantity</label>
@@ -146,8 +154,13 @@
                     <input type="hidden" name="action" value="edit_item"/>
                     <input type="hidden" id="edit_recipe_item_id" name="recipe_item_id" value=""/>
                     <div class="mb-2">
-                        <label class="form-label">Ingredient ID</label>
-                        <input id="edit_ingredient_id" name="ingredient_id" type="number" class="form-control" required />
+                        <label class="form-label">Ingredient</label>
+                        <select id="edit_ingredient_id" name="ingredient_id" class="form-select" required>
+                            <option value="">-- Select ingredient --</option>
+                            <c:forEach var="ing" items="${ingredients}">
+                                <option value="${ing.ingredientId}">${ing.ingredientName}</option>
+                            </c:forEach>
+                        </select>
                     </div>
                     <div class="mb-2">
                         <label class="form-label">Quantity</label>
@@ -161,14 +174,14 @@
                         <label class="form-label">Note</label>
                         <input id="edit_note" name="note" type="text" class="form-control" />
                     </div>
-                    <div class="mb-2">
+<!--                    <div class="mb-2">
                         <label class="form-label">Status</label>
                         <select id="edit_status" name="status" class="form-select">
                             <option value="Active">Active</option>
                             <option value="Inactive">Inactive</option>
                             <option value="Deleted">Deleted</option>
                         </select>
-                    </div>
+                    </div>-->
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
@@ -205,7 +218,7 @@
         document.getElementById('edit_quantity').value = quantity;
         document.getElementById('edit_unit').value = unit || '';
         document.getElementById('edit_note').value = note || '';
-        document.getElementById('edit_status').value = status || 'Active';
+//        document.getElementById('edit_status').value = status || 'Active';
         var modal = new bootstrap.Modal(document.getElementById('editItemModal'));
         modal.show();
     }
