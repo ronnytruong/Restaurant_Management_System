@@ -22,6 +22,41 @@ import model.Reservation;
  */
 public class ReservationDAO extends DBContext {
 
+    public Reservation getElementByTableId(int id) {
+        try {
+            String sql = "SELECT r.reservation_id, r.customer_id, r.table_id, r.reservation_date, r.reservation_time, r.party_size, r.status\n"
+                    + "FROM     reservation AS r INNER JOIN\n"
+                    + "                  [table] AS t ON r.table_id = t.table_id\n"
+                    + "WHERE  (t.table_id = ?) AND (LOWER(r.status) = LOWER('Seated'))";
+            ResultSet rs = this.executeSelectionQuery(sql, new Object[]{id});
+            if (rs.next()) {
+                return extract(rs);
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(ReservationDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
+    }
+
+    public List<Reservation> getAllSeated() {
+        List<Reservation> list = new ArrayList<>();
+
+        try {
+            String sql = "SELECT reservation_id, customer_id, table_id, reservation_date, reservation_time, party_size, status\n"
+                    + "FROM     reservation\n"
+                    + "WHERE  (LOWER(status) = LOWER('Seated'))\n"
+                    + "ORDER BY reservation_id";
+            ResultSet rs = this.executeSelectionQuery(sql, new Object[]{});
+
+            while (rs.next()) {
+                list.add(extract(rs));
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(ReservationDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return list;
+    }
+
     /* ===================== LIST (ADMIN) ===================== */
     public List<Reservation> getAll(int page, String keyword) {
         List<Reservation> list = new ArrayList<>();

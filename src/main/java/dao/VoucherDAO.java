@@ -21,6 +21,36 @@ import model.Voucher;
  * @author PHAT
  */
 public class VoucherDAO extends DBContext {
+
+    public List<Voucher> getAllAvailable() {
+        List<Voucher> list = new ArrayList<>();
+        try {
+            String query = "SELECT voucher_id, voucher_code, voucher_name, discount_type, discount_value, quantity, start_date, end_date, status "
+                    + "FROM Voucher WHERE LOWER(status) <> 'deleted'\n"
+                    + "AND CAST(GETDATE() AS DATE) BETWEEN start_date AND end_date\n"
+                    + "AND quantity > 0\n"
+                    + "ORDER BY voucher_id";
+            ResultSet rs = this.executeSelectionQuery(query, null);
+            while (rs.next()) {
+                Voucher v = new Voucher(
+                        rs.getInt("voucher_id"),
+                        rs.getString("voucher_code"),
+                        rs.getString("voucher_name"),
+                        rs.getString("discount_type"),
+                        rs.getBigDecimal("discount_value"),
+                        rs.getInt("quantity"),
+                        rs.getDate("start_date"),
+                        rs.getDate("end_date"),
+                        rs.getString("status")
+                );
+                list.add(v);
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(VoucherDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return list;
+    }
+
     public List<Voucher> getAll() {
         List<Voucher> list = new ArrayList<>();
         try {
@@ -126,7 +156,7 @@ public class VoucherDAO extends DBContext {
     public int add(String code, String name, String type, BigDecimal value, int qty, Date start, Date end, String status) {
         try {
             String query = "INSERT INTO Voucher (voucher_code, voucher_name, discount_type, discount_value, quantity, start_date, end_date, status) "
-                         + "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+                    + "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
             return this.executeQuery(query, new Object[]{code, name, type, value, qty, start, end, status});
         } catch (SQLException ex) {
             ex.printStackTrace();
@@ -137,7 +167,7 @@ public class VoucherDAO extends DBContext {
     public int edit(int id, String code, String name, String type, BigDecimal value, int qty, Date start, Date end, String status) {
         try {
             String query = "UPDATE Voucher SET voucher_code=?, voucher_name=?, discount_type=?, discount_value=?, quantity=?, start_date=?, end_date=?, status=? "
-                         + "WHERE voucher_id=?";
+                    + "WHERE voucher_id=?";
             return this.executeQuery(query, new Object[]{code, name, type, value, qty, start, end, status, id});
         } catch (SQLException ex) {
             ex.printStackTrace();
@@ -155,22 +185,22 @@ public class VoucherDAO extends DBContext {
         return -1;
     }
 
-    public Voucher getById(int id) {
+    public Voucher getElementById(int id) {
         try {
             String query = "SELECT voucher_id, voucher_code, voucher_name, discount_type, discount_value, quantity, start_date, end_date, status "
-                         + "FROM Voucher WHERE voucher_id = ? AND LOWER(status) <> 'deleted'";
+                    + "FROM Voucher WHERE voucher_id = ? AND LOWER(status) <> 'deleted'";
             ResultSet rs = this.executeSelectionQuery(query, new Object[]{id});
             if (rs.next()) {
                 return new Voucher(
-                    rs.getInt("voucher_id"),
-                    rs.getString("voucher_code"),
-                    rs.getString("voucher_name"),
-                    rs.getString("discount_type"),
-                    rs.getBigDecimal("discount_value"),
-                    rs.getInt("quantity"),
-                    rs.getDate("start_date"),
-                    rs.getDate("end_date"),
-                    rs.getString("status")
+                        rs.getInt("voucher_id"),
+                        rs.getString("voucher_code"),
+                        rs.getString("voucher_name"),
+                        rs.getString("discount_type"),
+                        rs.getBigDecimal("discount_value"),
+                        rs.getInt("quantity"),
+                        rs.getDate("start_date"),
+                        rs.getDate("end_date"),
+                        rs.getString("status")
                 );
             }
         } catch (SQLException ex) {
@@ -178,7 +208,7 @@ public class VoucherDAO extends DBContext {
         }
         return null;
     }
-    
+
     public int countItem() {
         try {
             String query = "SELECT COUNT(v.voucher_id) AS numrow "
