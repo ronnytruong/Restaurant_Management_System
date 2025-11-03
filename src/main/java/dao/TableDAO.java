@@ -21,6 +21,28 @@ import model.Table;
  */
 public class TableDAO extends DBContext {
 
+    public List<Table> getAllOccupied() {
+        List<Table> list = new ArrayList<>();
+        try {
+            String query = "SELECT table_id, table_number, table_capacity, status "
+                    + "FROM [table] "
+                    + "WHERE LOWER(status) = LOWER('Occupied') "
+                    + "ORDER BY table_id";
+            ResultSet rs = this.executeSelectionQuery(query, null);
+            while (rs.next()) {
+                int id = rs.getInt(1);
+                String number = rs.getString(2);
+                int capacity = rs.getInt(3);
+                String status = rs.getString(4);
+                
+                list.add(new Table(id, number, capacity, status));
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(TableDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return list;
+    }
+    
     /**
      * Lấy toàn bộ bàn (không phân trang)
      */
