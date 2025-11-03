@@ -11,43 +11,35 @@ import java.sql.SQLException;
 import java.sql.Time;
 import java.util.ArrayList;
 import java.util.List;
+import model.MenuItem;
 import model.Order;
+import model.OrderItem;
 
 /**
  *
  * @author Dai Minh Nhu - CE190213
  */
-public class OrderDAO extends DBContext {
+public class OrderItemDAO extends DBContext {
 
-    private final EmployeeDAO employeeDAO = new EmployeeDAO();
-    private final VoucherDAO voucherDAO = new VoucherDAO();
-    private final ReservationDAO reservationDAO = new ReservationDAO();
+    private final OrderDAO orderDAO = new OrderDAO();
+    private final MenuItemDAO menuItemDAO = new MenuItemDAO();
 
-    public List<Order> getAll() {
-
-        List<Order> list = new ArrayList<>();
-
+    public List<OrderItem> getAll() {
+        List<OrderItem> list = new ArrayList<>();
         try {
-            String query = "SELECT order_id, reservation_id, emp_id, voucher_id, order_date, order_time, payment_method, status\n"
-                    + "FROM     [order]\n"
-                    + "WHERE  (LOWER(status) <> LOWER('Deleted'))\n"
-                    + "ORDER BY order_date DESC";
+            String query = "SELECT order_item_id, order_id, menu_item_id, unit_price, quantity\n"
+                    + "FROM     order_item";
 
             ResultSet rs = this.executeSelectionQuery(query, null);
 
             while (rs.next()) {
-                int orderId = rs.getInt(1);
-                int reservationId = rs.getInt(2);
-                int empId = rs.getInt(3);
-                int voucherId = rs.getInt(4);
-                Date orderDate = rs.getDate(5);
-                Time orderTime = rs.getTime(6);
-                String paymentMethod = rs.getString(7);
-                String status = rs.getString(8);
+                int orderItemId = rs.getInt(1);
+                int orderId = rs.getInt(2);
+                int menuItemId = rs.getInt(3);
+                int unitPrice = rs.getInt(4);
+                int quantity = rs.getInt(5);
 
-                Order order = new Order(orderId, reservationDAO.getElementByID(reservationId),
-                        employeeDAO.getElementByID(empId), voucherDAO.getElementById(voucherId),
-                        orderDate, orderTime, paymentMethod, status);
+                OrderItem orderItem = new OrderItem(orderItemId, orderDAO.getElementByID(orderId), menuItemDAO.get, unitPrice, quantity);
 
                 list.add(order);
             }
@@ -94,9 +86,9 @@ public class OrderDAO extends DBContext {
 
         return list;
     }
-    
+
     public Order getElementByID(int id) {
-        
+
         try {
             String query = "SELECT order_id, reservation_id, emp_id, voucher_id, order_date, order_time, payment_method, status\n"
                     + "FROM     [order]\n"
