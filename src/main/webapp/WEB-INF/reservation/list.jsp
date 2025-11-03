@@ -21,9 +21,6 @@
                         <span class="input-group-text"><i class="bi bi-search"></i></span>
                         <input type="search" name="keyword" value="${param.keyword}" class="form-control" placeholder="Search id / table / status">
                     </form>
-                    <a class="btn btn-primary add-btn" href="<c:url value='reservation'>
-                           <c:param name='view' value='add'/>
-                       </c:url>"><i class="bi bi-plus-circle"></i>Add</a>
                 </div>
             </div>
         </div>
@@ -88,28 +85,7 @@
                                                     <i class="bi bi-x-octagon"></i>
                                                 </button>
                                             </form>
-
-                                            <!-- Cancel -->
-                                            <form action="<c:url value='/reservation'/>" method="post" style="display:inline;">
-                                                <input type="hidden" name="action" value="cancel"/>
-                                                <input type="hidden" name="id" value="${r.reservationId}"/>
-                                                <button type="submit" class="btn btn-secondary btn-icon" 
-                                                        title="Cancel" aria-label="Cancel"
-                                                        ${r.status == 'Cancelled' ? 'disabled' : ''}>
-                                                    <i class="bi bi-dash-circle"></i>
-                                                </button>
-                                            </form>
-
-
-                                            <!-- Edit -->
-                                            <a class="btn btn-outline-secondary btn-icon"
-                                               href="<c:url value='/reservation'>
-                                                   <c:param name='view' value='edit'/>
-                                                   <c:param name='id' value='${r.reservationId}'/>
-                                               </c:url>"
-                                               title="Edit" aria-label="Edit">
-                                                <i class="bi bi-pencil-square"></i>
-                                            </a>
+                             
                                         </div>
                                     </td>
                                 </tr>

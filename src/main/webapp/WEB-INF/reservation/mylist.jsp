@@ -13,53 +13,22 @@
 
         <!-- Header -->
         <div class="card-header border-0 px-4 py-3 d-flex flex-column flex-md-row gap-3 gap-md-0 justify-content-between align-items-md-center">
-            <div><h1 class="section-title mb-1">My Reservations</h1></div>
+            <div>
+                <h1 class="section-title mb-1">My Reservations</h1>
+            </div>
             <div class="actions d-flex flex-column flex-md-row gap-2 align-items-md-center justify-content-md-end">
-                <form action="<c:url value='/reservation'/>" method="get" class="search-box input-group">
-                    <input type="hidden" name="view" value="mylist"/>
-                    <input type="hidden" name="customerId" value="${requestScope.customerId}"/>
-                    <input type="hidden" name="page" value="1"/>
-                    <span class="input-group-text"><i class="bi bi-search"></i></span>
-                    <input type="search" name="keyword" value="${param.keyword}" class="form-control" placeholder="Search table / status">
-                </form>
+                <div class="filters d-flex flex-wrap gap-2 justify-content-end">
+                    <!-- Search box -->
+                    <form action="<c:url value='/reservation'/>" method="get" class="search-box input-group">
+                        <input type="hidden" name="view" value="mylist"/>
+                        <input type="hidden" name="customerId" value="${requestScope.customerId}"/>
+                        <input type="hidden" name="page" value="1"/>
+                        <span class="input-group-text"><i class="bi bi-search"></i></span>
+                        <input type="search" name="keyword" value="${param.keyword}" class="form-control" placeholder="Search table / status">
+                    </form>
+                </div>
             </div>
         </div>
-
-        <!-- Quick Add -->
-        <div class="px-4">
-            <div class="row g-2">
-                <form class="col-12" method="post" action="<c:url value='/reservation'/>">
-                    <input type="hidden" name="action" value="add"/>
-                    <input type="hidden" name="customerId" value="${requestScope.customerId}"/>
-
-                    <div class="row g-2">
-                        <div class="col-6 col-md-2">
-                            <label class="form-label">Table ID</label>
-                            <input type="number" name="tableId" class="form-control" required>
-                        </div>
-                        <div class="col-6 col-md-3">
-                            <label class="form-label">Date</label>
-                            <input type="date" name="reservationDate" class="form-control" required>
-                        </div>
-                        <div class="col-6 col-md-3">
-                            <label class="form-label">Time</label>
-                            <input type="time" name="reservationTime" class="form-control" required>
-                        </div>
-                        <div class="col-6 col-md-2">
-                            <label class="form-label">Party Size</label>
-                            <input type="number" name="partySize" min="1" class="form-control" required>
-                        </div>
-                        <div class="col-12 col-md-2 d-grid">
-                            <label class="form-label opacity-0">.</label>
-                            <button type="submit" class="btn btn-primary">
-                                <i class="bi bi-plus-circle"></i> Book
-                            </button>
-                        </div>
-                    </div>
-                </form>
-            </div>
-        </div>
-
         <!-- Table -->
         <div class="table-responsive px-4 pb-2 mt-3">
             <table class="table align-middle admin-table">

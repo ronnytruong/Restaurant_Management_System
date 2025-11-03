@@ -161,7 +161,6 @@ public class ReservationServlet extends HttpServlet {
                 tableId = Integer.parseInt(request.getParameter("tableId"));
                 partySize = Integer.parseInt(request.getParameter("partySize"));
                 date = Date.valueOf(request.getParameter("reservationDate"));
-                // UI gửi HH:mm -> thêm :00 để parse Time
                 time = Time.valueOf(request.getParameter("reservationTime") + ":00");
             } catch (Exception e) {
                 popupStatus = false;
@@ -171,18 +170,29 @@ public class ReservationServlet extends HttpServlet {
                 return;
             }
 
-            int check = reservationDAO.add(customerId, tableId, date, time, partySize);
-            if (check < 1) {
+            // ✅ Kiểm tra trạng thái bàn trước khi thêm
+            model.Table selectedTable = tableDAO.getElementByID(tableId);
+            if (selectedTable == null) {
                 popupStatus = false;
-                popupMessage = "Add failed. SQL error: " + getSqlErrorCode(check);
+                popupMessage = "Table not found.";
+            } else if (selectedTable.getStatus().equalsIgnoreCase("Reserved")
+                    || selectedTable.getStatus().equalsIgnoreCase("Occupied")) {
+                popupStatus = false;
+                popupMessage = "This table is currently not available for booking.";
             } else {
-                popupMessage = "Reservation created successfully. Status = Pending.";
+                int check = reservationDAO.add(customerId, tableId, date, time, partySize);
+                if (check < 1) {
+                    popupStatus = false;
+                    popupMessage = "Add failed. SQL error: " + getSqlErrorCode(check);
+                } else {
+                    popupMessage = "Reservation created successfully. Status = Pending.";
+                }
             }
+
             setPopup(request, popupStatus, popupMessage);
             response.sendRedirect(request.getContextPath()
                     + "/reservation?view=mylist&customerId=" + request.getParameter("customerId"));
             return;
-            
         } else if (action.equalsIgnoreCase("edit")) {
             // Admin edit reservation
             int id, tableId, party;
@@ -242,18 +252,39 @@ public class ReservationServlet extends HttpServlet {
                 popupStatus = false;
                 popupMessage = "Invalid reservation ID.";
             } else {
-                String status = action.equalsIgnoreCase("approve") ? "Approved" : "Rejected";
-                int check = reservationDAO.updateStatus(id, status);
-                if (check < 1) {
+                Reservation current = reservationDAO.getElementByID(id);
+                if (current == null) {
                     popupStatus = false;
-                    popupMessage = "Update status failed. SQL error: " + getSqlErrorCode(check);
+                    popupMessage = "Reservation not found.";
+                } else if (current.getStatus().equalsIgnoreCase("Approved") && action.equalsIgnoreCase("reject")) {
+                    popupStatus = false;
+                    popupMessage = "Already approved. Cannot reject.";
+                } else if (current.getStatus().equalsIgnoreCase("Rejected") && action.equalsIgnoreCase("approve")) {
+                    popupStatus = false;
+                    popupMessage = "Already rejected. Cannot approve.";
                 } else {
-                    popupMessage = "Reservation (ID: " + id + ") -> " + status;
+                    String status = action.equalsIgnoreCase("approve") ? "Approved" : "Rejected";
+                    int check = reservationDAO.updateStatus(id, status);
+                    if (check < 1) {
+                        popupStatus = false;
+                        popupMessage = "Update status failed. SQL error: " + getSqlErrorCode(check);
+                    } else {
+                        popupMessage = "Reservation (ID: " + id + ") -> " + status;
+
+                        // Update table status accordingly
+                        int tableId = current.getTableId();
+                        if (status.equalsIgnoreCase("Approved")) {
+                            tableDAO.updateStatus(tableId, "Reserved");
+                        } else if (status.equalsIgnoreCase("Rejected")) {
+                            tableDAO.updateStatus(tableId, "Available");
+                        }
+                    }
+
                 }
+                setPopup(request, popupStatus, popupMessage);
+                response.sendRedirect(request.getContextPath() + "/reservation");
+                return;
             }
-            setPopup(request, popupStatus, popupMessage);
-            response.sendRedirect(request.getContextPath() + "/reservation");
-            return;
         } else if (action.equalsIgnoreCase("cancel")) {
             int id, customerId;
             try {
