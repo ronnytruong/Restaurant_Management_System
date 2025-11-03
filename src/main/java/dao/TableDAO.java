@@ -114,7 +114,7 @@ public class TableDAO extends DBContext {
         }
         return list;
     }
-    
+
     public Table getElementByID(int id) {
 
         try {
@@ -210,5 +210,31 @@ public class TableDAO extends DBContext {
         }
 
         return 0;
+    }
+
+    /**
+     * Lấy danh sách bàn available có capacity >= partySize Dùng để hiển thị
+     * trong form đặt bàn của customer
+     */
+    public List<Table> getAvailableTables(int partySize) {
+        List<Table> list = new ArrayList<>();
+        try {
+            String query = "SELECT table_id, table_number, table_capacity, status "
+                    + "FROM [table] "
+                    + "WHERE LOWER(status) = 'available' "
+                    + "AND table_capacity >= ? "
+                    + "ORDER BY table_capacity ASC, table_id ASC";
+            ResultSet rs = this.executeSelectionQuery(query, new Object[]{partySize});
+            while (rs.next()) {
+                int id = rs.getInt(1);
+                String number = rs.getString(2);
+                int capacity = rs.getInt(3);
+                String status = rs.getString(4);
+                list.add(new Table(id, number, capacity, status));
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(TableDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return list;
     }
 }

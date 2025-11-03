@@ -12,6 +12,7 @@ import static constant.CommonFunction.validateInteger;
 import static constant.CommonFunction.validateString;
 
 import dao.ReservationDAO;
+import dao.TableDAO;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -31,6 +32,7 @@ import model.Reservation;
 public class ReservationServlet extends HttpServlet {
 
     ReservationDAO reservationDAO = new ReservationDAO();
+    TableDAO tableDAO = new TableDAO();
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -104,6 +106,7 @@ public class ReservationServlet extends HttpServlet {
             request.setAttribute("totalPages", totalPages);
             request.setAttribute("customerId", customerId);
             request.setAttribute("reservationList", reservationDAO.getByCustomer(customerId, page, keyword));
+            request.setAttribute("availableTables", tableDAO.getAll());
             request.getRequestDispatcher("/WEB-INF/reservation/mylist.jsp").forward(request, response);
 
         } else if (view.equalsIgnoreCase("edit")) {
@@ -179,70 +182,7 @@ public class ReservationServlet extends HttpServlet {
             response.sendRedirect(request.getContextPath()
                     + "/reservation?view=mylist&customerId=" + request.getParameter("customerId"));
             return;
-        }
-        if (action.equalsIgnoreCase("add")) {
-            // Add Reservation (customer self-create)
-            int customerId, tableId, partySize;
-            Date date;
-            Time time;
-            try {
-                customerId = Integer.parseInt(request.getParameter("customerId"));
-                tableId = Integer.parseInt(request.getParameter("tableId"));
-                partySize = Integer.parseInt(request.getParameter("partySize"));
-                date = Date.valueOf(request.getParameter("reservationDate"));
-                // UI gửi HH:mm -> thêm :00 để parse Time
-                time = Time.valueOf(request.getParameter("reservationTime") + ":00");
-            } catch (Exception e) {
-                popupStatus = false;
-                popupMessage = "Invalid input for Add Reservation.";
-                setPopup(request, popupStatus, popupMessage);
-                response.sendRedirect(request.getContextPath() + "/reservation?view=mylist");
-                return;
-            }
-
-            int check = reservationDAO.add(customerId, tableId, date, time, partySize);
-            if (check < 1) {
-                popupStatus = false;
-                popupMessage = "Add failed. SQL error: " + getSqlErrorCode(check);
-            } else {
-                popupMessage = "Reservation created successfully. Status = Pending.";
-            }
-            setPopup(request, popupStatus, popupMessage);
-            response.sendRedirect(request.getContextPath()
-                    + "/reservation?view=mylist&customerId=" + request.getParameter("customerId"));
-            return;
-        }
-        if (action.equalsIgnoreCase("add")) {
-            // Add Reservation (customer self-create)
-            int customerId, tableId, partySize;
-            Date date;
-            Time time;
-            try {
-                customerId = Integer.parseInt(request.getParameter("customerId"));
-                tableId = Integer.parseInt(request.getParameter("tableId"));
-                partySize = Integer.parseInt(request.getParameter("partySize"));
-                date = Date.valueOf(request.getParameter("reservationDate"));
-                // UI gửi HH:mm -> thêm :00 để parse Time
-                time = Time.valueOf(request.getParameter("reservationTime") + ":00");
-            } catch (Exception e) {
-                popupStatus = false;
-                popupMessage = "Invalid input for Add Reservation.";
-                setPopup(request, popupStatus, popupMessage);
-                response.sendRedirect(request.getContextPath() + "/reservation?view=mylist");
-                return;
-            }
-
-            int check = reservationDAO.add(customerId, tableId, date, time, partySize);
-            if (check < 1) {
-                popupStatus = false;
-                popupMessage = "Add failed. SQL error: " + getSqlErrorCode(check);
-            } else {
-                popupMessage = "Reservation created successfully. Status = Pending.";
-            }
-            setPopup(request, popupStatus, popupMessage);
-            response.sendRedirect(request.getContextPath()
-                    + "/reservation?view=mylist&customerId=" + request.getParameter("customerId"));
-            return;
+            
         } else if (action.equalsIgnoreCase("edit")) {
             // Admin edit reservation
             int id, tableId, party;

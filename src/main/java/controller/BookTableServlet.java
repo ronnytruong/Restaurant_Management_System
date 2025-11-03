@@ -5,8 +5,11 @@
 package controller;
 
 import com.google.gson.Gson;
+import static constant.CommonFunction.getSqlErrorCode;
 import static constant.CommonFunction.getTotalPages;
+import static constant.CommonFunction.setPopup;
 import static constant.CommonFunction.validateString;
+import dao.ReservationDAO;
 import dao.TableDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -15,6 +18,10 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+import java.sql.Date;
+import java.sql.Time;
+import model.Customer;
 
 /**
  *
@@ -24,6 +31,7 @@ import jakarta.servlet.http.HttpServletResponse;
 public class BookTableServlet extends HttpServlet {
 
     TableDAO tableDAO = new TableDAO();
+    ReservationDAO reservationDAO = new ReservationDAO();
     public String json;
 
     /**
@@ -114,7 +122,52 @@ public class BookTableServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        request.setCharacterEncoding("UTF-8");
+
+        HttpSession session = request.getSession(false);
+        Customer customer = null;
+        if (session != null) {
+            customer = (Customer) session.getAttribute("customerSession");
+        }
+
+        if (customer == null) {
+            setPopup(request, false, "Please login to make a reservation.");
+            response.sendRedirect(request.getContextPath() + "/login");
+            return;
+        }
+
+        boolean popupStatus = true;
+        String popupMessage = "";
+
+        try {
+            int tableId = Integer.parseInt(request.getParameter("tableId"));
+            int partySize = Integer.parseInt(request.getParameter("partySize"));
+            Date date = Date.valueOf(request.getParameter("reservationDate"));
+            String timeStr = request.getParameter("reservationTime");
+
+            Time time;
+            if (timeStr != null && timeStr.contains("T")) {
+
+                String[] parts = timeStr.split("T");
+                time = Time.valueOf(parts[1] + ":00");
+            } else {
+                time = Time.valueOf(timeStr + ":00");
+            }
+
+            int check = reservationDAO.add(customer.getCustomerId(), tableId, date, time, partySize);
+            if (check < 1) {
+                popupStatus = false;
+                popupMessage = "Booking failed. SQL error: " + getSqlErrorCode(check);
+            } else {
+                popupMessage = "Reservation created successfully! Status = Pending. Please wait for approval.";
+            }
+        } catch (Exception e) {
+            popupStatus = false;
+            popupMessage = "Invalid input. Please check your booking information.";
+        }
+
+        setPopup(request, popupStatus, popupMessage);
+        response.sendRedirect(request.getContextPath() + "/booktable");
     }
 
     /**
@@ -126,6 +179,5 @@ public class BookTableServlet extends HttpServlet {
     public String getServletInfo() {
         return "Short description";
     }// </editor-fold>
-   
-}
 
+}
