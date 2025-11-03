@@ -130,19 +130,24 @@
                         %>
 
                         <div class="col-6 col-md-4 col-lg-3">
-                            <div class="table-card <%= t.getStatus().toLowerCase()%> h-100 text-center p-4"
-                                 style="cursor:pointer;"
-                                 data-table-id="<%= t.getId()%>"
-                                 data-table-number="<%= t.getNumber()%>"
-                                 data-table-capacity="<%= t.getCapacity()%>"
-                                 onclick="openBookingModal(this)"
-                                 data-bs-toggle="modal"
-                                 data-bs-target="#bookingModal">
+                            <%
+                                String status = t.getStatus().toLowerCase();
+                                boolean clickable = status.equals("available");
+                            %>
+                            <div class="table-card <%= status%> h-100 text-center p-4"
+                                 style="<%= clickable ? "cursor:pointer;" : "cursor:not-allowed; opacity:0.6;"%>"
+                                 <%= clickable
+                                         ? "data-table-id='" + t.getId()
+                                         + "' data-table-number='" + t.getNumber()
+                                         + "' data-table-capacity='" + t.getCapacity()
+                                         + "' onclick='openBookingModal(this)' data-bs-toggle=\"modal\" data-bs-target=\"#bookingModal\""
+                                         : ""%>>
                                 <h4>Table <%= t.getNumber()%></h4>
                                 <p class="capacity"><%= t.getCapacity()%> Guests</p>
                                 <span class="status"><%= t.getStatus()%></span>
                             </div>
                         </div>
+
 
                         <%
                             }
@@ -274,33 +279,33 @@
         <script src="assets/js/main.js"></script>
 
         <script>
-                                     function openBookingModal(div) {
-                                         const id = div.dataset.tableId;
-                                         const number = div.dataset.tableNumber;
-                                         const capacity = div.dataset.tableCapacity || '';
-                                         document.getElementById('tableId').value = id;
-                                         document.querySelector('#bookingModal .modal-title').innerText = "Book Table " + number;
+            function openBookingModal(div) {
+                const id = div.dataset.tableId;
+                const number = div.dataset.tableNumber;
+                const capacity = div.dataset.tableCapacity || '';
+                document.getElementById('tableId').value = id;
+                document.querySelector('#bookingModal .modal-title').innerText = "Book Table " + number;
 
-                                         // Set minimum date to today
-                                         const today = new Date().toISOString().split('T')[0];
-                                         const dateInput = document.getElementById('modalReservationDate');
-                                         if (dateInput) {
-                                             dateInput.setAttribute('min', today);
-                                             dateInput.value = '';
-                                         }
+                // Set minimum date to today
+                const today = new Date().toISOString().split('T')[0];
+                const dateInput = document.getElementById('modalReservationDate');
+                if (dateInput) {
+                    dateInput.setAttribute('min', today);
+                    dateInput.value = '';
+                }
 
-                                         // Clear other fields
-                                         document.getElementById('modalPartySize').value = '';
-                                         document.getElementById('modalReservationTime').value = '';
-                                     }
-                                     // Set minimum date on page load
-                                     document.addEventListener('DOMContentLoaded', function () {
-                                         const today = new Date().toISOString().split('T')[0];
-                                         const dateInput = document.getElementById('modalReservationDate');
-                                         if (dateInput) {
-                                             dateInput.setAttribute('min', today);
-                                         }
-                                     });
+                // Clear other fields
+                document.getElementById('modalPartySize').value = '';
+                document.getElementById('modalReservationTime').value = '';
+            }
+            // Set minimum date on page load
+            document.addEventListener('DOMContentLoaded', function () {
+                const today = new Date().toISOString().split('T')[0];
+                const dateInput = document.getElementById('modalReservationDate');
+                if (dateInput) {
+                    dateInput.setAttribute('min', today);
+                }
+            });
         </script>
 
     </body>

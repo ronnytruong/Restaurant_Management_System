@@ -147,7 +147,7 @@ public class TableDAO extends DBContext {
                     + "                  (table_number, table_capacity, status)\n"
                     + "VALUES (?, ?, ?)";
 
-            return this.executeQuery(query, new Object[]{number, capacity, "Active"});
+            return this.executeQuery(query, new Object[]{number, capacity, "Available"});
 
         } catch (SQLException ex) {
 
@@ -237,4 +237,19 @@ public class TableDAO extends DBContext {
         }
         return list;
     }
+
+    public int updateStatus(int id, String status) {
+        try {
+            String sql = "UPDATE [table] SET status = ? WHERE table_id = ?";
+            return this.executeQuery(sql, new Object[]{status, id});
+        } catch (SQLException ex) {
+            int err = checkErrorSQL(ex);
+            if (err != 0) {
+                return err;
+            }
+            Logger.getLogger(TableDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return -1;
+    }
+
 }
