@@ -134,6 +134,7 @@
                                  style="cursor:pointer;"
                                  data-table-id="<%= t.getId()%>"
                                  data-table-number="<%= t.getNumber()%>"
+                                 data-table-capacity="<%= t.getCapacity()%>"
                                  onclick="openBookingModal(this)"
                                  data-bs-toggle="modal"
                                  data-bs-target="#bookingModal">
@@ -143,10 +144,18 @@
                             </div>
                         </div>
 
+                        <%
+                            }
+                        } else {
+                        %>
+                        <p>No tables available.</p>
+                        <% }%>
+
+                        <!-- Booking Modal (outside loop, only one instance) -->
                         <div class="modal fade" id="bookingModal" tabindex="-1" aria-hidden="true">
                             <div class="modal-dialog">
                                 <div class="modal-content">
-                                    <form action="booktable" method="post">
+                                    <form action="<c:url value='/booktable'/>" method="post">
                                         <div class="modal-header">
                                             <h5 class="modal-title">Book Table</h5>
                                             <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
@@ -155,20 +164,15 @@
                                         <div class="modal-body">
                                             <input type="hidden" name="tableId" id="tableId">
 
-                                            <div class="mb-3">
-                                                <label class="form-label">Customer Name</label>
-                                                <input type="text" class="form-control" name="customerName" placeholder="<%= t.getId()%>" required>
-                                            </div>
+                                            <label class="form-label">Party Size</label>
+                                            <input type="number" class="form-control" name="partySize" id="modalPartySize" min="1" required>
+                                            <small class="text-muted">Number of guests</small>
 
-                                            <div class="mb-3">
-                                                <label class="form-label">Phone</label>
-                                                <input type="text" class="form-control" name="phone" placeholder="<%= t.getId()%>" required>
-                                            </div>
+                                            <label class="form-label">Date</label>
+                                            <input type="date" class="form-control" name="reservationDate" id="modalReservationDate" required>
 
-                                            <div class="mb-3">
-                                                <label class="form-label">Booking Time</label>
-                                                <input type="datetime-local" class="form-control" name="bookingTime" required>
-                                            </div>
+                                            <label class="form-label">Time</label>
+                                            <input type="time" class="form-control" name="reservationTime" id="modalReservationTime" required>
                                         </div>
 
                                         <div class="modal-footer">
@@ -179,15 +183,6 @@
                                 </div>
                             </div>
                         </div>
-
-
-
-                        <%
-                            }
-                        } else {
-                        %>
-                        <p>No tables available.</p>
-                        <% }%>
 
                     </div>
                 </div>
@@ -282,13 +277,31 @@
                                      function openBookingModal(div) {
                                          const id = div.dataset.tableId;
                                          const number = div.dataset.tableNumber;
+                                         const capacity = div.dataset.tableCapacity || '';
                                          document.getElementById('tableId').value = id;
-                                         document.querySelector('.modal-title').innerText = "Book Table " + number;
+                                         document.querySelector('#bookingModal .modal-title').innerText = "Book Table " + number;
+
+                                         // Set minimum date to today
+                                         const today = new Date().toISOString().split('T')[0];
+                                         const dateInput = document.getElementById('modalReservationDate');
+                                         if (dateInput) {
+                                             dateInput.setAttribute('min', today);
+                                             dateInput.value = '';
+                                         }
+
+                                         // Clear other fields
+                                         document.getElementById('modalPartySize').value = '';
+                                         document.getElementById('modalReservationTime').value = '';
                                      }
-
-
+                                     // Set minimum date on page load
+                                     document.addEventListener('DOMContentLoaded', function () {
+                                         const today = new Date().toISOString().split('T')[0];
+                                         const dateInput = document.getElementById('modalReservationDate');
+                                         if (dateInput) {
+                                             dateInput.setAttribute('min', today);
+                                         }
+                                     });
         </script>
-
 
     </body>
 
