@@ -17,7 +17,7 @@ public class RecipeItem {
     private String unit;
     private String note;
     private String status;
-    // optional display field
+    
     private String ingredientName;
 
     public RecipeItem() {

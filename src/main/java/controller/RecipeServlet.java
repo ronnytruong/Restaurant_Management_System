@@ -5,6 +5,7 @@
 package controller;
 
 import static constant.CommonFunction.*;
+import dao.IngredientDAO;
 import dao.RecipeDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -20,7 +21,9 @@ import jakarta.servlet.http.HttpServletResponse;
  */
 @WebServlet(name = "RecipeServlet", urlPatterns = {"/recipe"})
 public class RecipeServlet extends HttpServlet {
+
     RecipeDAO recipeDAO = new RecipeDAO();
+    IngredientDAO ingDAO = new IngredientDAO();
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -63,7 +66,9 @@ public class RecipeServlet extends HttpServlet {
         String namepage = "";
         String view = request.getParameter("view");
         String keyword = request.getParameter("keyword");
-        if (keyword == null) keyword = "";
+        if (keyword == null) {
+            keyword = "";
+        }
 
         if (!validateString(view, -1) || view.equalsIgnoreCase("list")) {
             namepage = "list";
@@ -100,6 +105,7 @@ public class RecipeServlet extends HttpServlet {
         }
         request.setAttribute("totalPages", totalPages);
         request.setAttribute("recipesList", recipeDAO.getAll(page, keyword));
+        request.setAttribute("ingredients", ingDAO.getAll());
         request.getRequestDispatcher("/WEB-INF/recipe/" + namepage + ".jsp").forward(request, response);
         removePopup(request);
     }
@@ -120,115 +126,76 @@ public class RecipeServlet extends HttpServlet {
         String popupMessage = "";
 
         if (action != null && !action.isEmpty()) {
-            // Recipe-level actions
             if (action.equalsIgnoreCase("add")) {
-                int menuItemId;
-                try {
-                    menuItemId = Integer.parseInt(request.getParameter("menu_item_id"));
-                } catch (NumberFormatException e) {
-                    menuItemId = -1;
-                }
-                // validate
-                if (!validateInteger(menuItemId, false, false, true)) {
+                String recipeName = request.getParameter("recipe_name");
+                if (!validateString(recipeName, -1)) {
                     popupStatus = false;
-                    popupMessage = "The add action is NOT successful. The input has some error.";
+                    popupMessage = "Add recipe failed. Invalid input.";
                 } else {
-                    popupMessage = "Recipe added successfully (menu_item_id=" + menuItemId + ").";
-                }
-                if (popupStatus) {
-                    int checkError = recipeDAO.add(menuItemId);
-                    if (checkError >= 1) {
-                        // success
+                    int check = recipeDAO.add(recipeName);
+                    if (check >= 1) {
+                        popupMessage = "Recipe added successfully.";
                     } else {
                         popupStatus = false;
-                        popupMessage = "The add action is NOT successful. The object has " + getSqlErrorCode(checkError) + " error.";
+                        popupMessage = "Add recipe failed. SQL error " + getSqlErrorCode(check);
                     }
                 }
             } else if (action.equalsIgnoreCase("edit")) {
                 int id;
-                int menuItemId;
+                String recipeName;
                 String status;
-                try {
-                    id = Integer.parseInt(request.getParameter("id"));
-                } catch (NumberFormatException e) {
-                    id = -1;
-                }
-                try {
-                    menuItemId = Integer.parseInt(request.getParameter("menu_item_id"));
-                } catch (NumberFormatException e) {
-                    menuItemId = -1;
-                }
+                try { id = Integer.parseInt(request.getParameter("id")); } catch (NumberFormatException e) { id = -1; }
+                recipeName = request.getParameter("recipe_name");
                 status = request.getParameter("status");
-                if (!validateInteger(id, false, false, true) || !validateInteger(menuItemId, false, false, true) || !validateString(status, -1)) {
+                if (!validateInteger(id, false, false, true) || !validateString(recipeName, -1) || !validateString(status, -1)) {
                     popupStatus = false;
-                    popupMessage = "The edit action is NOT successful. The input has some error.";
+                    popupMessage = "Edit recipe failed. Invalid input.";
                 } else {
-                    popupMessage = "Recipe with id=" + id + " edited successfully.";
-                }
-                if (popupStatus) {
-                    int checkError = recipeDAO.edit(id, menuItemId, status);
-                    if (checkError >= 1) {
-                        // ok
+                    int check = recipeDAO.edit(id, recipeName, status);
+                    if (check >= 1) {
+                        popupMessage = "Recipe edited successfully.";
                     } else {
                         popupStatus = false;
-                        popupMessage = "The edit action is NOT successful. The object has " + getSqlErrorCode(checkError) + " error.";
+                        popupMessage = "Edit recipe failed. SQL error " + getSqlErrorCode(check);
                     }
                 }
             } else if (action.equalsIgnoreCase("delete")) {
                 int id;
-                try {
-                    id = Integer.parseInt(request.getParameter("id"));
-                } catch (NumberFormatException e) {
-                    id = -1;
-                }
+                try { id = Integer.parseInt(request.getParameter("id")); } catch (NumberFormatException e) { id = -1; }
                 if (!validateInteger(id, false, false, true)) {
                     popupStatus = false;
-                    popupMessage = "The delete action is NOT successful.";
+                    popupMessage = "Delete recipe failed.";
                 } else {
-                    popupMessage = "Recipe with id=" + id + " deleted successfully.";
-                }
-                if (popupStatus) {
-                    int checkError = recipeDAO.delete(id);
-                    if (checkError >= 1) {
+                    int check = recipeDAO.delete(id);
+                    if (check >= 1) {
+                        popupMessage = "Recipe deleted successfully.";
                     } else {
                         popupStatus = false;
-                        popupMessage = "The delete action is NOT successful. The object has " + getSqlErrorCode(checkError) + " error.";
+                        popupMessage = "Delete recipe failed. SQL error " + getSqlErrorCode(check);
                     }
                 }
             }
 
-            // Item-level actions (prefix with item_)
+            // item-level actions: add_item, edit_item, delete_item
             else if (action.equalsIgnoreCase("add_item")) {
                 int recipeId, ingredientId;
                 double quantity = 0;
                 String unit = request.getParameter("unit");
                 String note = request.getParameter("note");
-                try {
-                    recipeId = Integer.parseInt(request.getParameter("recipe_id"));
-                } catch (NumberFormatException e) {
-                    recipeId = -1;
-                }
-                try {
-                    ingredientId = Integer.parseInt(request.getParameter("ingredient_id"));
-                } catch (NumberFormatException e) {
-                    ingredientId = -1;
-                }
+                try { recipeId = Integer.parseInt(request.getParameter("recipe_id")); } catch (NumberFormatException e) { recipeId = -1; }
+                try { ingredientId = Integer.parseInt(request.getParameter("ingredient_id")); } catch (NumberFormatException e) { ingredientId = -1; }
                 try {
                     String q = request.getParameter("quantity");
                     if (q != null && !q.isEmpty()) quantity = Double.parseDouble(q);
-                } catch (NumberFormatException e) {
-                    quantity = 0;
-                }
+                } catch (NumberFormatException e) { quantity = 0; }
 
                 if (!validateInteger(recipeId, false, false, true) || !validateInteger(ingredientId, false, false, true)) {
                     popupStatus = false;
                     popupMessage = "Add item failed. Input invalid.";
                 } else {
-                    popupMessage = "Item added to recipe " + recipeId + " successfully.";
-                }
-                if (popupStatus) {
                     int checkError = recipeDAO.addItem(recipeId, ingredientId, quantity, unit, note);
                     if (checkError >= 1) {
+                        popupMessage = "Item added to recipe " + recipeId + " successfully.";
                     } else {
                         popupStatus = false;
                         popupMessage = "Add item failed. SQL error " + getSqlErrorCode(checkError);
@@ -240,32 +207,20 @@ public class RecipeServlet extends HttpServlet {
                 String unit = request.getParameter("unit");
                 String note = request.getParameter("note");
                 String status = request.getParameter("status");
-                try {
-                    recipeItemId = Integer.parseInt(request.getParameter("recipe_item_id"));
-                } catch (NumberFormatException e) {
-                    recipeItemId = -1;
-                }
-                try {
-                    ingredientId = Integer.parseInt(request.getParameter("ingredient_id"));
-                } catch (NumberFormatException e) {
-                    ingredientId = -1;
-                }
+                try { recipeItemId = Integer.parseInt(request.getParameter("recipe_item_id")); } catch (NumberFormatException e) { recipeItemId = -1; }
+                try { ingredientId = Integer.parseInt(request.getParameter("ingredient_id")); } catch (NumberFormatException e) { ingredientId = -1; }
                 try {
                     String q = request.getParameter("quantity");
                     if (q != null && !q.isEmpty()) quantity = Double.parseDouble(q);
-                } catch (NumberFormatException e) {
-                    quantity = 0;
-                }
+                } catch (NumberFormatException e) { quantity = 0; }
 
                 if (!validateInteger(recipeItemId, false, false, true) || !validateInteger(ingredientId, false, false, true)) {
                     popupStatus = false;
                     popupMessage = "Edit item failed. Input invalid.";
                 } else {
-                    popupMessage = "Item edited successfully.";
-                }
-                if (popupStatus) {
                     int checkError = recipeDAO.editItem(recipeItemId, ingredientId, quantity, unit, note, status);
                     if (checkError >= 1) {
+                        popupMessage = "Item edited successfully.";
                     } else {
                         popupStatus = false;
                         popupMessage = "Edit item failed. SQL error " + getSqlErrorCode(checkError);
@@ -273,20 +228,14 @@ public class RecipeServlet extends HttpServlet {
                 }
             } else if (action.equalsIgnoreCase("delete_item")) {
                 int recipeItemId;
-                try {
-                    recipeItemId = Integer.parseInt(request.getParameter("recipe_item_id"));
-                } catch (NumberFormatException e) {
-                    recipeItemId = -1;
-                }
+                try { recipeItemId = Integer.parseInt(request.getParameter("recipe_item_id")); } catch (NumberFormatException e) { recipeItemId = -1; }
                 if (!validateInteger(recipeItemId, false, false, true)) {
                     popupStatus = false;
                     popupMessage = "Delete item failed.";
                 } else {
-                    popupMessage = "Item deleted successfully.";
-                }
-                if (popupStatus) {
                     int checkError = recipeDAO.deleteItem(recipeItemId);
                     if (checkError >= 1) {
+                        popupMessage = "Item deleted successfully.";
                     } else {
                         popupStatus = false;
                         popupMessage = "Delete item failed. SQL error " + getSqlErrorCode(checkError);
@@ -298,6 +247,7 @@ public class RecipeServlet extends HttpServlet {
         setPopup(request, popupStatus, popupMessage);
         response.sendRedirect(request.getContextPath() + "/recipe");
     }
+    
 
     /**
      * Returns a short description of the servlet.

@@ -17,19 +17,20 @@ public class Recipe {
     private int menuItemId;
     private String menuItemName;
     private String status;
+    private String recipeName;
     private List<RecipeItem> items;
 
     public Recipe() {
         items = new ArrayList<>();
     }
 
-    public Recipe(int recipeId, int menuItemId, String status) {
-        this.recipeId = recipeId;
-        this.menuItemId = menuItemId;
-        this.status = status;
-        
-    }
-
+//    public Recipe(int recipeId, int menuItemId, String status) {
+//        this.recipeId = recipeId;
+//        this.menuItemId = menuItemId;
+//        this.status = status;
+//
+//    }
+//
 //    public Recipe(int recipeId, int menuItemId, String menuItemName, String status) {
 //        this.recipeId = recipeId;
 //        this.menuItemId = menuItemId;
@@ -37,7 +38,13 @@ public class Recipe {
 //        this.status = status;
 //        this.items = new ArrayList<>();
 //    }
-    
+
+    public Recipe(int recipeId, String recipeName, String status) {
+        this.recipeId = recipeId;
+        this.recipeName = recipeName;
+        this.status = status;
+        this.items = new ArrayList<>();
+    }
     
 
     // getters & setters
@@ -65,7 +72,6 @@ public class Recipe {
         this.menuItemName = menuItemName;
     }
 
-    
     public String getStatus() {
         return status;
     }
@@ -83,8 +89,18 @@ public class Recipe {
     }
 
     public void addItem(RecipeItem item) {
-        if (items == null) items = new ArrayList<>();
+        if (items == null) {
+            items = new ArrayList<>();
+        }
         items.add(item);
     }
-    
+
+    public String getRecipeName() {
+        return recipeName;
+    }
+
+    public void setRecipeName(String recipeName) {
+        this.recipeName = recipeName;
+    }
+
 }
