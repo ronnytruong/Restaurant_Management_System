@@ -149,7 +149,7 @@ public class OrderServlet extends HttpServlet {
 
                 Reservation reservation = reservationDAO.getElementByTableId(tableId);
                 Employee emp = employeeDAO.getElementByID(empId); // check available
-                Voucher voucher = voucherDAO.getById(voucherId); // check available
+                Voucher voucher = voucherDAO.getElementById(voucherId); // check available
 
 //validate
                 if (reservation == null || emp == null || paymentMethod == null
@@ -194,7 +194,7 @@ public class OrderServlet extends HttpServlet {
 
                 Reservation reservation = reservationDAO.getElementByTableId(tableId);
                 Employee emp = employeeDAO.getElementByID(empId); // check available
-                Voucher voucher = voucherDAO.getById(voucherId); // check available
+                Voucher voucher = voucherDAO.getElementById(voucherId); // check available
 
                 System.out.println((!paymentMethod.equals("Cash") && !paymentMethod.equals("Pay later")));
                 
