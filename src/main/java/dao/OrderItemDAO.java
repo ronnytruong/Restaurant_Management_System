@@ -11,9 +11,7 @@ import java.sql.SQLException;
 import java.sql.Time;
 import java.util.ArrayList;
 import java.util.List;
-import model.MenuItem;
-import model.Order;
-import model.OrderItem;
+import model.*;
 
 /**
  *
@@ -52,36 +50,29 @@ public class OrderItemDAO extends DBContext {
 //
 //        return list;
 //    }
+    public List<OrderItem> getAll(int page, int maxElement) {
 
-    public List<Order> getAll(int page, int maxElement) {
-
-        List<Order> list = new ArrayList<>();
+        List<OrderItem> list = new ArrayList<>();
 
         try {
-            String query = "SELECT order_id, reservation_id, emp_id, voucher_id, order_date, order_time, payment_method, status\n"
-                    + "FROM     [order]\n"
-                    + "WHERE  (LOWER(status) <> LOWER('Deleted'))\n"
-                    + "ORDER BY order_date desc, order_time desc\n"
+            String query = "SELECT order_item_id, order_id, menu_item_id, unit_price, quantity\n"
+                    + "FROM     order_item\n"
+                    + "ORDER BY order_item_id\n"
                     + "OFFSET ? ROWS \n"
                     + "FETCH NEXT ? ROWS ONLY;";
 
             ResultSet rs = this.executeSelectionQuery(query, new Object[]{(page - 1) * maxElement, maxElement});
 
             while (rs.next()) {
-                int orderId = rs.getInt(1);
-                int reservationId = rs.getInt(2);
-                int empId = rs.getInt(3);
-                int voucherId = rs.getInt(4);
-                Date orderDate = rs.getDate(5);
-                Time orderTime = rs.getTime(6);
-                String paymentMethod = rs.getString(7);
-                String status = rs.getString(8);
+                int orderItemId = rs.getInt(1);
+    int orderId = rs.getInt(2);
+    int menuItemId = rs.getInt(3);
+    int unitPrice = rs.getInt(4);
+    int quantity = rs.getInt(5);
 
-                Order order = new Order(orderId, reservationDAO.getElementByID(reservationId),
-                        employeeDAO.getElementByID(empId), voucherDAO.getById(voucherId),
-                        orderDate, orderTime, paymentMethod, status);
+//                OrderItem orderItem = new OrderItem(orderItemId, orderDAO.getElementByID(orderId), menuItemDAO.getAllCategoryNames(), unitPrice, quantity);
 
-                list.add(order);
+//                list.add(order);
             }
         } catch (SQLException ex) {
             System.out.println("Can't not load list");

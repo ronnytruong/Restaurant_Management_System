@@ -15,12 +15,16 @@ import model.Recipe;
 
 public class MenuItemDAO extends DBContext {
 
+    private final CategoryDAO categoryDAO = new CategoryDAO();
+    private final RecipeDAO recipeDAO = new RecipeDAO();
+
     public static void main(String[] args) {
     }
-/**
- * 
- * @return 
- */
+
+    /**
+     *
+     * @return
+     */
     public List<String> getAllCategoryNames() {
         List<String> categoryNames = new ArrayList<>();
         try {
@@ -35,11 +39,12 @@ public class MenuItemDAO extends DBContext {
         }
         return categoryNames;
     }
-/**
- * 
- * @param categoryName
- * @return 
- */
+
+    /**
+     *
+     * @param categoryName
+     * @return
+     */
     public List<MenuItem> getMenuItemsByCategoryName(String categoryName) {
         List<MenuItem> list = new ArrayList<>();
         try {
@@ -60,10 +65,10 @@ public class MenuItemDAO extends DBContext {
 
             while (rs.next()) {
 
-              int menuItemId = rs.getInt("menu_item_id");
+                int menuItemId = rs.getInt("menu_item_id");
                 String itemName = rs.getString("item_name");
                 String imageUrl = rs.getString("image_url");
-                int price = rs.getInt("price"); 
+                int price = rs.getInt("price");
                 String description = rs.getString("description");
                 String status = rs.getString("status");
                 int categoryId = rs.getInt("category_id");
@@ -72,10 +77,9 @@ public class MenuItemDAO extends DBContext {
                 int recipeId = rs.getInt("recipe_id");
                 String recipeName = rs.getString("recipe_name");
                 Recipe recipe = new Recipe(recipeId, recipeName, null);
-                
 
                 MenuItem item = new MenuItem(
-                     menuItemId,
+                        menuItemId,
                         category,
                         recipe,
                         itemName,
@@ -90,5 +94,39 @@ public class MenuItemDAO extends DBContext {
             Logger.getLogger(MenuItemDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
         return list;
+    }
+
+    public MenuItem getElementByID(int id) {
+
+        try {
+            String query = "SELECT menu_item_id, category_id, recipe_id, item_name, image_url, price, description, status\n"
+                    + "FROM     menu_item\n"
+                    + "WHERE  (LOWER(status) <> LOWER('Deleted')) AND (menu_item_id = ?)";
+
+            ResultSet rs = this.executeSelectionQuery(query, new Object[]{});
+
+            while (rs.next()) {
+
+                int menuItemId = rs.getInt(1);
+                int categoryId = rs.getInt(2);
+                int recipeId = rs.getInt(3);
+                String itemName = rs.getString(4);
+                String imageUrl = rs.getString(5);
+                int price = rs.getInt(6);
+                String description = rs.getString(7);
+                String status = rs.getString(8);
+
+                MenuItem item = new MenuItem(menuItemId, 
+                        categoryDAO.getElementByID(categoryId), 
+                        recipeDAO.getElementByID(recipeId), 
+                        itemName, imageUrl, price, description, status);
+
+                return item;
+            }
+        } catch (SQLException ex) {
+            System.out.println("Can't not load object");
+        }
+
+        return null;
     }
 }
