@@ -1,9 +1,11 @@
-/*
+ /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package db;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -18,7 +20,7 @@ public class DBContext {
     private Connection conn;
     private final String DB_URL = "jdbc:sqlserver://127.0.0.1:1433;databaseName=RestaurantManagement;encrypt=false";
     private final String DB_USER = "sa";
-    private final String DB_PWD = "6789";
+    private final String DB_PWD = "123456";
 
     public DBContext() {
         try {
@@ -57,6 +59,25 @@ public class DBContext {
         }
 
         return statement.executeUpdate();
+    }
+    public String hashToMD5(String input) {
+        try {
+            // Sử dụng thuật toán MD5
+            MessageDigest md = MessageDigest.getInstance("MD5");
+            byte[] digest = md.digest(input.getBytes());
+            
+            // Chuyển đổi byte array sang chuỗi Hex
+            StringBuilder sb = new StringBuilder();
+            for (byte b : digest) {
+                String hex = Integer.toHexString(0xff & b);
+                if (hex.length() == 1) sb.append('0');
+                sb.append(hex);
+            }
+            return sb.toString();
+        } catch (NoSuchAlgorithmException e) {
+            // Xử lý ngoại lệ nếu thuật toán MD5 không khả dụng
+            throw new RuntimeException("MD5 algorithm not found!", e);
+        }
     }
 
 }

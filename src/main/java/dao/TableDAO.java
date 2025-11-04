@@ -21,6 +21,28 @@ import model.Table;
  */
 public class TableDAO extends DBContext {
 
+    public List<Table> getAllOccupied() {
+        List<Table> list = new ArrayList<>();
+        try {
+            String query = "SELECT table_id, table_number, table_capacity, status "
+                    + "FROM [table] "
+                    + "WHERE LOWER(status) = LOWER('Occupied') "
+                    + "ORDER BY table_id";
+            ResultSet rs = this.executeSelectionQuery(query, null);
+            while (rs.next()) {
+                int id = rs.getInt(1);
+                String number = rs.getString(2);
+                int capacity = rs.getInt(3);
+                String status = rs.getString(4);
+                
+                list.add(new Table(id, number, capacity, status));
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(TableDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return list;
+    }
+    
     /**
      * Lấy toàn bộ bàn (không phân trang)
      */
@@ -79,9 +101,8 @@ public class TableDAO extends DBContext {
     public List<Table> getAll(int page, String keyword) {
         List<Table> list = new ArrayList<>();
         try {
-            String base = "SELECT table_id, table_number, table_capacity, status "
-                    + "FROM [table] "
-                    + "WHERE LOWER(status) <> 'deleted' ";
+            String base = "SELECT table_id, table_number, table_capacity, status FROM [table] t "
+                    + "WHERE LOWER(t.status) <> 'deleted'  ";
             String orderOffset = "ORDER BY table_id OFFSET ? ROWS FETCH NEXT ? ROWS ONLY;";
 
             ResultSet rs;
@@ -115,7 +136,7 @@ public class TableDAO extends DBContext {
         }
         return list;
     }
-    
+
     public Table getElementByID(int id) {
 
         try {
@@ -148,7 +169,7 @@ public class TableDAO extends DBContext {
                     + "                  (table_number, table_capacity, status)\n"
                     + "VALUES (?, ?, ?)";
 
-            return this.executeQuery(query, new Object[]{number, capacity, "Active"});
+            return this.executeQuery(query, new Object[]{number, capacity, "Available"});
 
         } catch (SQLException ex) {
 
@@ -212,4 +233,45 @@ public class TableDAO extends DBContext {
 
         return 0;
     }
+
+    /**
+     * Lấy danh sách bàn available có capacity >= partySize Dùng để hiển thị
+     * trong form đặt bàn của customer
+     */
+    public List<Table> getAvailableTables(int partySize) {
+        List<Table> list = new ArrayList<>();
+        try {
+            String query = "SELECT table_id, table_number, table_capacity, status "
+                    + "FROM [table] "
+                    + "WHERE LOWER(status) = 'available' "
+                    + "AND table_capacity >= ? "
+                    + "ORDER BY table_capacity ASC, table_id ASC";
+            ResultSet rs = this.executeSelectionQuery(query, new Object[]{partySize});
+            while (rs.next()) {
+                int id = rs.getInt(1);
+                String number = rs.getString(2);
+                int capacity = rs.getInt(3);
+                String status = rs.getString(4);
+                list.add(new Table(id, number, capacity, status));
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(TableDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return list;
+    }
+
+    public int updateStatus(int id, String status) {
+        try {
+            String sql = "UPDATE [table] SET status = ? WHERE table_id = ?";
+            return this.executeQuery(sql, new Object[]{status, id});
+        } catch (SQLException ex) {
+            int err = checkErrorSQL(ex);
+            if (err != 0) {
+                return err;
+            }
+            Logger.getLogger(TableDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return -1;
+    }
+
 }

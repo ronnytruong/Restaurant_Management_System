@@ -283,6 +283,7 @@ public class CustomerDAO extends DBContext {
         return -1;
     }
 
+
     public boolean checkAccountExist(String customerAccount) {
         try {
             String query = "SELECT c.customer_id FROM customer AS c "
@@ -318,7 +319,7 @@ public class CustomerDAO extends DBContext {
                 String status = rs.getString(10);
 
                 return new Customer(customerId, account, password, customerName, gender, phoneNumber, email, address, dob, status);
-            }
+}
         } catch (SQLException ex) {
             Logger.getLogger(CustomerDAO.class.getName()).log(Level.SEVERE, null, ex);
         }

@@ -316,4 +316,38 @@ public class EmployeeDAO extends DBContext {
         }
         return 0;
     }
+    public Employee authenticate(String empAccount, String hashedPassword) {
+        try {
+   
+            String query = "SELECT e.emp_id, e.emp_account, e.password, e.emp_name, e.gender, e.dob, "
+                    + "e.phone_number, e.email, e.address, e.role_id, r.role_name, e.status "
+                    + "FROM employee AS e "
+                    + "JOIN role AS r ON e.role_id = r.role_id " 
+                    + "WHERE e.emp_account = ? AND e.password = ? AND LOWER(e.status) = 'active'";
+
+            ResultSet rs = this.executeSelectionQuery(query, new Object[]{empAccount, hashedPassword});
+
+            if (rs.next()) {
+               
+                int empId = rs.getInt(1);
+                String account = rs.getString(2);
+                String password = rs.getString(3);
+                String empName = rs.getString(4);
+                String gender = rs.getString(5);
+                Date dob = rs.getDate(6);
+                String phoneNumber = rs.getString(7);
+                String email = rs.getString(8);
+                String address = rs.getString(9);
+                int roleId = rs.getInt(10);
+                String roleName = rs.getString(11);
+                String status = rs.getString(12);
+
+                return new Employee(empId, account, password, empName, gender, dob, phoneNumber, email, address, roleId, roleName, status);
+            }
+        } catch (SQLException ex) {
+           
+            Logger.getLogger(EmployeeDAO.class.getName()).log(Level.SEVERE, "Lỗi khi xác thực nhân viên", ex);
+        }
+        return null;
+    }
 }

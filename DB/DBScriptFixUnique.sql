@@ -167,36 +167,24 @@ WHERE status <> 'deleted';
 CREATE TABLE [order] (
     order_id INT IDENTITY(1,1) NOT NULL,
     reservation_id INT NULL,
-    table_id INT NOT NULL,
-    customer_id INT NOT NULL,
     emp_id INT NOT NULL,
     voucher_id INT NULL,
     order_date DATE NOT NULL DEFAULT CAST(GETDATE() AS DATE),
     order_time TIME NOT NULL DEFAULT CAST(GETDATE() AS TIME),
-    order_status NVARCHAR(20) NOT NULL DEFAULT 'Pending',
-    subtotal DECIMAL(10,2) NOT NULL DEFAULT 0.00,
-    discount DECIMAL(10,2) NOT NULL DEFAULT 0.00,
-    total_amount DECIMAL(10,2) NOT NULL DEFAULT 0.00,
     payment_method NVARCHAR(20) NULL,
     status NVARCHAR(20) NOT NULL DEFAULT 'Pending',
     CONSTRAINT PK_order PRIMARY KEY (order_id),
-    CONSTRAINT FK_order_customer FOREIGN KEY (customer_id) REFERENCES customer(customer_id),
-    CONSTRAINT FK_order_table FOREIGN KEY (table_id) REFERENCES [table](table_id),
     CONSTRAINT FK_order_reservation FOREIGN KEY (reservation_id) REFERENCES reservation(reservation_id),
-    CONSTRAINT FK_order_employee FOREIGN KEY (emp_id) REFERENCES employee(emp_id), -- Khóa ngoại employee
+    CONSTRAINT FK_order_employee FOREIGN KEY (emp_id) REFERENCES employee(emp_id),
 	CONSTRAINT FK_order_voucher FOREIGN KEY (voucher_id) REFERENCES voucher(voucher_id)
-
 );
 
 CREATE TABLE order_item (
     order_item_id INT IDENTITY(1,1) NOT NULL,
     order_id INT NOT NULL,
     menu_item_id INT NOT NULL,
-    unit_price DECIMAL(10,2) NOT NULL DEFAULT 0.00,
-    discount_amount DECIMAL(10,2) NOT NULL DEFAULT 0.00,
-    total_amount DECIMAL(10,2) NOT NULL DEFAULT 0.00,
-    description NVARCHAR(255) NULL,
-    status NVARCHAR(20) NOT NULL DEFAULT 'Active',
+    unit_price INT NOT NULL DEFAULT 0,
+    quantity INT NOT NULL DEFAULT 1,
     CONSTRAINT PK_order_item PRIMARY KEY (order_item_id),
     CONSTRAINT FK_order_item_order FOREIGN KEY (order_id) REFERENCES [order](order_id),
     CONSTRAINT FK_order_item_menu FOREIGN KEY (menu_item_id) REFERENCES menu_item(menu_item_id)
