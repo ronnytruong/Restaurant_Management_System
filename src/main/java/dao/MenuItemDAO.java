@@ -11,12 +11,16 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import model.Category;
 import model.MenuItem;
+import model.Recipe;
 
 public class MenuItemDAO extends DBContext {
 
     public static void main(String[] args) {
     }
-
+/**
+ * 
+ * @return 
+ */
     public List<String> getAllCategoryNames() {
         List<String> categoryNames = new ArrayList<>();
         try {
@@ -31,20 +35,20 @@ public class MenuItemDAO extends DBContext {
         }
         return categoryNames;
     }
-
+/**
+ * 
+ * @param categoryName
+ * @return 
+ */
     public List<MenuItem> getMenuItemsByCategoryName(String categoryName) {
         List<MenuItem> list = new ArrayList<>();
         try {
-            
+
             String query = "SELECT \n"
-                    + "    mi.menu_item_id, mi.category_id, mi.item_name, \n"
-                    + "    mi.image_url, mi.price, mi.description, mi.status, \n"
-                    + "    c.category_name, \n"
-                    + "    r.recipe_name, \n"
-                    + "    (SELECT STRING_AGG(CONCAT(ri.quantity, ' ', ri.unit, ' ', i.ingredient_name), ', ') \n"
-                    + "     FROM recipe_item ri \n"
-                    + "     JOIN ingredient i ON ri.ingredient_id = i.ingredient_id \n"
-                    + "     WHERE ri.recipe_id = mi.recipe_id AND LOWER(ri.status) = 'active') AS ingredients\n"
+                    + "     mi.menu_item_id, mi.category_id, mi.recipe_id, mi.item_name, \n"
+                    + "     mi.image_url, mi.price, mi.description, mi.status, \n"
+                    + "     c.category_name, \n"
+                    + "     r.recipe_name \n"
                     + "FROM menu_item mi \n"
                     + "JOIN category c ON mi.category_id = c.category_id \n"
                     + "JOIN recipe r ON mi.recipe_id = r.recipe_id\n"
@@ -56,21 +60,29 @@ public class MenuItemDAO extends DBContext {
 
             while (rs.next()) {
 
-                double price = rs.getInt("price");
-
-            
-                String ingredients = rs.getString("ingredients");
+              int menuItemId = rs.getInt("menu_item_id");
+                String itemName = rs.getString("item_name");
+                String imageUrl = rs.getString("image_url");
+                int price = rs.getInt("price"); 
+                String description = rs.getString("description");
+                String status = rs.getString("status");
+                int categoryId = rs.getInt("category_id");
+                String catName = rs.getString("category_name");
+                Category category = new Category(categoryId, catName, null, null);
+                int recipeId = rs.getInt("recipe_id");
+                String recipeName = rs.getString("recipe_name");
+                Recipe recipe = new Recipe(recipeId, recipeName, null);
+                
 
                 MenuItem item = new MenuItem(
-                        rs.getInt("menu_item_id"),
-                        rs.getInt("category_id"),
-                        rs.getString("item_name"),
-                        ingredients, 
-                        rs.getString("image_url"),
+                     menuItemId,
+                        category,
+                        recipe,
+                        itemName,
+                        imageUrl,
                         price,
-                        rs.getString("description"),
-                        rs.getString("status"),
-                        rs.getString("category_name")
+                        description,
+                        status
                 );
                 list.add(item);
             }

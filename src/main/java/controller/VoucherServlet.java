@@ -84,7 +84,7 @@ public class VoucherServlet extends HttpServlet {
             } catch (NumberFormatException e) {
                 id = -1;
             }
-            request.setAttribute("currentVoucher", dao.getElementById(id));
+            request.setAttribute("currentVoucher", dao.getById(id));
         } else if (view.equalsIgnoreCase("delete")) {
             namepage = "delete";
         }

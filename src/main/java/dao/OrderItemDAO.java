@@ -78,7 +78,7 @@ public class OrderItemDAO extends DBContext {
                 String status = rs.getString(8);
 
                 Order order = new Order(orderId, reservationDAO.getElementByID(reservationId),
-                        employeeDAO.getElementByID(empId), voucherDAO.getElementById(voucherId),
+                        employeeDAO.getElementByID(empId), voucherDAO.getById(voucherId),
                         orderDate, orderTime, paymentMethod, status);
 
                 list.add(order);
@@ -111,7 +111,7 @@ public class OrderItemDAO extends DBContext {
                 String status = rs.getString(8);
 
                 Order order = new Order(orderId, reservationDAO.getElementByID(reservationId),
-                        employeeDAO.getElementByID(empId), voucherDAO.getElementById(voucherId),
+                        employeeDAO.getElementByID(empId), voucherDAO.getById(voucherId),
                         orderDate, orderTime, paymentMethod, status);
 
                 return order;

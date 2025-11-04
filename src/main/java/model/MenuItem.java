@@ -9,32 +9,28 @@ package model;
  * @author Huynh Thai Duy Phuong - CE190603
  */
 public class MenuItem {
-private int menuItemId;
-    private int categoryId;
-    private String categoryName; 
+
+    private int menuItemId;
+    private Category category;
+    private Recipe recipe;
     private String itemName;
-    private String ingredients;
     private String imageUrl;
-    private double price;
+    private int price;
     private String description;
     private String status;
 
     public MenuItem() {
     }
-    public MenuItem(int menuItemId, int categoryId, String itemName, String ingredients, String imageUrl, double price, String description, String status, String categoryName) {
+
+    public MenuItem(int menuItemId, Category category, Recipe recipe, String itemName, String imageUrl, int price, String description, String status) {
         this.menuItemId = menuItemId;
-        this.categoryId = categoryId;
+        this.category = category;
+        this.recipe = recipe;
         this.itemName = itemName;
-        this.ingredients = ingredients;
         this.imageUrl = imageUrl;
         this.price = price;
         this.description = description;
         this.status = status;
-        this.categoryName = categoryName;
-    }
-
-    public MenuItem(int menuItemId, int categoryId, String itemName, String ingredients, String imageUrl, double price, String description, String status) {
-        this(menuItemId, categoryId, itemName, ingredients, imageUrl, price, description, status, null);
     }
 
     public int getMenuItemId() {
@@ -45,12 +41,20 @@ private int menuItemId;
         this.menuItemId = menuItemId;
     }
 
-    public int getCategoryId() {
-        return categoryId;
+    public Category getCategory() {
+        return category;
     }
 
-    public void setCategoryId(int categoryId) {
-        this.categoryId = categoryId;
+    public void setCategory(Category category) {
+        this.category = category;
+    }
+
+    public Recipe getRecipe() {
+        return recipe;
+    }
+
+    public void setRecipe(Recipe recipe) {
+        this.recipe = recipe;
     }
 
     public String getItemName() {
@@ -61,14 +65,6 @@ private int menuItemId;
         this.itemName = itemName;
     }
 
-    public String getIngredients() {
-        return ingredients;
-    }
-
-    public void setIngredients(String ingredients) {
-        this.ingredients = ingredients;
-    }
-
     public String getImageUrl() {
         return imageUrl;
     }
@@ -77,11 +73,11 @@ private int menuItemId;
         this.imageUrl = imageUrl;
     }
 
-    public double getPrice() {
+    public int getPrice() {
         return price;
     }
 
-    public void setPrice(double price) {
+    public void setPrice(int price) {
         this.price = price;
     }
 
@@ -99,14 +95,6 @@ private int menuItemId;
 
     public void setStatus(String status) {
         this.status = status;
-    }
-
-    public String getCategoryName() {
-        return categoryName;
-    }
-
-    public void setCategoryName(String categoryName) {
-        this.categoryName = categoryName;
     }
 
 }
