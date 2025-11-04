@@ -103,7 +103,7 @@ public class MenuItemDAO extends DBContext {
                     + "FROM     menu_item\n"
                     + "WHERE  (LOWER(status) <> LOWER('Deleted')) AND (menu_item_id = ?)";
 
-            ResultSet rs = this.executeSelectionQuery(query, new Object[]{});
+            ResultSet rs = this.executeSelectionQuery(query, new Object[]{id});
 
             while (rs.next()) {
 
