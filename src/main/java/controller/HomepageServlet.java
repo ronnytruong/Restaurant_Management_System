@@ -4,6 +4,7 @@
  */
 package controller;
 
+import dao.MenuItemDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -11,6 +12,8 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.util.List;
+import model.MenuItem;
 
 /**
  *
@@ -57,7 +60,38 @@ public class HomepageServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        request.getRequestDispatcher("/WEB-INF/template/" + "book-table" + ".html").forward(request, response);
+        MenuItemDAO menuItemDAO = new MenuItemDAO();
+           
+        try {
+           
+            List<String> categoryNames = menuItemDAO.getTopCategoryNames();
+
+          
+            request.setAttribute("categoryNames", categoryNames);
+
+     
+            for (String categoryName : categoryNames) {
+                
+                
+                List<MenuItem> menuItems = menuItemDAO.getTopMenuItemsByCategoryName(categoryName);
+                
+               
+                String attributeName = categoryName.toLowerCase().replace(" ", "").concat("List");
+                
+     
+                request.setAttribute(attributeName, menuItems);
+            }
+
+           
+            request.getRequestDispatcher("/WEB-INF/homepage/homepage.jsp").forward(request, response);
+
+        } catch (Exception e) {
+            
+            log("Error in MenuItemServlet: " + e.getMessage(), e);
+          
+            throw new ServletException("Could not load menu data.", e);
+        }
+       
 
     }
 
