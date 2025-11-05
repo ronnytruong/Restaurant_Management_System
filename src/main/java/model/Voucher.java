@@ -4,7 +4,6 @@
  */
 package model;
 
-import java.math.BigDecimal;
 import java.sql.Date;
 
 /**
@@ -17,7 +16,7 @@ public class Voucher {
     private String voucherCode;
     private String voucherName;
     private String discountType;
-    private BigDecimal discountValue;
+    private int discountValue;
     private int quantity;
     private Date startDate;
     private Date endDate;
@@ -27,7 +26,7 @@ public class Voucher {
     }
 
     public Voucher(int voucherId, String voucherCode, String voucherName, String discountType,
-            BigDecimal discountValue, int quantity, Date startDate, Date endDate, String status) {
+            int discountValue, int quantity, Date startDate, Date endDate, String status) {
         this.voucherId = voucherId;
         this.voucherCode = voucherCode;
         this.voucherName = voucherName;
@@ -71,11 +70,11 @@ public class Voucher {
         this.discountType = discountType;
     }
 
-    public BigDecimal getDiscountValue() {
+    public int getDiscountValue() {
         return discountValue;
     }
 
-    public void setDiscountValue(BigDecimal discountValue) {
+    public void setDiscountValue(int discountValue) {
         this.discountValue = discountValue;
     }
 
@@ -112,16 +111,16 @@ public class Voucher {
     }
 
     public String getCurrentDiscount() {
-        if (discountType == null || discountValue == null) {
+        if (discountType == null) {
             return "N/A";
         }
 
         if (discountType.equalsIgnoreCase("Percent")) {
-            return discountValue.stripTrailingZeros().toPlainString() + "%";
+            return discountValue + "%";
         } else if (discountType.equalsIgnoreCase("Amount")) {
             return discountValue + " VND";
         } else {
-            return discountValue.toPlainString();
+            return discountValue + "";
         }
     }
 }
