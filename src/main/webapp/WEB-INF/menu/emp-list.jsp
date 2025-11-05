@@ -85,9 +85,9 @@
                                                 <i class="bi bi-pencil"></i>
                                             </a>
                                            
-                                            <button type="button" class="btn btn-outline-danger btn-icon btn-delete"
+                                            <button type="button" class="btn btn-outline-secondary btn-icon btn-delete"
                                                     title="Delete" aria-label="Delete" onclick="showDeletePopup('${item.menuItemId}', '${item.itemName}')">
-                                                <i class="bi bi-trash"></i>
+ <i class="bi bi-x-circle"></i>
                                             </button>
                                         </div>
                                     </td>
