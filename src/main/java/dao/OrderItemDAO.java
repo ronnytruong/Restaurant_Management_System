@@ -141,31 +141,25 @@ public class OrderItemDAO extends DBContext {
         return list;
     }
 
-    public Order getElementByID(int id) {
+    public OrderItem getElementByID(int id) {
 
         try {
-            String query = "SELECT order_id, reservation_id, emp_id, voucher_id, order_date, order_time, payment_method, status\n"
-                    + "FROM     [order]\n"
-                    + "WHERE  (LOWER(status) <> LOWER('Deleted') and order_id = ?)\n"
-                    + "ORDER BY order_id\n";
+            String query = "SELECT order_item_id, order_id, menu_item_id, unit_price, quantity\n"
+                    + "FROM     order_item\n"
+                    + "WHERE order_item_id = ?";
 
             ResultSet rs = this.executeSelectionQuery(query, new Object[]{id});
 
             while (rs.next()) {
-                int orderId = rs.getInt(1);
-                int reservationId = rs.getInt(2);
-                int empId = rs.getInt(3);
-                int voucherId = rs.getInt(4);
-                Date orderDate = rs.getDate(5);
-                Time orderTime = rs.getTime(6);
-                String paymentMethod = rs.getString(7);
-                String status = rs.getString(8);
+                int orderItemId = rs.getInt(1);
+                int orderId = rs.getInt(2);
+                int menuItemId = rs.getInt(3);
+                int unitPrice = rs.getInt(4);
+                int quantity = rs.getInt(5);
 
-                Order order = new Order(orderId, reservationDAO.getElementByID(reservationId),
-                        employeeDAO.getElementByID(empId), voucherDAO.getById(voucherId),
-                        orderDate, orderTime, paymentMethod, status);
+                OrderItem orderItem = new OrderItem(orderItemId, orderDAO.getElementByID(orderId), menuItemDAO.getElementByID(menuItemId), unitPrice, quantity);
 
-                return order;
+                return orderItem;
             }
         } catch (SQLException ex) {
             System.out.println("Can't not load object");
@@ -195,7 +189,7 @@ public class OrderItemDAO extends DBContext {
                     + "SET          order_id = ?, menu_item_id = ?, unit_price = ?, quantity = ?\n"
                     + "WHERE  (order_item_id = ?)";
 
-            return this.executeQuery(query, new Object[]{orderId, menuItemId, unitPrice, quantity,});
+            return this.executeQuery(query, new Object[]{orderId, menuItemId, unitPrice, quantity, orderItemId});
 
         } catch (SQLException ex) {
             System.out.println("Can't not edit object");
@@ -221,6 +215,22 @@ public class OrderItemDAO extends DBContext {
             String query = "SELECT COUNT(order_item_id) AS numrow\n"
                     + "FROM     [order_item]\n";
             ResultSet rs = this.executeSelectionQuery(query, null);
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        } catch (SQLException ex) {
+            System.out.println("Error");
+        }
+
+        return 0;
+    }
+
+    public int countItembyOrderId(int id) {
+        try {
+            String query = "SELECT COUNT(order_item_id) AS numrow\n"
+                    + "FROM     order_item\n"
+                    + "WHERE  (order_id = ?)\n";
+            ResultSet rs = this.executeSelectionQuery(query, new Object[]{id});
             if (rs.next()) {
                 return rs.getInt(1);
             }

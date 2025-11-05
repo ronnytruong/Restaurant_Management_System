@@ -22,6 +22,8 @@
                                                 <input type="search" name="keyword" class="form-control" placeholder="Search by name or description">
                                             </div>
                                         </form>--%>
+                    Chua giam voucher khi them vao order, khi ??i tr?ng thái thì 
+                    Khi chuy?n tr?ng thái sang complete thì hay tr?
                     <a class="btn btn-primary add-btn" href="<c:url value="order">
                            <c:param name="view" value="add"/>
                        </c:url>"><i class="bi bi-plus-circle"></i>Add</a>
@@ -70,7 +72,7 @@
                                                title="View details" aria-label="View details"
                                                href="<c:url value="orderItem">
                                                    <c:param name="view" value="list"/>
-                                                   <c:param name="orderDd" value="${order.orderId}"/>
+                                                   <c:param name="orderId" value="${order.orderId}"/>
                                                </c:url>">
                                                 <i class="bi bi-eye"></i>
                                             </a>
