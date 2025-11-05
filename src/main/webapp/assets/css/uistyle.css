@@ -179,7 +179,7 @@ body {
 
     background-image: linear-gradient(to bottom right, rgba(201, 42, 42, 0.7), rgba(201, 42, 42, 0.8)),
 
-        url('../images/background.gif');
+        url('../img/background/background.gif');
 
     background-size: cover;
     background-position: center;
