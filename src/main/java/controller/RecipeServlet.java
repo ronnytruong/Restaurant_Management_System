@@ -14,6 +14,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import model.RecipeItem;
 
 /**
  *
@@ -94,8 +95,25 @@ public class RecipeServlet extends HttpServlet {
                 id = -1;
             }
             request.setAttribute("currentRecipe", recipeDAO.getElementByID(id));
+        } else if (view.equalsIgnoreCase("add-item")) {
+            namepage = "add-item";
+            int id;
+            try {
+                id = Integer.parseInt(request.getParameter("id"));
+            } catch (NumberFormatException e) {
+                id = -1;
+            }
+            request.setAttribute("currentRecipe", recipeDAO.getElementByID(id));
+        } else if (view.equalsIgnoreCase("edit-item")) {
+            namepage = "edit-item";
+            int recipeItemId;
+            try {
+                recipeItemId = Integer.parseInt(request.getParameter("recipe_item_id"));
+            } catch (NumberFormatException e) {
+                recipeItemId = -1;
+            }
+            request.setAttribute("currentItem", recipeDAO.getRecipeItemById(recipeItemId));
         }
-
         int page;
         int totalPages = getTotalPages(recipeDAO.countItem());
         try {
@@ -137,14 +155,18 @@ public class RecipeServlet extends HttpServlet {
                         popupMessage = "Recipe added successfully.";
                     } else {
                         popupStatus = false;
-                        popupMessage = "Add recipe failed. SQL error " + getSqlErrorCode(check);
+                        popupMessage = "The add action is NOT successfull. The object has " + getSqlErrorCode(check) + " error.";
                     }
                 }
             } else if (action.equalsIgnoreCase("edit")) {
                 int id;
                 String recipeName;
                 String status;
-                try { id = Integer.parseInt(request.getParameter("id")); } catch (NumberFormatException e) { id = -1; }
+                try {
+                    id = Integer.parseInt(request.getParameter("id"));
+                } catch (NumberFormatException e) {
+                    id = -1;
+                }
                 recipeName = request.getParameter("recipe_name");
                 status = request.getParameter("status");
                 if (!validateInteger(id, false, false, true) || !validateString(recipeName, -1) || !validateString(status, -1)) {
@@ -156,12 +178,16 @@ public class RecipeServlet extends HttpServlet {
                         popupMessage = "Recipe edited successfully.";
                     } else {
                         popupStatus = false;
-                        popupMessage = "Edit recipe failed. SQL error " + getSqlErrorCode(check);
+                        popupMessage = "The edit action is NOT successfull. The object has " + getSqlErrorCode(check) + " error.";
                     }
                 }
             } else if (action.equalsIgnoreCase("delete")) {
                 int id;
-                try { id = Integer.parseInt(request.getParameter("id")); } catch (NumberFormatException e) { id = -1; }
+                try {
+                    id = Integer.parseInt(request.getParameter("id"));
+                } catch (NumberFormatException e) {
+                    id = -1;
+                }
                 if (!validateInteger(id, false, false, true)) {
                     popupStatus = false;
                     popupMessage = "Delete recipe failed.";
@@ -171,23 +197,33 @@ public class RecipeServlet extends HttpServlet {
                         popupMessage = "Recipe deleted successfully.";
                     } else {
                         popupStatus = false;
-                        popupMessage = "Delete recipe failed. SQL error " + getSqlErrorCode(check);
+                        popupMessage = "The delete action is NOT successfull. The object has " + getSqlErrorCode(check) + " error.";
                     }
                 }
-            }
-
-            // item-level actions: add_item, edit_item, delete_item
+            } // item-level actions: add_item, edit_item, delete_item
             else if (action.equalsIgnoreCase("add_item")) {
                 int recipeId, ingredientId;
                 double quantity = 0;
                 String unit = request.getParameter("unit");
                 String note = request.getParameter("note");
-                try { recipeId = Integer.parseInt(request.getParameter("recipe_id")); } catch (NumberFormatException e) { recipeId = -1; }
-                try { ingredientId = Integer.parseInt(request.getParameter("ingredient_id")); } catch (NumberFormatException e) { ingredientId = -1; }
+                try {
+                    recipeId = Integer.parseInt(request.getParameter("recipe_id"));
+                } catch (NumberFormatException e) {
+                    recipeId = -1;
+                }
+                try {
+                    ingredientId = Integer.parseInt(request.getParameter("ingredient_id"));
+                } catch (NumberFormatException e) {
+                    ingredientId = -1;
+                }
                 try {
                     String q = request.getParameter("quantity");
-                    if (q != null && !q.isEmpty()) quantity = Double.parseDouble(q);
-                } catch (NumberFormatException e) { quantity = 0; }
+                    if (q != null && !q.isEmpty()) {
+                        quantity = Double.parseDouble(q);
+                    }
+                } catch (NumberFormatException e) {
+                    quantity = 0;
+                }
 
                 if (!validateInteger(recipeId, false, false, true) || !validateInteger(ingredientId, false, false, true)) {
                     popupStatus = false;
@@ -198,7 +234,7 @@ public class RecipeServlet extends HttpServlet {
                         popupMessage = "Item added to recipe " + recipeId + " successfully.";
                     } else {
                         popupStatus = false;
-                        popupMessage = "Add item failed. SQL error " + getSqlErrorCode(checkError);
+                        popupMessage = "The add action is NOT successfull. The object has " + getSqlErrorCode(checkError) + " error.";
                     }
                 }
             } else if (action.equalsIgnoreCase("edit_item")) {
@@ -207,12 +243,30 @@ public class RecipeServlet extends HttpServlet {
                 String unit = request.getParameter("unit");
                 String note = request.getParameter("note");
                 String status = request.getParameter("status");
-                try { recipeItemId = Integer.parseInt(request.getParameter("recipe_item_id")); } catch (NumberFormatException e) { recipeItemId = -1; }
-                try { ingredientId = Integer.parseInt(request.getParameter("ingredient_id")); } catch (NumberFormatException e) { ingredientId = -1; }
+                try {
+                    recipeItemId = Integer.parseInt(request.getParameter("recipe_item_id"));
+                } catch (NumberFormatException e) {
+                    recipeItemId = -1;
+                }
+                try {
+                    ingredientId = Integer.parseInt(request.getParameter("ingredient_id"));
+                } catch (NumberFormatException e) {
+                    ingredientId = -1;
+                }
                 try {
                     String q = request.getParameter("quantity");
-                    if (q != null && !q.isEmpty()) quantity = Double.parseDouble(q);
-                } catch (NumberFormatException e) { quantity = 0; }
+                    if (q != null && !q.isEmpty()) {
+                        quantity = Double.parseDouble(q);
+                    }
+                } catch (NumberFormatException e) {
+                    quantity = 0;
+                }
+                
+                status = "Active";
+                RecipeItem existing = recipeDAO.getRecipeItemById(recipeItemId);
+                if (existing != null && existing.getStatus() != null) {
+                    status = existing.getStatus();
+                }
 
                 if (!validateInteger(recipeItemId, false, false, true) || !validateInteger(ingredientId, false, false, true)) {
                     popupStatus = false;
@@ -223,12 +277,16 @@ public class RecipeServlet extends HttpServlet {
                         popupMessage = "Item edited successfully.";
                     } else {
                         popupStatus = false;
-                        popupMessage = "Edit item failed. SQL error " + getSqlErrorCode(checkError);
+                        popupMessage = "The edit action is NOT successfull. The object has " + getSqlErrorCode(checkError) + " error.";
                     }
                 }
             } else if (action.equalsIgnoreCase("delete_item")) {
                 int recipeItemId;
-                try { recipeItemId = Integer.parseInt(request.getParameter("recipe_item_id")); } catch (NumberFormatException e) { recipeItemId = -1; }
+                try {
+                    recipeItemId = Integer.parseInt(request.getParameter("recipe_item_id"));
+                } catch (NumberFormatException e) {
+                    recipeItemId = -1;
+                }
                 if (!validateInteger(recipeItemId, false, false, true)) {
                     popupStatus = false;
                     popupMessage = "Delete item failed.";
@@ -238,7 +296,7 @@ public class RecipeServlet extends HttpServlet {
                         popupMessage = "Item deleted successfully.";
                     } else {
                         popupStatus = false;
-                        popupMessage = "Delete item failed. SQL error " + getSqlErrorCode(checkError);
+                        popupMessage = "The delete action is NOT successfull. The object has " + getSqlErrorCode(checkError) + " error.";
                     }
                 }
             }
@@ -247,7 +305,6 @@ public class RecipeServlet extends HttpServlet {
         setPopup(request, popupStatus, popupMessage);
         response.sendRedirect(request.getContextPath() + "/recipe");
     }
-    
 
     /**
      * Returns a short description of the servlet.
