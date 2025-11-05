@@ -11,6 +11,7 @@ import java.sql.*;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import model.Ingredient;
 import model.Recipe;
 import model.RecipeItem;
 
@@ -19,6 +20,7 @@ import model.RecipeItem;
  * @author PHAT
  */
 public class RecipeDAO extends DBContext {
+    private IngredientDAO ingredientDAO = new IngredientDAO();
 
     public List<Recipe> getAll() {
         List<Recipe> list = new ArrayList<>();
@@ -181,6 +183,30 @@ public class RecipeDAO extends DBContext {
         }
         return list;
     }
+    
+    public RecipeItem getRecipeItemById(int recipeItemId) {
+        try {
+            String query = "SELECT ri.recipe_item_id, ri.recipe_id, ri.ingredient_id, ri.quantity, ri.unit, ri.note, ri.status, ig.ingredient_name "
+                    + "FROM recipe_item ri LEFT JOIN ingredient ig ON ri.ingredient_id = ig.ingredient_id "
+                    + "WHERE ri.recipe_item_id = ? AND (LOWER(ri.status) <> LOWER(N'Deleted'))";
+            ResultSet rs = this.executeSelectionQuery(query, new Object[]{recipeItemId});
+            if (rs.next()) {
+                int id = rs.getInt("recipe_item_id");
+                int rId = rs.getInt("recipe_id");
+                int ingId = rs.getInt("ingredient_id");
+                double qty = rs.getDouble("quantity");
+                String unit = rs.getString("unit");
+                String note = rs.getString("note");
+                String status = rs.getString("status");
+                String ingName = rs.getString("ingredient_name");
+
+                return new RecipeItem(id, rId, ingId, qty, unit, note, status, ingName);
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(RecipeDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
+    }
 
     /**
      * Thêm item vào recipe. Trước khi insert: kiểm tra ingredient tồn tại và
@@ -189,9 +215,9 @@ public class RecipeDAO extends DBContext {
      */
     public int addItem(int recipeId, int ingredientId, double quantity, String unit, String note) {
         try {
-            // validate ingredient exists and not Deleted (read-only)
-            if (!ingredientValidForUse(ingredientId)) {
-                return -2; // custom error: ingredient invalid / không tồn tại hoặc đã bị Deleted
+            Ingredient ing = ingredientDAO.getElementByID(ingredientId);
+            if (ing == null) {
+                return -2; 
             }
             String query = "INSERT INTO recipe_item (recipe_id, ingredient_id, quantity, unit, note, status) VALUES (?, ?, ?, ?, ?, ?)";
             return this.executeQuery(query, new Object[]{recipeId, ingredientId, quantity, unit, note, "Active"});
@@ -211,7 +237,8 @@ public class RecipeDAO extends DBContext {
      */
     public int editItem(int recipeItemId, int ingredientId, double quantity, String unit, String note, String status) {
         try {
-            if (!ingredientValidForUse(ingredientId)) {
+            Ingredient ing = ingredientDAO.getElementByID(ingredientId);
+            if (ing == null) {
                 return -2;
             }
             String query = "UPDATE recipe_item SET ingredient_id = ?, quantity = ?, unit = ?, note = ?, status = ? WHERE recipe_item_id = ?";
@@ -234,43 +261,6 @@ public class RecipeDAO extends DBContext {
             Logger.getLogger(RecipeDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
         return -1;
-    }
-
-    // ---- Helpers liên quan ingredient (READ-ONLY vì ingredient thuộc team khác) ----
-    /**
-     * Kiểm tra ingredient tồn tại và không bị Deleted. Trả về true nếu tồn tại
-     * và status <> 'Deleted'
-     */
-    public boolean ingredientValidForUse(int ingredientId) {
-        try {
-            String query = "SELECT status FROM ingredient WHERE ingredient_id = ?";
-            ResultSet rs = this.executeSelectionQuery(query, new Object[]{ingredientId});
-            if (rs.next()) {
-                String status = rs.getString("status");
-                return status == null || !"Deleted".equalsIgnoreCase(status);
-            } else {
-                return false; // không tìm thấy ingredient
-            }
-        } catch (SQLException ex) {
-            Logger.getLogger(RecipeDAO.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return false;
-    }
-
-    /**
-     * Lấy tên ingredient (null nếu không tìm thấy)
-     */
-    public String getIngredientNameById(int ingredientId) {
-        try {
-            String query = "SELECT ingredient_name FROM ingredient WHERE ingredient_id = ?";
-            ResultSet rs = this.executeSelectionQuery(query, new Object[]{ingredientId});
-            if (rs.next()) {
-                return rs.getString("ingredient_name");
-            }
-        } catch (SQLException ex) {
-            Logger.getLogger(RecipeDAO.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return null;
     }
 
     // helper: check if recipe exists / is deleted
