@@ -22,6 +22,7 @@
                 <form method="post" action="<c:url value='recipe'/>" class="row g-3">
                     <input type="hidden" name="action" value="edit"/>
                     <input type="hidden" name="id" value="${currentRecipe.recipeId}"/>
+                    <input type="hidden" name="status" value="${currentRecipe.status}" />
 
                     <div class="col-md-6">
                         <label class="form-label">Recipe ID</label>
@@ -32,14 +33,6 @@
                         <label for="recipeName" class="form-label">Recipe Name</label>
                         <input id="recipeName" name="recipe_name" type="text" class="form-control" value="${currentRecipe.recipeName}" required />
                     </div>
-
-<!--                    <div class="col-md-3">
-                        <label for="statusSelect" class="form-label">Status</label>
-                        <select id="statusSelect" name="status" class="form-select" required>
-                            <option value="Active" ${currentRecipe.status == 'Active' ? 'selected="selected"' : ''}>Active</option>
-                            <option value="Inactive" ${currentRecipe.status == 'Inactive' ? 'selected="selected"' : ''}>Inactive</option>
-                        </select>
-                    </div>-->
 
                     <div class="col-12 d-flex gap-2 justify-content-end">
                         <a class="btn btn-secondary" href="<c:url value='recipe'/>">Cancel</a>
