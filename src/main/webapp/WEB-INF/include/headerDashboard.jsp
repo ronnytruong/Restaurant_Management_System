@@ -31,8 +31,10 @@
             <div class="container-fluid d-flex align-items-center justify-content-between">
                 <div class="brand d-flex align-items-center gap-3">
                     <div class="brand-info"> 
-                        <h2 class="brand-name mb-0">Dashboard</h2>
-                        <p class="brand-subtitle mb-0">Staff &amp; Operations</p>
+                        <a href="<c:url value="dashboard"/>">
+                            <h2 class="brand-name mb-0">Dashboard</h2>
+                            <p class="brand-subtitle mb-0">Staff &amp; Operations</p>
+                        </a>
                     </div>
                 </div>
                 <div class="header-actions d-flex align-items-center gap-3">
