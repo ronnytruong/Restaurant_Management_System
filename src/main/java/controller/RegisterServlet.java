@@ -4,10 +4,8 @@
  */
 package controller;
 
-import static constant.CommonFunction.getSqlErrorCode;
-import static constant.CommonFunction.setPopup; // Used for setting success/error messages, if needed
-import static constant.CommonFunction.validateString; // Assuming this function is for basic string null/empty check
-import constant.HashUtil;
+
+import db.DBContext;
 import dao.CustomerDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -16,6 +14,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 /**
  *
@@ -24,8 +23,8 @@ import jakarta.servlet.http.HttpServletResponse;
 @WebServlet(name = "RegisterServlet", urlPatterns = {"/register"})
 public class RegisterServlet extends HttpServlet {
 
-    CustomerDAO customerDAO = new CustomerDAO();
-
+    private CustomerDAO customerDAO = new CustomerDAO();
+    private DBContext db = new DBContext();
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -35,11 +34,42 @@ public class RegisterServlet extends HttpServlet {
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */
+   
+    private boolean isNullOrEmpty(String str) {
+        return str == null || str.trim().isEmpty();
+    }
+    private void setPopup(HttpServletRequest request, boolean status, String message) {
+        HttpSession session = request.getSession(false);
+        if (session != null) {
+            session.setAttribute("popupStatus", status);
+            session.setAttribute("popupMessage", message);
+        }
+    }
+    private String getSqlErrorCode(int temp_code) {
+      
+     
+        final int DUPLICATE_KEY_CONST = -10; 
+        final int FOREIGN_KEY_VIOLATION_CONST = -20; 
+        final int NULL_INSERT_VIOLATION_CONST = -30;
+        final int UNIQUE_INDEX_CONST = -40; 
+        
+        if (temp_code == DUPLICATE_KEY_CONST) {
+            return "DUPLICATE_KEY (Account or other unique field already exists)";
+        } else if (temp_code == FOREIGN_KEY_VIOLATION_CONST) {
+            return "FOREIGN_KEY_VIOLATION";
+        } else if (temp_code == NULL_INSERT_VIOLATION_CONST) {
+            return "NULL_INSERT_VIOLATION";
+        } else if (temp_code == UNIQUE_INDEX_CONST) {
+            return "DUPLICATE_UNIQUE";
+        }
+
+        return "Unknown Error Code: " + temp_code;
+    }
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         try ( PrintWriter out = response.getWriter()) {
-            /* Basic default output */
+            
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
@@ -65,7 +95,7 @@ public class RegisterServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        // Forward to the registration JSP page
+      
         request.getRequestDispatcher("/WEB-INF/authentication/register.jsp").forward(request, response);
     }
 
@@ -83,56 +113,66 @@ public class RegisterServlet extends HttpServlet {
             throws ServletException, IOException {
         request.setCharacterEncoding("UTF-8");
 
-        String customerAccount = request.getParameter("account");
+       String customerAccount = request.getParameter("account");
         String password = request.getParameter("password");
         String confirmPassword = request.getParameter("confirm_password");
         String customerName = request.getParameter("name");
-
-        //optional
         String email = request.getParameter("email");
         String phoneNumber = request.getParameter("phone");
+        //optional, post authentication
+String gender = null; 
+        String address = null;
+        java.sql.Date dob = null;
 
         boolean registerSuccess = true;
         String errorMessage = "";
 
         // Validation
-        if (!validateString(customerAccount, -1)
-                || !validateString(password, -1)
-                || !validateString(customerName, -1)) {
+     if (isNullOrEmpty(customerAccount)
+                || isNullOrEmpty(password)
+                || isNullOrEmpty(customerName)
+                || isNullOrEmpty(email)
+                || isNullOrEmpty(phoneNumber)) {
+            
             registerSuccess = false;
-            errorMessage = "Please enter valid Username and Password.";
+            errorMessage = "All fields marked with (*) are required. Please fill them out.";
+            
         } else if (!password.equals(confirmPassword)) {
-            // B. Check password match
+           
             registerSuccess = false;
             errorMessage = "Password and Confirm Password don't match.";
+            
         } else if (customerDAO.checkAccountExist(customerAccount)) {
-            // C. Check account existence
+          
             registerSuccess = false;
             errorMessage = "Username already exists. Try another.";
         }
 
-        // Process registration
         if (registerSuccess) {
+            
+            String hashedPassword = db.hashToMD5(password);
 
-            String hashedPassword = HashUtil.toMD5(password);
-
-            int checkError = customerDAO.add(customerAccount, hashedPassword, customerName);
+           
+            int checkError = customerDAO.add(customerAccount, hashedPassword, customerName, 
+                                            gender, phoneNumber, email, address, dob);
 
             if (checkError >= 1) {
-
+                
                 setPopup(request, true, "Register successfully! Sign in to connect.");
                 response.sendRedirect("login");
                 return;
+                
             } else {
-
+                
                 registerSuccess = false;
-                errorMessage = "Register failed. Error:" + getSqlErrorCode(checkError);
+                errorMessage = "Register failed. Database Error: " + getSqlErrorCode(checkError);
             }
         }
 
         if (!registerSuccess) {
-
             request.setAttribute("error", errorMessage);
+            
+           
             request.setAttribute("account", customerAccount);
             request.setAttribute("name", customerName);
             request.setAttribute("email", email);
@@ -140,6 +180,7 @@ public class RegisterServlet extends HttpServlet {
 
             request.getRequestDispatcher("/WEB-INF/authentication/register.jsp").forward(request, response);
         }
+    
     }
 
     /**

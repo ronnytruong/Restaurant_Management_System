@@ -36,12 +36,15 @@
                     </div>
                 </div>
                 <div class="header-actions d-flex align-items-center gap-3">
+                    <c:set var="employee" value="${sessionScope.employeeSession}"/>
+                    <c:if test="${employee != null}">
                     <div class="profile-chip d-flex align-items-center gap-2">
-                        <div class="avatar">A</div>
+                       <div class="avatar">${employee.empName.charAt(0)}</div>
                         <div>
-                            <p class="mb-0 fw-semibold">Alex Morgan</p>
-                            <span class="role">Administrator</span>
+                           <p class="mb-0 fw-semibold">${employee.empName}</p>
+                           <span class="role">${employee.roleName}</span>
                         </div>
+                        </c:if>
                     </div>
                 </div>
             </div>
@@ -66,7 +69,11 @@
                                 <li><a href="supplier"><i class="bi bi-truck"></i> Supplier List</a></li>
                                 <li><a href="account"><i class="bi bi-person-badge"></i> Account List</a></li>
                                 <li><a href="role"><i class="bi bi-shield-lock"></i> Role List</a></li>
-                                <li><a href="voucher"><i class="bi bi-ticket-perforated"></i> Voucher List</a></li>
+                                <li><a href="voucher"><i class="bi bi-ticket-perforated"></i> Voucher List</a></li><li class="menu-separator mt-3 mb-3"></li>
+                                <c:if test="${employee != null}">
+                                <li><a class=" text-danger" href="logout"><i class="bi bi-box-arrow-right text-danger"></i> <strong> Logout</strong></a></li>
+                                </c:if>
                             </ul>
+                         
                         </nav>
                     </aside>

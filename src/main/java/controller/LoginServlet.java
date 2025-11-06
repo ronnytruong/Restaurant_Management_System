@@ -26,7 +26,11 @@ public class LoginServlet extends HttpServlet {
 
     private CustomerDAO customerDAO = new CustomerDAO();
 private DBContext dbContext = new DBContext();
-    /**
+    
+private boolean isNullOrEmpty(String str) {
+        return str == null || str.trim().isEmpty();
+    }
+/**
      * * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
      *
@@ -81,21 +85,24 @@ private DBContext dbContext = new DBContext();
             throws ServletException, IOException {
         request.setCharacterEncoding("UTF-8");
 
+      request.setCharacterEncoding("UTF-8");
+
         String customerAccount = request.getParameter("account");
         String password = request.getParameter("password");
 
         String errorMessage = "";
 
-        if (customerAccount == null || customerAccount.isEmpty() || password == null || password.isEmpty()) {
+        // validate
+        if (isNullOrEmpty(customerAccount) || isNullOrEmpty(password)) {
             errorMessage = "Please enter valid Username and Password.";
+            
         } else {
-
-           //////////
-String hashedPassword = dbContext.hashToMD5(password);
+            
+            String hashedPassword = dbContext.hashToMD5(password);
             Customer customer = customerDAO.authenticate(customerAccount, hashedPassword);
 
             if (customer != null) {
-
+               
                 HttpSession session = request.getSession();
 
                 session.setAttribute("customerSession", customer);
@@ -103,16 +110,19 @@ String hashedPassword = dbContext.hashToMD5(password);
 
                 response.sendRedirect(request.getContextPath() + "/homepage");
                 return;
+                
             } else {
-
+             
                 errorMessage = "Incorrect username or password. Your account might also be banned. Please try again.";
             }
         }
 
+      
         request.setAttribute("error", errorMessage);
-        request.setAttribute("account", customerAccount);
+        request.setAttribute("account", customerAccount); 
 
         request.getRequestDispatcher("/WEB-INF/authentication/login.jsp").forward(request, response);
+    
     }
 
     /**

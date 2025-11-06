@@ -37,7 +37,44 @@
         <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
       </nav>
 
-      <a class="btn-getstarted" href="booktable">Book a Table</a>
+    <div class="d-flex align-items-center gap-2">
+        
+            
+            <a class="btn-getstarted" href="booktable">Book a Table</a>
+              
+            <c:if test="${empty sessionScope.customerSession}">
+                <a class="btn btn-outline-danger text-danger round" href="login">Login</a>
+            </c:if>
+            
+            
+            <c:if test="${not empty sessionScope.customerSession}">
+                <div class="dropdown">
+                    <a class="btn btn-link dropdown-toggle p-0" href="#" role="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                        <img src="https://ui-avatars.com/api/?name=${sessionScope.customerSession.customerName}&background=f5f5f5&color=000000&size=40" 
+                             alt="User Avatar" 
+                             class="rounded-circle" 
+                             style="width: 40px; height: 40px; object-fit: cover;">
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                        <li>
+                            <h5 class="dropdown-header text-center text-dark">Hello, ${sessionScope.customerSession.customerName}!</h5>
+                        </li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li>
+                            <a class="dropdown-item" href="customer-profile">
+                                <i class="bi bi-person-circle me-2"></i>Manage My Profile
+                            </a>
+                        </li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li>
+                            <a class="dropdown-item text-danger" href="logout">
+                                <i class="bi bi-box-arrow-right me-2"></i>Logout
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </c:if>
+        </div>
 
     </div>
   </header>
