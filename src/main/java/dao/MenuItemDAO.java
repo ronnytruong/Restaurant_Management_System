@@ -41,6 +41,40 @@ public class MenuItemDAO extends DBContext {
      * @return
      *
      */
+    public List<MenuItem> getAll() {
+        List<MenuItem> list = new ArrayList<>();
+
+        try {
+            String query = "SELECT menu_item_id, category_id, recipe_id, item_name, image_url, price, description, status\n"
+                    + "FROM     menu_item\n"
+                    + "WHERE  (LOWER(status) <> LOWER('Deleted'))";
+
+            ResultSet rs = this.executeSelectionQuery(query, new Object[]{});
+
+            while (rs.next()) {
+                int menuItemId = rs.getInt(1);
+                int categoryId = rs.getInt(2);
+                int recipeId = rs.getInt(3);
+                String itemName = rs.getString(4);
+                String imageUrl = rs.getString(5);
+                int price = rs.getInt(6);
+                String description = rs.getString(7);
+                String status = rs.getString(8);
+                
+                //Chua check tinh kha dung cua recipe
+                MenuItem menuItem = new MenuItem(menuItemId,
+                        categoryDAO.getElementByID(categoryId), recipeDAO.getElementByID(recipeId),
+                        itemName, imageUrl, price, description, status);
+
+                list.add(menuItem);
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(CategoryDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        return list;
+    }
+
     public List<String> getAllCategoryNames() {
 
         List<String> categoryNames = new ArrayList<>();
@@ -66,7 +100,8 @@ public class MenuItemDAO extends DBContext {
         return categoryNames;
 
     }
-     public List<String> getTopCategoryNames() {
+
+    public List<String> getTopCategoryNames() {
 
         List<String> categoryNames = new ArrayList<>();
 
@@ -92,10 +127,10 @@ public class MenuItemDAO extends DBContext {
 
     }
 
-     /**
-      * 
-      */
-      public List<MenuItem> getTopMenuItemsByCategoryName(String categoryName) {
+    /**
+     *
+     */
+    public List<MenuItem> getTopMenuItemsByCategoryName(String categoryName) {
 
         List<MenuItem> list = new ArrayList<>();
 
@@ -108,8 +143,7 @@ public class MenuItemDAO extends DBContext {
                     + "JOIN category c ON mi.category_id = c.category_id \n"
                     + "WHERE LOWER(c.category_name) = LOWER(?) \n"
                     + " AND LOWER(mi.status) = 'active'\n"
-                    + "ORDER BY mi.menu_item_id"
-                    ;
+                    + "ORDER BY mi.menu_item_id";
 
             ResultSet rs = this.executeSelectionQuery(query, new Object[]{categoryName});
 
@@ -163,6 +197,7 @@ public class MenuItemDAO extends DBContext {
         return list;
 
     }
+
     /**
      *
      *

@@ -94,9 +94,9 @@ public class OrderDAO extends DBContext {
 
         return list;
     }
-    
+
     public Order getElementByID(int id) {
-        
+
         try {
             String query = "SELECT order_id, reservation_id, emp_id, voucher_id, order_date, order_time, payment_method, status\n"
                     + "FROM     [order]\n"
@@ -225,5 +225,41 @@ public class OrderDAO extends DBContext {
         }
 
         return 0;
+    }
+
+    public long getTotalPricebyOrderId(int id) {
+        int sum = 0;
+        try {
+            String query = "SELECT [unit_price]\n"
+                    + "      ,[quantity]\n"
+                    + "  FROM [RestaurantManagement].[dbo].[order_item]\n"
+                    + "  where order_id = ?";
+            ResultSet rs = this.executeSelectionQuery(query, new Object[]{id});
+            while (rs.next()) {
+                int unitPrice = rs.getInt(1);
+                int quantity = rs.getInt(2);
+
+                sum += unitPrice * quantity;
+            }
+
+            Order order = getElementByID(id);
+            long discount = 0;
+
+            if (order.getVoucher() != null) {
+                if (order.getVoucher().getDiscountType().equalsIgnoreCase("percent")) {
+                    discount = order.getVoucher().getDiscountValue() / 100 * sum;
+                } else {
+                    discount = order.getVoucher().getDiscountValue();
+                }
+                if (discount > sum) {
+                    return 0;
+                }
+                return sum - discount;
+            } else {
+                return sum;
+            }
+        } catch (SQLException ex) {
+            return -1;
+        }
     }
 }
