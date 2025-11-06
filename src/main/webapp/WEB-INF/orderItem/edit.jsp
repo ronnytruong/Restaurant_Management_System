@@ -47,7 +47,7 @@
                                         <c:forEach var="item" items="${menuItemsList}">
                                             <option value="${item.menuItemId}" class="form-options" 
                                                     ${currentOrderItem.menuItem.menuItemId eq item.menuItemId ? 'Selected' : '' }>
-                                                <c:out value="${item.itemName}"/>(<c:out value="${item.price}"/>)
+                                                <c:out value="${item.itemName}"/>(<c:out value="${item.priceVND}"/>)
                                             </option>
                                         </c:forEach>
                                     </select>

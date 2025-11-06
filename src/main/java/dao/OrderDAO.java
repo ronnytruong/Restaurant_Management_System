@@ -5,13 +5,16 @@
 package dao;
 
 import db.DBContext;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Time;
 import java.util.ArrayList;
 import java.util.List;
-import model.Order;
+import model.*;
 
 /**
  *
@@ -22,6 +25,7 @@ public class OrderDAO extends DBContext {
     private final EmployeeDAO employeeDAO = new EmployeeDAO();
     private final VoucherDAO voucherDAO = new VoucherDAO();
     private final ReservationDAO reservationDAO = new ReservationDAO();
+    private final IngredientDAO ingredientDAO = new IngredientDAO();
 
     public List<Order> getAll() {
 
@@ -31,7 +35,7 @@ public class OrderDAO extends DBContext {
             String query = "SELECT order_id, reservation_id, emp_id, voucher_id, order_date, order_time, payment_method, status\n"
                     + "FROM     [order]\n"
                     + "WHERE  (LOWER(status) <> LOWER('Deleted'))\n"
-                    + "ORDER BY order_date DESC";
+                    + "ORDER BY order_id DESC";
 
             ResultSet rs = this.executeSelectionQuery(query, null);
 
@@ -66,7 +70,7 @@ public class OrderDAO extends DBContext {
             String query = "SELECT order_id, reservation_id, emp_id, voucher_id, order_date, order_time, payment_method, status\n"
                     + "FROM     [order]\n"
                     + "WHERE  (LOWER(status) <> LOWER('Deleted'))\n"
-                    + "ORDER BY order_date desc, order_time desc\n"
+                    + "ORDER BY order_id DESC\n"
                     + "OFFSET ? ROWS \n"
                     + "FETCH NEXT ? ROWS ONLY;";
 
@@ -261,5 +265,88 @@ public class OrderDAO extends DBContext {
         } catch (SQLException ex) {
             return -1;
         }
+    }
+
+    public String exportIngredientNeed(int id) {
+
+        Order order = getElementByID(id);
+
+        if (order == null) {
+            return "";
+        }
+
+        String filePath = "../../../export/ingredientNeed/" + order.getOrderDate().toString().replace('/', '-') + "_" + order.getOrderTime().toString().replace(':', '-') + ".txt";
+
+        File file = new File(filePath);
+        file.getParentFile().mkdirs();
+
+        String content = "";
+
+        content += "Create by: " + order.getEmp().getEmpName() + "\n"
+                + "Customer Name: " + order.getReservation().getCustomer().getCustomerName() + "\n"
+                + "Table: " + order.getReservation().getTable().getNumber() + "\n"
+                + "Ingredient \t Quantity \n"
+                + "---------------------------\n";
+
+        try {
+            String query = "SELECT i.ingredient_id, SUM(oi.quantity * ri.quantity) AS total_ingredient_needed\n"
+                    + "FROM     [order] AS o INNER JOIN\n"
+                    + "                  order_item AS oi ON o.order_id = oi.order_id INNER JOIN\n"
+                    + "                  menu_item AS mi ON oi.menu_item_id = mi.menu_item_id INNER JOIN\n"
+                    + "                  recipe AS r ON mi.recipe_id = r.recipe_id INNER JOIN\n"
+                    + "                  recipe_item AS ri ON r.recipe_id = ri.recipe_id INNER JOIN\n"
+                    + "                  ingredient AS i ON ri.ingredient_id = i.ingredient_id\n"
+                    + "WHERE  (o.order_id = ?)\n"
+                    + "GROUP BY o.order_id, i.ingredient_id\n"
+                    + "ORDER BY o.order_id";
+
+            ResultSet rs = this.executeSelectionQuery(query, new Object[]{order.getOrderId()});
+
+            while (rs.next()) {
+                int ingredientId = rs.getInt(1);
+                double quantity = rs.getDouble(2);
+
+                content += ingredientDAO.getElementByID(ingredientId).getIngredientName() + "\t" + quantity + "\n";
+            }
+        } catch (SQLException ex) {
+            return "";
+        }
+
+        content += "---------------------------\n";
+
+        try {
+            FileWriter writer = new FileWriter(filePath);
+            writer.write(content);
+            writer.close();
+
+        } catch (IOException e) {
+            System.out.println("Lỗi khi ghi file: " + e.getMessage());
+            return "";
+        }
+
+        return content;
+    }
+
+    public String getTotalPricebyOrderIdFormatVND(int id) {
+        String str = "";
+
+        String temp = getTotalPricebyOrderId(id) + "";
+
+        while (temp.length() > 0) {
+            if (temp.length() > 3) {
+                str = temp.substring(temp.length() - 3, temp.length()) + str;
+                temp = temp.substring(0, temp.length() - 3);
+            } else {
+                str = temp + str;
+                temp = "";
+            }
+            if (temp.length() > 0) {
+                str = "." + str;
+            }
+        }
+
+        str += " VND";
+
+        return str;
     }
 }

@@ -5,10 +5,11 @@
 package dao;
 
 import db.DBContext;
-import java.sql.Date;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Time;
 import java.util.ArrayList;
 import java.util.List;
 import model.*;
@@ -239,5 +240,78 @@ public class OrderItemDAO extends DBContext {
         }
 
         return 0;
+    }
+
+    public String exportBill(int orderId) {
+
+        Order order = orderDAO.getElementByID(orderId);
+
+        if (order == null) {
+            return "";
+        }
+
+        String filePath = "../../../export/bill/" + order.getOrderDate().toString().replace('/', '-') + "_" + order.getOrderTime().toString().replace(':', '-') + ".txt";
+
+        File file = new File(filePath);
+        file.getParentFile().mkdirs();
+
+        String content = "";
+
+        List<OrderItem> orderItems = getAllByOrderId(order.getOrderId());
+
+        content += "Create by: " + order.getEmp().getEmpName() + "\n"
+                + "Customer Name: " + order.getReservation().getCustomer().getCustomerName() + "\n"
+                + "Item \t UnitPrice \t Qty \n"
+                + "---------------------------\n";
+
+        for (OrderItem orderItem : orderItems) {
+            content += orderItem.getMenuItem().getItemName() + "\t" + orderItem.getMenuItem().getPriceVND() + "\t" + orderItem.getQuantity() + "\n";
+        }
+
+        long total = orderDAO.getTotalPricebyOrderId(order.getOrderId());
+        long vat = total * 10 / 100;
+        long remain = total + vat;
+
+        content += "---------------------------\n"
+                + "Total: " + getFormatVND(total) + "\n"
+                + "VAT(10%): " + getFormatVND(vat) + "\n"
+                + "Sum: " + getFormatVND(remain) + "\n"
+                + "---------------------------";
+
+        try {
+            FileWriter writer = new FileWriter(filePath);
+            writer.write(content);
+            writer.close();
+
+            
+        } catch (IOException e) {
+            System.out.println("Lỗi khi ghi file: " + e.getMessage());
+            return "";
+        }
+
+        return content;
+    }
+
+    public String getFormatVND(long number) {
+        String str = "";
+
+        String temp = number + "";
+
+        while (temp.length() > 0) {
+            if (temp.length() > 3) {
+                str = temp.substring(temp.length() - 3, temp.length()) + str;
+                temp = temp.substring(0, temp.length() - 3);
+            } else {
+                str = temp + str;
+                temp = "";
+            }
+            if (temp.length() > 0) {
+                str = "." + str;
+            }
+        }
+
+        str += " VND";
+
+        return str;
     }
 }
