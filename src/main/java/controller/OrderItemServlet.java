@@ -114,7 +114,7 @@ public class OrderItemServlet extends HttpServlet {
 
         request.setAttribute("totalPages", totalPages);
         request.setAttribute("currentOrder", orderDAO.getElementByID(orderId));
-        request.setAttribute("totalPrice", orderDAO.getTotalPricebyOrderId(orderId));
+        request.setAttribute("totalPrice", orderDAO.getTotalPricebyOrderIdFormatVND(orderId));
         request.setAttribute("orderItemsList", orderItemDAO.getAllByOrderId(orderId, page, MAX_ELEMENTS_PER_PAGE));
 
         request.getRequestDispatcher("/WEB-INF/orderItem/" + namepage + ".jsp").forward(request, response);
@@ -163,7 +163,7 @@ public class OrderItemServlet extends HttpServlet {
 
 //validate
                 if (order == null || menuItem == null
-                        || (quantity < 1)) {
+                        || (quantity < 1) || !order.getStatus().equalsIgnoreCase("Pending")) {
                     popupStatus = false;
                     popupMessage = "The add action is NOT successfull. Check the information again.";
                 } else {
@@ -199,10 +199,10 @@ public class OrderItemServlet extends HttpServlet {
 
                 Order order = orderDAO.getElementByID(orderId); //chưa check trang thai cua order moi them vao
                 MenuItem menuItem = menuItemDAO.getElementByID(menuItemId);
-                
+
 //validate
                 if (order == null || menuItem == null
-                        || (quantity < 1) || (id < 1)) {
+                        || (quantity < 1) || (id < 1) || !order.getStatus().equalsIgnoreCase("Pending")) {
                     popupStatus = false;
                     popupMessage = "The edit action is NOT successfull. The input has some error.";
                 } else {
@@ -227,8 +227,10 @@ public class OrderItemServlet extends HttpServlet {
                     id = -1;
                 }
 
+                Order order = orderDAO.getElementByID(orderId); //chưa check trang thai cua order moi them vao
+                
 //validate
-                if (id <= 0) {
+                if (id <= 0 || order == null || !order.getStatus().equalsIgnoreCase("Pending")) {
                     popupStatus = false;
                     popupMessage = "The delete action is NOT successfull.";
                 } else {
@@ -243,6 +245,46 @@ public class OrderItemServlet extends HttpServlet {
                     } else {
                         popupStatus = false;
                         popupMessage = "The delete action is NOT successfull. Check the information again.";
+                    }
+                }
+            }  else if (action.equalsIgnoreCase("exportBill")) {
+
+                Order order = orderDAO.getElementByID(orderId); //chưa check trang thai cua order moi them vao
+                
+//validate
+                if (order == null) {
+                    popupStatus = false;
+                    popupMessage = "The export action is NOT successfull.";
+                } else {
+                    popupMessage = "The object exported successfull.";
+                }
+//end
+                if (popupStatus == true) {
+                    String checkError = orderItemDAO.exportBill(order.getOrderId());
+
+                    if (checkError.isBlank()) {
+                        popupStatus = false;
+                        popupMessage = "The export action is NOT successfull. Check the information again.";
+                    }
+                }
+            }   else if (action.equalsIgnoreCase("exportIngredient")) {
+
+                Order order = orderDAO.getElementByID(orderId); 
+                
+//validate
+                if (order == null) {
+                    popupStatus = false;
+                    popupMessage = "The export action is NOT successfull.";
+                } else {
+                    popupMessage = "The object exported successfull.";
+                }
+//end
+                if (popupStatus == true) {
+                    String checkError = orderDAO.exportIngredientNeed(order.getOrderId());
+
+                    if (checkError.isBlank()) {
+                        popupStatus = false;
+                        popupMessage = "The export action is NOT successfull. Check the information again.";
                     }
                 }
             }

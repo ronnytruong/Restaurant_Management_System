@@ -58,11 +58,19 @@
                                     <label for="employee" class="form-label">Employee</label>
                                 </th>
                                 <td>
-                                    <label id="employee" class="form-control">
-                                        <c:out value="${sessionScope.employeeSession.empName}"/>
-                                    </label>
-                                    <input type="hidden" name="empId" value="${sessionScope.employeeSession.empId}">
-                                </td>
+                                    <c:choose>
+                                        <c:when test="${not empty sessionScope.employeeSession}">
+                                            <label id="employee" class="form-control">
+                                                <c:out value="${sessionScope.employeeSession.empName}"/>
+                                            </label>
+                                            <input type="hidden" name="empId" value="${sessionScope.employeeSession.empId}">
+                                            x
+                                        </c:when>
+                                        <c:otherwise>
+                                            <label class="form-control" style="color: red">Please login employee account</label>
+                                        </c:otherwise>
+                                    </c:choose>
+                                <td>
                             </tr>
 
                             <tr>

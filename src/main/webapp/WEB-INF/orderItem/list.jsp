@@ -63,7 +63,7 @@
                         <div class="col-12 col-lg-4">
                             <div class="border rounded-3 p-3 bg-light">
                                 <small class="text-uppercase text-muted fw-semibold">Total Price</small>
-                                <p class="mb-0 fw-semibold"><c:out value='${totalPrice}'/> VND</p>
+                                <p class="mb-0 fw-semibold"><c:out value='${totalPrice}'/></p>
                             </div>
                         </div>
                         <div class="col-12 col-lg-4">
@@ -82,18 +82,29 @@
                     </div>
                 </c:otherwise>
             </c:choose>
-            
+
             chi cho them edit, xoa khi trang thai khac completed, rejected
             <div class="card-footer actions d-flex flex-column flex-md-row gap-2 align-items-md-center justify-content-md-end">
                 <div class="filters d-flex flex-wrap gap-2 justify-content-end">
-                    <a class="btn btn-outline-secondary add-btn" href="">
-                        <i class="bi bi-save"></i>Export Bill
-                    </a>
-                    <a class="btn btn-primary add-btn" href="<c:url value="orderItem">
-                           <c:param name="view" value="add"/>
-                           <c:param  name="orderId" value="${param.orderId}"/>
-                       </c:url>"><i class="bi bi-plus-circle"></i>Add
-                    </a>
+                    <c:if test="${not empty currentOrder}">
+                        <form method="post" action="<c:url value="orderItem">
+                                  <c:param name="orderId" value="${param.orderId}"/>
+                              </c:url>">
+                            <button type="submit" name="action" value="exportIngredient" class="btn btn-outline-secondary add-btn">
+                                <i class="bi bi-save"></i>Export Ingredient
+                            </button>
+                            <button type="submit" name="action" value="exportBill" class="btn btn-outline-secondary add-btn">
+                                <i class="bi bi-save"></i>Export Bill
+                            </button>
+                        </form>
+                    </c:if>
+                    <c:if test="${currentOrder.status eq 'Pending'}">
+                        <a class="btn btn-primary add-btn" href="<c:url value="orderItem">
+                               <c:param name="view" value="add"/>
+                               <c:param  name="orderId" value="${param.orderId}"/>
+                           </c:url>"><i class="bi bi-plus-circle"></i>Add
+                        </a>
+                    </c:if>
                 </div>
             </div>
         </div>
@@ -106,7 +117,9 @@
                         <th width="30%" scope="col">Item Name</th>
                         <th width="15%" scope="col">Unit Price</th>
                         <th width="15%" scope="col">Quantity</th>
-                        <th width="20%"scope="col" class="text-end">Actions</th>
+                            <c:if test="${currentOrder.status eq 'Pending'}">
+                            <th width="20%"scope="col" class="text-end">Actions</th>
+                            </c:if>
                     </tr>
                 </thead>
                 <tbody>
@@ -121,26 +134,27 @@
                                 <tr>
                                     <td><c:out value="${orderItem.orderItemId}"/></td>
                                     <td><c:out value="${orderItem.menuItem.itemName}"/></td>
-                                    <td><c:out value="${orderItem.unitPrice}"/></td>
+                                    <td><c:out value="${orderItem.priceVND}"/></td>
                                     <td><c:out value="${orderItem.quantity}"/></td>
-
-                                    <td class="text-end">
-                                        <div class="action-button-group d-flex justify-content-end gap-2">
-                                            <a class="btn btn-outline-secondary btn-icon btn-edit"
-                                               title="Edit" aria-label="Edit"
-                                               href="<c:url value="orderItem">
-                                                   <c:param name="view" value="edit"/>
-                                                   <c:param name="orderId" value="${param.orderId}"/>
-                                                   <c:param name="id" value="${orderItem.orderItemId}"/>
-                                               </c:url>">
-                                                <i class="bi bi-pencil"></i>
-                                            </a>
-                                            <button type="button" class="btn btn-outline-secondary btn-icon btn-delete"
-                                                    title="Delete" aria-label="Delete" onclick="showDeletePopup('${orderItem.orderItemId}')">
-                                                <i class="bi bi-x-circle"></i>
-                                            </button>
-                                        </div>
-                                    </td>
+                                    <c:if test="${currentOrder.status eq 'Pending'}">
+                                        <td class="text-end">
+                                            <div class="action-button-group d-flex justify-content-end gap-2">
+                                                <a class="btn btn-outline-secondary btn-icon btn-edit"
+                                                   title="Edit" aria-label="Edit"
+                                                   href="<c:url value="orderItem">
+                                                       <c:param name="view" value="edit"/>
+                                                       <c:param name="orderId" value="${param.orderId}"/>
+                                                       <c:param name="id" value="${orderItem.orderItemId}"/>
+                                                   </c:url>">
+                                                    <i class="bi bi-pencil"></i>
+                                                </a>
+                                                <button type="button" class="btn btn-outline-secondary btn-icon btn-delete"
+                                                        title="Delete" aria-label="Delete" onclick="showDeletePopup('${orderItem.orderItemId}')">
+                                                    <i class="bi bi-x-circle"></i>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </c:if>
                                 </tr>
                             </c:forEach>
                         </c:otherwise>

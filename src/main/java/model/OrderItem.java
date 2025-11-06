@@ -9,6 +9,7 @@ package model;
  * @author Dai Minh Nhu - CE190213
  */
 public class OrderItem {
+
     private int orderItemId;
     private Order order;
     private MenuItem menuItem;
@@ -61,5 +62,28 @@ public class OrderItem {
 
     public void setQuantity(int quantity) {
         this.quantity = quantity;
+    }
+
+    public String getPriceVND() {
+        String str = "";
+
+        String temp = getUnitPrice() + "";
+
+        while (temp.length() > 0) {
+            if (temp.length() > 3) {
+                str = temp.substring(temp.length() - 3, temp.length()) + str;
+                temp = temp.substring(0, temp.length() - 3);
+            } else {
+                str = temp + str;
+                temp = "";
+            }
+            if (temp.length() > 0) {
+                str = "." + str;
+            }
+        }
+
+        str += " VND";
+
+        return str;
     }
 }
