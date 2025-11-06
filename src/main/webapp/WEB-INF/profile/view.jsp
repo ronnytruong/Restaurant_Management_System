@@ -1,292 +1,214 @@
-<%@ page contentType="text/html;charset=UTF-8" %>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
     <head>
-        <title>My Profile - Yummy</title>
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta charset="utf-8">
+        <meta content="width=device-width, initial-scale=1.0" name="viewport">
+        <title>My Profile - Yummy Restaurant</title>
+        <meta name="description" content="View and edit your personal account information.">
+        <meta name="keywords" content="user profile, account settings, customer details">
+
+        <link href="assets/img/favicon.png" rel="icon">
+        <link href="assets/img/apple-touch-icon.png" rel="apple-touch-icon">
+
+        <link href="https://fonts.googleapis.com" rel="preconnect">
+        <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&family=Inter:wght@100;200;300;400;500;600;700;800;900&family=Amatic+SC:wght@400;700&display=swap" rel="stylesheet">
+
+        <link href="assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+        <link href="assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+        <link href="assets/vendor/aos/aos.css" rel="stylesheet">
+        <link href="assets/vendor/glightbox/css/glightbox.min.css" rel="stylesheet">
+        <link href="assets/vendor/swiper/swiper-bundle.min.css" rel="stylesheet">
+
+        <link href="assets/css/main.css" rel="stylesheet">
+
         <style>
-            * {
-                margin: 0;
-                padding: 0;
-                box-sizing: border-box;
+            
+            .profile-section .card {
+                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+                border: none;
             }
-
-            body {
-                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-                background-color: #f5f5f5;
-                color: #333;
-            }
-
-
-            /* Main Container */
-            .container {
-                max-width: 800px;
-                margin: 60px auto;
-                padding: 0 20px;
-            }
-
-            .profile-card {
-                background: white;
-                border-radius: 8px;
-                padding: 40px;
-                box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            }
-
-            h2 {
-                font-size: 32px;
-                color: #333;
-                margin-bottom: 10px;
-                font-weight: 600;
-            }
-
-            .subtitle {
-                color: #666;
-                margin-bottom: 30px;
-                font-size: 14px;
-            }
-
-            /* Messages */
-            .message {
-                padding: 12px 20px;
-                border-radius: 4px;
-                margin-bottom: 20px;
-                font-size: 14px;
-            }
-
-            .message.success {
-                background-color: #e8f5e9;
-                color: #2e7d32;
-                border-left: 4px solid #4caf50;
-            }
-
-            .message.error {
-                background-color: #ffebee;
-                color: #c62828;
-                border-left: 4px solid #f44336;
-            }
-
-            /* Profile Info Table */
-            .profile-info {
-                margin-bottom: 30px;
-            }
-
-            .info-row {
-                display: flex;
-                padding: 16px 0;
-                border-bottom: 1px solid #f0f0f0;
-            }
-
-            .info-row:last-child {
-                border-bottom: none;
-            }
-
             .info-label {
-                flex: 0 0 180px;
                 font-weight: 600;
-                color: #555;
-                font-size: 14px;
+                color: #7a7a7a;
             }
-
-            .info-value {
-                flex: 1;
-                color: #333;
-                font-size: 14px;
-            }
-
             .info-value.empty {
-                color: #999;
+                color: #ccc;
                 font-style: italic;
             }
-
-            /* Buttons */
-            .button-group {
-                display: flex;
-                gap: 15px;
-                margin-top: 30px;
-            }
-
-            .btn {
-                display: inline-block;
-                padding: 14px 40px;
-                border-radius: 50px;
-                font-size: 16px;
-                font-weight: 500;
-                text-decoration: none;
-                text-align: center;
+            .btn-yummy-primary {
+                background-color: #ce1212; 
+                border-color: #ce1212;
+                color: white;
                 transition: all 0.3s;
-                cursor: pointer;
             }
-
-            .btn-primary {
-                background-color: #d32f2f;
+            .btn-yummy-primary:hover {
+                background-color: #a00f0f;
+                border-color: #a00f0f;
+                transform: translateY(-1px);
+            }
+            .btn-outline-yummy {
+                color: #ce1212;
+                border-color: #ce1212;
+                transition: all 0.3s;
+            }
+            .btn-outline-yummy:hover {
+                background-color: #ce1212;
                 color: white;
-            }
-
-            .btn-primary:hover {
-                background-color: #b71c1c;
-                transform: translateY(-2px);
-                box-shadow: 0 4px 12px rgba(211, 47, 47, 0.3);
-            }
-
-            .btn-secondary {
-                background-color: white;
-                color: #d32f2f;
-                border: 2px solid #d32f2f;
-            }
-
-            .btn-secondary:hover {
-                background-color: #d32f2f;
-                color: white;
-            }
-
-            /* Responsive */
-            @media (max-width: 768px) {
-                .profile-card {
-                    padding: 30px 20px;
-                }
-
-                .info-row {
-                    flex-direction: column;
-                    gap: 8px;
-                }
-
-                .info-label {
-                    flex: none;
-                }
-
-                .button-group {
-                    flex-direction: column;
-                }
-
-                .btn {
-                    width: 100%;
-                }
-
-                .header-content {
-                    flex-direction: column;
-                    gap: 15px;
-                }
-
-                .nav {
-                    display: flex;
-                    flex-wrap: wrap;
-                    gap: 15px;
-                }
-
-                .nav a {
-                    margin-left: 0;
-                }
             }
         </style>
     </head>
-    <body>
+
+    <body class="inner-page">
+
+        <%-- Include Header --%>
+        <%@include file="/WEB-INF/include/customerHeader.jsp" %>
+
+        <main class="main">
 
 
-        <!-- Main Content -->
-        <div class="container">
-            <div class="profile-card">
-                <h2>My Profile</h2>
-                <p class="subtitle">View your account information</p>
 
-                <c:if test="${not empty successMessage}">
-                    <div class="message success">${successMessage}</div>
-                </c:if>
+            <section id="profile" class="profile-section pt-5 section">
+                <div class="container" data-aos="fade-up" data-aos-delay="100">
 
-                <c:if test="${not empty errorMessage}">
-                    <div class="message error">${errorMessage}</div>
-                </c:if>
+                    <div class="row justify-content-center">
+                        <div class="col-lg-8">
+                            <div class="card p-4 p-md-5">
 
-                <div class="profile-info">
-                    <div class="info-row">
-                        <div class="info-label">Username</div>
-                        <div class="info-value">${customer.customerAccount}</div>
-                    </div>
-                    <div class="info-row">
-                        <div class="info-label">Full Name</div>
-                        <div class="info-value">
-                            <c:choose>
-                                <c:when test="${not empty customer.customerName}">
-                                    ${customer.customerName}
-                                </c:when>
-                                <c:otherwise>
-                                    <span class="empty">Not provided</span>
-                                </c:otherwise>
-                            </c:choose>
+                                <%-- Display Messages --%>
+                                <c:if test="${not empty successMessage}">
+                                    <div class="alert alert-success d-flex align-items-center" role="alert">
+                                        <i class="bi bi-check-circle-fill me-2"></i>
+                                        <div>${successMessage}</div>
+                                    </div>
+                                </c:if>
+
+                                <c:if test="${not empty errorMessage}">
+                                    <div class="alert alert-danger d-flex align-items-center" role="alert">
+                                        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                                        <div>${errorMessage}</div>
+                                    </div>
+                                </c:if>
+
+                                <h3 class="mb-4 text-center">Profile Information</h3>
+
+                                <div class="profile-info">
+                                    <%-- Customer Info Rows --%>
+                                    <div class="row py-3 border-bottom">
+                                        <div class="col-sm-4 info-label">Username</div>
+                                        <div class="col-sm-8 info-value">
+                                            <strong>${customer.customerAccount}</strong>
+                                        </div>
+                                    </div>
+
+                                    <div class="row py-3 border-bottom">
+                                        <div class="col-sm-4 info-label">Full Name</div>
+                                        <div class="col-sm-8 info-value">
+                                            <c:choose>
+                                                <c:when test="${not empty customer.customerName}">
+                                                    ${customer.customerName}
+                                                </c:when>
+                                                <c:otherwise>
+                                                    <span class="empty">Not provided</span>
+                                                </c:otherwise>
+                                            </c:choose>
+                                        </div>
+                                    </div>
+
+                                    <div class="row py-3 border-bottom">
+                                        <div class="col-sm-4 info-label">Gender</div>
+                                        <div class="col-sm-8 info-value">
+                                            <c:choose>
+                                                <c:when test="${not empty customer.gender}">
+                                                    ${customer.gender}
+                                                </c:when>
+                                                <c:otherwise>
+                                                    <span class="empty">Not provided</span>
+                                                </c:otherwise>
+                                            </c:choose>
+                                        </div>
+                                    </div>
+
+                                    <div class="row py-3 border-bottom">
+                                        <div class="col-sm-4 info-label">Phone Number</div>
+                                        <div class="col-sm-8 info-value">
+                                            <c:choose>
+                                                <c:when test="${not empty customer.phoneNumber}">
+                                                    ${customer.phoneNumber}
+                                                </c:when>
+                                                <c:otherwise>
+                                                    <span class="empty">Not provided</span>
+                                                </c:otherwise>
+                                            </c:choose>
+                                        </div>
+                                    </div>
+
+                                    <div class="row py-3 border-bottom">
+                                        <div class="col-sm-4 info-label">Email Address</div>
+                                        <div class="col-sm-8 info-value">
+                                            <c:choose>
+                                                <c:when test="${not empty customer.email}">
+                                                    ${customer.email}
+                                                </c:when>
+                                                <c:otherwise>
+                                                    <span class="empty">Not provided</span>
+                                                </c:otherwise>
+                                            </c:choose>
+                                        </div>
+                                    </div>
+
+                                    <div class="row py-3 border-bottom">
+                                        <div class="col-sm-4 info-label">Address</div>
+                                        <div class="col-sm-8 info-value">
+                                            <c:choose>
+                                                <c:when test="${not empty customer.address}">
+                                                    ${customer.address}
+                                                </c:when>
+                                                <c:otherwise>
+                                                    <span class="empty">Not provided</span>
+                                                </c:otherwise>
+                                            </c:choose>
+                                        </div>
+                                    </div>
+
+                                    <div class="row py-3">
+                                        <div class="col-sm-4 info-label">Date of Birth</div>
+                                        <div class="col-sm-8 info-value">
+                                            <c:choose>
+                                                <c:when test="${not empty customer.dob}">
+                                                    ${customer.dob}
+                                                </c:when>
+                                                <c:otherwise>
+                                                    <span class="empty">Not provided</span>
+                                                </c:otherwise>
+                                            </c:choose>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <%-- Action Buttons --%>
+                                <div class="text-center mt-4 pt-4 border-top">
+                                    <a href="customer-profile?action=edit" class="btn btn-yummy-primary px-5 py-2 me-3">
+                                        <i class="bi bi-pencil-square me-1"></i> Edit Profile
+                                    </a>
+                                    <a href="customer-profile?action=change-password" class="btn btn-outline-yummy px-5 py-2">
+                                        <i class="bi bi-key me-1"></i> Change Password
+                                    </a>
+                                </div>
+
+                            </div>
                         </div>
                     </div>
-                    <div class="info-row">
-                        <div class="info-label">Gender</div>
-                        <div class="info-value">
-                            <c:choose>
-                                <c:when test="${not empty customer.gender}">
-                                    ${customer.gender}
-                                </c:when>
-                                <c:otherwise>
-                                    <span class="empty">Not provided</span>
-                                </c:otherwise>
-                            </c:choose>
-                        </div>
-                    </div>
-                    <div class="info-row">
-                        <div class="info-label">Phone Number</div>
-                        <div class="info-value">
-                            <c:choose>
-                                <c:when test="${not empty customer.phoneNumber}">
-                                    ${customer.phoneNumber}
-                                </c:when>
-                                <c:otherwise>
-                                    <span class="empty">Not provided</span>
-                                </c:otherwise>
-                            </c:choose>
-                        </div>
-                    </div>
-                    <div class="info-row">
-                        <div class="info-label">Email Address</div>
-                        <div class="info-value">
-                            <c:choose>
-                                <c:when test="${not empty customer.email}">
-                                    ${customer.email}
-                                </c:when>
-                                <c:otherwise>
-                                    <span class="empty">Not provided</span>
-                                </c:otherwise>
-                            </c:choose>
-                        </div>
-                    </div>
-                    <div class="info-row">
-                        <div class="info-label">Address</div>
-                        <div class="info-value">
-                            <c:choose>
-                                <c:when test="${not empty customer.address}">
-                                    ${customer.address}
-                                </c:when>
-                                <c:otherwise>
-                                    <span class="empty">Not provided</span>
-                                </c:otherwise>
-                            </c:choose>
-                        </div>
-                    </div>
-                    <div class="info-row">
-                        <div class="info-label">Date of Birth</div>
-                        <div class="info-value">
-                            <c:choose>
-                                <c:when test="${not empty customer.dob}">
-                                    ${customer.dob}
-                                </c:when>
-                                <c:otherwise>
-                                    <span class="empty">Not provided</span>
-                                </c:otherwise>
-                            </c:choose>
-                        </div>
-                    </div>
+
                 </div>
+            </section>
+        </main>
 
-                <div class="button-group">
-                    <a href="customer-profile?action=edit" class="btn btn-primary">Edit Profile</a>
-                    <a href="customer-profile?action=change-password" class="btn btn-secondary">Change Password</a>
-                </div>
-            </div>
-        </div>
+        <%-- Include Footer --%>
+        <%@include file="/WEB-INF/include/customerFooter.jsp" %>
     </body>
 </html>

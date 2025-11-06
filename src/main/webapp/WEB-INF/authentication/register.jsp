@@ -67,23 +67,23 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="name">Full Name</label>
+                        <label for="name">Full Name (*)</label>
                         <input type="text" id="name" name="name" 
                                value="${requestScope.name}" required>
                     </div>
 
 
                     <div class="form-group">
-                        <label for="email">Email</label>
+                        <label for="email">Email (*)</label>
                         <input type="email" id="email" name="email"
-                               value="${requestScope.email}">
+                               value="${requestScope.email}" required>
                     </div>
 
 
                     <div class="form-group">
-                        <label for="phone">Phone number</label>
+                        <label for="phone">Phone number (*)</label>
                         <input type="tel" id="phone" name="phone" 
-                               value="${requestScope.phone}">
+                               value="${requestScope.phone}" required>
                     </div>
 
 

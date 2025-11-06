@@ -4,7 +4,6 @@
  */
 package controller;
 
-
 import dao.CustomerDAO;
 import db.DBContext;
 import model.Customer;
@@ -25,10 +24,15 @@ import jakarta.servlet.http.HttpSession;
 public class LoginServlet extends HttpServlet {
 
     private CustomerDAO customerDAO = new CustomerDAO();
-private DBContext dbContext = new DBContext();
+    private DBContext dbContext = new DBContext();
+
+    private boolean isNullOrEmpty(String str) {
+        return str == null || str.trim().isEmpty();
+    }
+
     /**
-     * * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
-     * methods.
+     * * Processes requests for both HTTP <code>GET</code> and
+     * <code>POST</code> methods.
      *
      * @param request servlet request
      * @param response servlet response
@@ -81,28 +85,35 @@ private DBContext dbContext = new DBContext();
             throws ServletException, IOException {
         request.setCharacterEncoding("UTF-8");
 
+        request.setCharacterEncoding("UTF-8");
+
         String customerAccount = request.getParameter("account");
         String password = request.getParameter("password");
 
         String errorMessage = "";
 
-        if (customerAccount == null || customerAccount.isEmpty() || password == null || password.isEmpty()) {
+        // validate
+        if (isNullOrEmpty(customerAccount) || isNullOrEmpty(password)) {
             errorMessage = "Please enter valid Username and Password.";
+
         } else {
 
-           //////////
-String hashedPassword = dbContext.hashToMD5(password);
+            String hashedPassword = dbContext.hashToMD5(password);
             Customer customer = customerDAO.authenticate(customerAccount, hashedPassword);
 
             if (customer != null) {
 
-                HttpSession session = request.getSession();
-
+                HttpSession session = request.getSession(false);
+                if (session != null) {
+                    session.invalidate();
+                }
+                session = request.getSession(true);
                 session.setAttribute("customerSession", customer);
                 session.setMaxInactiveInterval(30 * 60);
 
                 response.sendRedirect(request.getContextPath() + "/homepage");
                 return;
+
             } else {
 
                 errorMessage = "Incorrect username or password. Your account might also be banned. Please try again.";
@@ -113,6 +124,7 @@ String hashedPassword = dbContext.hashToMD5(password);
         request.setAttribute("account", customerAccount);
 
         request.getRequestDispatcher("/WEB-INF/authentication/login.jsp").forward(request, response);
+
     }
 
     /**

@@ -17,7 +17,7 @@ import jakarta.servlet.http.HttpSession;
  *
  * @author Huynh Thai Duy Phuong - CE190603
  */
-@WebServlet(name = "LoginServlet", urlPatterns = {"/login"})
+@WebServlet(name = "LogoutServlet", urlPatterns = {"/logout"})
 public class LogoutServlet extends HttpServlet {
 
     /**
