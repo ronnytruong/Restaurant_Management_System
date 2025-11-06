@@ -4,7 +4,7 @@
     <head>
         <meta charset="utf-8">
         <title>Restaurant Management System</title>
-        
+
         <!-- Favicons -->
         <link href="<%=request.getContextPath()%>/assets/img/favicon.png" rel="icon">
         <link href="<%=request.getContextPath()%>/assets/img/apple-touch-icon.png" rel="apple-touch-icon">
@@ -30,7 +30,7 @@
         <header class="admin-header shadow-sm">
             <div class="container-fluid d-flex align-items-center justify-content-between">
                 <div class="brand d-flex align-items-center gap-3">
-                    <div class="brand-info">
+                    <div class="brand-info"> 
                         <h2 class="brand-name mb-0">Dashboard</h2>
                         <p class="brand-subtitle mb-0">Staff &amp; Operations</p>
                     </div>
@@ -38,15 +38,29 @@
                 <div class="header-actions d-flex align-items-center gap-3">
                     <c:set var="employee" value="${sessionScope.employeeSession}"/>
                     <c:if test="${employee != null}">
-                    <div class="profile-chip d-flex align-items-center gap-2">
-                       <div class="avatar">${employee.empName.charAt(0)}</div>
-                        <div>
-                           <p class="mb-0 fw-semibold">${employee.empName}</p>
-                           <span class="role">${employee.roleName}</span>
+                        <div class="dropdown profile-chip d-flex align-items-center gap-2">
+                            <a href="#" class="d-flex align-items-center gap-2 text-decoration-none dropdown-toggle"
+                               id="profileDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                <div class="avatar">${employee.empName.charAt(0)}</div>
+                                <div>
+                                    <p class="mb-0 fw-semibold text-dark">${employee.empName}</p>
+                                    <span class="role">${employee.roleName}</span>
+                                </div>
+                            </a>
+
+                            <ul class="dropdown-menu dropdown-menu-end shadow-sm" aria-labelledby="profileDropdown">
+                                <li> <a class="dropdown-item" href="employee-profile">
+                                        <i class="bi bi-person-circle me-2"></i>My Profile
+                                    </a></li>
+                                <li> <a class="dropdown-item text-danger" href="logout">
+                                        <i class="bi bi-box-arrow-right me-2"></i>Logout
+                                    </a></li>
+                            </ul>
                         </div>
-                        </c:if>
+
+
                     </div>
-                </div>
+                </c:if>
             </div>
         </header>
 
@@ -70,10 +84,7 @@
                                 <li><a href="account"><i class="bi bi-person-badge"></i> Account List</a></li>
                                 <li><a href="role"><i class="bi bi-shield-lock"></i> Role List</a></li>
                                 <li><a href="voucher"><i class="bi bi-ticket-perforated"></i> Voucher List</a></li><li class="menu-separator mt-3 mb-3"></li>
-                                <c:if test="${employee != null}">
-                                <li><a class=" text-danger" href="logout"><i class="bi bi-box-arrow-right text-danger"></i> <strong> Logout</strong></a></li>
-                                </c:if>
                             </ul>
-                         
+
                         </nav>
                     </aside>
