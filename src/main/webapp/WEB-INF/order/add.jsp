@@ -4,6 +4,9 @@
     Author     : Dai Minh Nhu - CE190213
 --%>
 
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<c:set var="title" value="Add Order - Yummy"/>
+
 <%@include file="/WEB-INF/include/headerDashboard.jsp" %>
 
 <section class="col-12 col-lg-9 col-xxl-10 table-section" aria-label="Listing table">
@@ -53,7 +56,6 @@
                                         <c:out value="${sessionScope.employeeSession.empName}"/>
                                     </label>
                                     <input type="hidden" name="empId" value="${sessionScope.employeeSession.empId}">
-                                    x
                                 </c:when>
                                 <c:otherwise>
                                     <label class="form-control" style="color: red">Please login employee account</label>

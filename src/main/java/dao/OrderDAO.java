@@ -99,6 +99,42 @@ public class OrderDAO extends DBContext {
         return list;
     }
 
+    public Order getAllByCustomerId(int customerId, int page, int maxElement) {
+
+        try {
+            String query = "SELECT o.order_id, o.reservation_id, o.emp_id, o.voucher_id, o.order_date, o.order_time, o.payment_method, o.status\n"
+                    + "FROM     [order] AS o INNER JOIN\n"
+                    + "                  reservation AS r ON o.reservation_id = r.reservation_id\n"
+                    + "WHERE  (LOWER(o.status) <> LOWER('Deleted')) AND (r.customer_id = ?)\n"
+                    + "ORDER BY o.order_id DESC\n" 
+                    + "OFFSET ? ROWS \n"
+                    + "FETCH NEXT ? ROWS ONLY;";
+
+            ResultSet rs = this.executeSelectionQuery(query, new Object[]{customerId, (page - 1) * maxElement, maxElement});
+
+            while (rs.next()) {
+                int orderId = rs.getInt(1);
+                int reservationId = rs.getInt(2);
+                int empId = rs.getInt(3);
+                int voucherId = rs.getInt(4);
+                Date orderDate = rs.getDate(5);
+                Time orderTime = rs.getTime(6);
+                String paymentMethod = rs.getString(7);
+                String status = rs.getString(8);
+
+                Order order = new Order(orderId, reservationDAO.getElementByID(reservationId),
+                        employeeDAO.getElementByID(empId), voucherDAO.getById(voucherId),
+                        orderDate, orderTime, paymentMethod, status);
+
+                return order;
+            }
+        } catch (SQLException ex) {
+            System.out.println("Can't not load object");
+        }
+
+        return null;
+    }
+
     public Order getElementByID(int id) {
 
         try {
