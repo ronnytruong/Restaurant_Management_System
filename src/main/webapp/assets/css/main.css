@@ -261,7 +261,42 @@ a:hover {
   border-radius: 50px;
   transition: 0.3s;
 }
+.round{
+    border-radius: 50px;
+}
+.dropdown-toggle {
+    text-decoration: none !important;
+}
 
+.dropdown-toggle:hover {
+    text-decoration: none !important;
+}
+
+.dropdown-toggle::after {
+    color: #000 !important; /* Black arrow */
+    border-top-color: #000 !important;
+}
+
+.dropdown-menu {
+    min-width: 200px;
+}
+
+.dropdown-header {
+    font-weight: 600;
+    color: #333;
+}
+
+.dropdown-item {
+    padding: 0.5rem 1rem;
+}
+
+.dropdown-item:hover {
+    background-color: #f8f9fa;
+}
+
+.dropdown-item.text-danger:hover {
+    background-color: #fff5f5;
+}
 .header .btn-getstarted:hover,
 .header .btn-getstarted:focus:hover {
   color: var(--contrast-color);

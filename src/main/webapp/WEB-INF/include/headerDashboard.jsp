@@ -3,8 +3,8 @@
 <html>
     <head>
         <meta charset="utf-8">
-        <title>Restaurant Management System</title>
-        
+        <title>${title}</title>
+
         <!-- Favicons -->
         <link href="<%=request.getContextPath()%>/assets/img/favicon.png" rel="icon">
         <link href="<%=request.getContextPath()%>/assets/img/apple-touch-icon.png" rel="apple-touch-icon">
@@ -24,26 +24,66 @@
 
         <!-- Admin Listing CSS -->
         <link href="<%=request.getContextPath()%>/assets/css/dashboard.css" rel="stylesheet">
+
+        <c:if test="${not empty dashboard_cssjs}">
+            <style>
+                .bd-placeholder-img {
+                    font-size: 1.125rem;
+                    text-anchor: middle;
+                    -webkit-user-select: none;
+                    -moz-user-select: none;
+                    user-select: none;
+                }
+
+                @media (min-width: 768px) {
+                    .bd-placeholder-img-lg {
+                        font-size: 3.5rem;
+                    }
+                }
+            </style>
+            
+            <link href="<%=request.getContextPath()%>/assets/css/dashboard.css" rel="stylesheet">
+        </c:if>
+
     </head>
 
     <body class="admin-list-page">
         <header class="admin-header shadow-sm">
             <div class="container-fluid d-flex align-items-center justify-content-between">
                 <div class="brand d-flex align-items-center gap-3">
-                    <div class="brand-info">
-                        <h2 class="brand-name mb-0">Dashboard</h2>
-                        <p class="brand-subtitle mb-0">Staff &amp; Operations</p>
+                    <div class="brand-info"> 
+                        <a href="<c:url value="dashboard"/>">
+                            <h2 class="brand-name mb-0">Dashboard</h2>
+                            <p class="brand-subtitle mb-0">Staff &amp; Operations</p>
+                        </a>
                     </div>
                 </div>
                 <div class="header-actions d-flex align-items-center gap-3">
-                    <div class="profile-chip d-flex align-items-center gap-2">
-                        <div class="avatar">A</div>
-                        <div>
-                            <p class="mb-0 fw-semibold">Alex Morgan</p>
-                            <span class="role">Administrator</span>
+                    <c:set var="employee" value="${sessionScope.employeeSession}"/>
+                    <c:if test="${employee != null}">
+                        <div class="dropdown profile-chip d-flex align-items-center gap-2">
+                            <a href="#" class="d-flex align-items-center gap-2 text-decoration-none dropdown-toggle"
+                               id="profileDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                <div class="avatar">${employee.empName.charAt(0)}</div>
+                                <div>
+                                    <p class="mb-0 fw-semibold text-dark">${employee.empName}</p>
+                                    <span class="role">${employee.roleName}</span>
+                                </div>
+                            </a>
+
+                            <ul class="dropdown-menu dropdown-menu-end shadow-sm" aria-labelledby="profileDropdown">
+                                <li> <a class="dropdown-item" href="employee-profile">
+                                        <i class="bi bi-person-circle me-2"></i>My Profile
+                                    </a></li>
+                                <li> <a class="dropdown-item text-danger" href="logout">
+                                        <i class="bi bi-box-arrow-right me-2"></i>Logout
+                                    </a></li>
+                            </ul>
                         </div>
+
+
                     </div>
-                </div>
+                </c:if>
             </div>
         </header>
 
@@ -66,7 +106,8 @@
                                 <li><a href="supplier"><i class="bi bi-truck"></i> Supplier List</a></li>
                                 <li><a href="account"><i class="bi bi-person-badge"></i> Account List</a></li>
                                 <li><a href="role"><i class="bi bi-shield-lock"></i> Role List</a></li>
-                                <li><a href="voucher"><i class="bi bi-ticket-perforated"></i> Voucher List</a></li>
+                                <li><a href="voucher"><i class="bi bi-ticket-perforated"></i> Voucher List</a></li><li class="menu-separator mt-3 mb-3"></li>
                             </ul>
+
                         </nav>
                     </aside>
