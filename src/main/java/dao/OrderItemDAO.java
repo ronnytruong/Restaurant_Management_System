@@ -8,6 +8,7 @@ import db.DBContext;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -283,7 +284,6 @@ public class OrderItemDAO extends DBContext {
             writer.write(content);
             writer.close();
 
-            
         } catch (IOException e) {
             System.out.println("Lỗi khi ghi file: " + e.getMessage());
             return "";
@@ -313,5 +313,89 @@ public class OrderItemDAO extends DBContext {
         str += " VND";
 
         return str;
+    }
+
+    public List<Date> statisticDate() {
+        List<Date> list = new ArrayList<>();
+
+        try {
+            String query = "SELECT order_date\n"
+                    + "FROM     [order]\n"
+                    + "WHERE  (LOWER(status) = LOWER('Completed'))\n"
+                    + "GROUP BY order_date\n"
+                    + "ORDER BY order_date";
+
+            ResultSet rs = this.executeSelectionQuery(query, null);
+
+            while (rs.next()) {
+                Date date = rs.getDate(1);
+                list.add(date);
+            }
+        } catch (SQLException ex) {
+            System.out.println("Can't not load list");
+        }
+
+        return list;
+    }
+
+    public List<Long> statisticIncome() {
+        List<Long> list = new ArrayList<>();
+
+        Date currentDate = null;
+        long sum = 0;
+
+        try {
+            String query = "SELECT o.order_id, oi.menu_item_id, v.voucher_id, o.order_date, oi.unit_price, oi.quantity, v.discount_type, v.discount_value\n"
+                    + "FROM     [order] AS o LEFT JOIN\n"
+                    + "                  order_item AS oi ON o.order_id = oi.order_id LEFT JOIN\n"
+                    + "                  voucher AS v ON o.voucher_id = v.voucher_id\n"
+                    + "WHERE  (oi.menu_item_id IS NOT NULL) AND (LOWER(o.status) = LOWER('Completed'))\n"
+                    + "ORDER BY o.order_date";
+
+            ResultSet rs = this.executeSelectionQuery(query, null);
+
+            while (rs.next()) {
+                int orderId = rs.getInt(1);
+                int orderItemId = rs.getInt(2);
+                Integer voucherId = rs.getInt(3);
+                Date date = rs.getDate(4);
+
+                if (currentDate == null) {
+                    currentDate = date;
+                }
+
+                if (!date.toString().equalsIgnoreCase(currentDate.toString())) {
+                    currentDate = date;
+                    list.add(sum);
+                    sum = 0;
+                }
+
+                Order order = orderDAO.getElementByID(orderId);
+                OrderItem orderItem = getElementByID(orderItemId);
+
+                long mini_sum = orderItem.getQuantity() * orderItem.getUnitPrice();
+
+                if (voucherId.intValue() <= 0) {
+                    sum += mini_sum;
+                } else {
+                    Voucher voucher = voucherDAO.getById(voucherId);
+
+                    if (voucher.getDiscountType().equalsIgnoreCase("Percent")) {
+                        sum += mini_sum - mini_sum * voucher.getDiscountValue() / 100;
+                    } else {
+                        if (mini_sum > voucher.getDiscountValue()) {
+                            sum += mini_sum - voucher.getDiscountValue();
+                        }
+                    }
+                }
+            }
+            if (sum > 0) {
+                list.add(sum);
+            }
+        } catch (SQLException ex) {
+            System.out.println("Can't not load list");
+        }
+
+        return list;
     }
 }
