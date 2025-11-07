@@ -28,7 +28,7 @@ public class EmployeeDAO extends DBContext {
             String query = "SELECT e.emp_id, e.emp_account, e.password, e.emp_name, e.gender, e.dob, e.phone_number, e.email, e.address, e.role_id, r.role_name, e.status\n"
                     + "FROM employee AS e INNER JOIN\n"
                     + "     role AS r ON e.role_id = r.role_id\n"
-                    + "WHERE  (LOWER(e.status) <> 'deleted') AND (LOWER(r.status) <> 'deleted')\n"
+                    + "WHERE  (LOWER(e.status) <> 'deleted')\n"
                     + "ORDER BY e.emp_id\n";
             ResultSet rs = this.executeSelectionQuery(query, null);
             while (rs.next()) {
@@ -61,7 +61,7 @@ public class EmployeeDAO extends DBContext {
             String query = "SELECT e.emp_id, e.emp_account, e.password, e.emp_name, e.gender, e.dob, e.phone_number, e.email, e.address, e.role_id, r.role_name, e.status\n"
                     + "FROM employee AS e INNER JOIN\n"
                     + "     role AS r ON e.role_id = r.role_id\n"
-                    + "WHERE  (LOWER(e.status) <> 'deleted') AND (LOWER(r.status) <> 'deleted')\n"
+                    + "WHERE  (LOWER(e.status) <> 'deleted')\n"
                     + "ORDER BY e.emp_id\n"
                     + "OFFSET ? ROWS FETCH NEXT ? ROWS ONLY;";
             ResultSet rs = this.executeSelectionQuery(query, new Object[]{(page - 1) * MAX_ELEMENTS_PER_PAGE, MAX_ELEMENTS_PER_PAGE});
@@ -95,7 +95,7 @@ public class EmployeeDAO extends DBContext {
             String query = "SELECT e.emp_id, e.emp_account, e.password, e.emp_name, e.gender, e.dob, e.phone_number, e.email, e.address, e.role_id, r.role_name, e.status\n"
                     + "FROM     employee AS e INNER JOIN\n"
                     + "                  role AS r ON e.role_id = r.role_id\n"
-                    + "WHERE  (LOWER(e.status) <> 'deleted') AND (LOWER(r.status) <> 'deleted')\n"
+                    + "WHERE  (LOWER(e.status) <> 'deleted')\n"
                     + "            AND (LOWER(e.emp_account) LIKE LOWER(?) OR\n"
                     + "                 LOWER(e.gender) LIKE LOWER(?) OR\n"
                     + "                 LOWER(e.phone_number) LIKE LOWER(?) OR\n"
@@ -139,7 +139,7 @@ public class EmployeeDAO extends DBContext {
             String query = "SELECT e.emp_id, e.emp_account, e.password, e.emp_name, e.gender, e.dob, e.phone_number, e.email, e.address, e.role_id, r.role_name, e.status\n"
                     + "FROM employee AS e INNER JOIN\n"
                     + "     role AS r ON e.role_id = r.role_id\n"
-                    + "WHERE  (LOWER(e.status) <> 'deleted') AND (LOWER(r.status) <> 'deleted') AND (e.emp_id = ?)";
+                    + "WHERE  (LOWER(e.status) <> 'deleted') AND (e.emp_id = ?)";
 
             ResultSet rs = this.executeSelectionQuery(query, new Object[]{id});
             while (rs.next()) {
@@ -306,7 +306,7 @@ public class EmployeeDAO extends DBContext {
             String query = "SELECT COUNT(e.emp_id) AS numrow\n"
                     + "FROM     employee AS e INNER JOIN\n"
                     + "                  role AS r ON e.role_id = r.role_id\n"
-                    + "WHERE  (LOWER(e.status) <> 'deleted') AND (LOWER(r.status) <> 'deleted')";
+                    + "WHERE  (LOWER(e.status) <> 'deleted')";
             ResultSet rs = this.executeSelectionQuery(query, null);
             if (rs.next()) {
                 return rs.getInt(1);

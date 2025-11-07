@@ -261,11 +261,11 @@ public class OrderItemDAO extends DBContext {
 
         content += "Create by: " + order.getEmp().getEmpName() + "\n"
                 + "Customer Name: " + order.getReservation().getCustomer().getCustomerName() + "\n"
-                + "Item \t UnitPrice \t Qty \n"
+                + "Item \t| UnitPrice \t| Qty \n"
                 + "---------------------------\n";
 
         for (OrderItem orderItem : orderItems) {
-            content += orderItem.getMenuItem().getItemName() + "\t" + orderItem.getMenuItem().getPriceVND() + "\t" + orderItem.getQuantity() + "\n";
+            content += orderItem.getMenuItem().getItemName() + "\t| " + orderItem.getMenuItem().getPriceVND() + "\t| " + orderItem.getQuantity() + "\n";
         }
 
         long total = orderDAO.getTotalPricebyOrderId(order.getOrderId());

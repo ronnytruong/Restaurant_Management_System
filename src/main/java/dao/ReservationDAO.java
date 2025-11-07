@@ -29,7 +29,8 @@ public class ReservationDAO extends DBContext {
             String sql = "SELECT r.reservation_id, r.customer_id, r.table_id, r.reservation_date, r.reservation_time, r.party_size, r.status\n"
                     + "FROM     reservation AS r INNER JOIN\n"
                     + "                  [table] AS t ON r.table_id = t.table_id\n"
-                    + "WHERE  (t.table_id = ?) AND (LOWER(r.status) = LOWER('Seated'))";
+                    + "WHERE  (t.table_id = ?) AND (LOWER(r.status) = LOWER('Approved'))\n"
+                    + "ORDER BY r.reservation_id DESC";
             ResultSet rs = this.executeSelectionQuery(sql, new Object[]{id});
             if (rs.next()) {
                 return extract(rs);
