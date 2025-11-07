@@ -99,14 +99,16 @@ public class OrderDAO extends DBContext {
         return list;
     }
 
-    public Order getAllByCustomerId(int customerId, int page, int maxElement) {
+    public List<Order> getAllByCustomerId(int customerId, int page, int maxElement) {
+
+        List<Order> list = new ArrayList<>();
 
         try {
             String query = "SELECT o.order_id, o.reservation_id, o.emp_id, o.voucher_id, o.order_date, o.order_time, o.payment_method, o.status\n"
                     + "FROM     [order] AS o INNER JOIN\n"
                     + "                  reservation AS r ON o.reservation_id = r.reservation_id\n"
                     + "WHERE  (LOWER(o.status) <> LOWER('Deleted')) AND (r.customer_id = ?)\n"
-                    + "ORDER BY o.order_id DESC\n" 
+                    + "ORDER BY o.order_id DESC\n"
                     + "OFFSET ? ROWS \n"
                     + "FETCH NEXT ? ROWS ONLY;";
 
@@ -126,13 +128,14 @@ public class OrderDAO extends DBContext {
                         employeeDAO.getElementByID(empId), voucherDAO.getById(voucherId),
                         orderDate, orderTime, paymentMethod, status);
 
-                return order;
+                list.add(order);
             }
+
         } catch (SQLException ex) {
             System.out.println("Can't not load object");
         }
 
-        return null;
+        return list;
     }
 
     public Order getElementByID(int id) {
@@ -228,7 +231,42 @@ public class OrderDAO extends DBContext {
         return 0;
     }
 
+    public int countItemByCustomer(int customerId) {
+        try {
+            String query = "SELECT COUNT(o.order_id) AS numrow\n"
+                    + "FROM     [order] AS o INNER JOIN\n"
+                    + "                  reservation AS r ON o.reservation_id = r.reservation_id INNER JOIN\n"
+                    + "                  customer AS c ON r.customer_id = c.customer_id\n"
+                    + "WHERE  (LOWER(o.status) <> LOWER(N'Deleted')) AND (c.customer_id = ?)";
+            ResultSet rs = this.executeSelectionQuery(query, new Object[]{customerId});
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        } catch (SQLException ex) {
+            System.out.println("Error");
+        }
+
+        return 0;
+    }
+    
+    public boolean validateApprove(int id) {
+        Order order = getElementByID(id);
+        
+        if (order.getVoucher() == null) {
+            return true;
+        } else {
+            Voucher voucher = order.getVoucher();
+            
+            if (voucherDAO.decrease1Quantity(voucher.getVoucherId()) <= 0) {
+                return false;
+            }
+        }
+        
+        return true;
+    }
+
     public int approve(int id) {
+        
         try {
             String query = "UPDATE [order]\n"
                     + "SET status = 'Approved'\n"
@@ -238,7 +276,7 @@ public class OrderDAO extends DBContext {
             System.out.println("Error");
         }
 
-        return 0;
+        return -1;
     }
 
     public int reject(int id) {
@@ -321,7 +359,7 @@ public class OrderDAO extends DBContext {
         content += "Create by: " + order.getEmp().getEmpName() + "\n"
                 + "Customer Name: " + order.getReservation().getCustomer().getCustomerName() + "\n"
                 + "Table: " + order.getReservation().getTable().getNumber() + "\n"
-                + "Ingredient \t Quantity \n"
+                + "Ingredient \t| Quantity \n"
                 + "---------------------------\n";
 
         try {
@@ -342,7 +380,7 @@ public class OrderDAO extends DBContext {
                 int ingredientId = rs.getInt(1);
                 double quantity = rs.getDouble(2);
 
-                content += ingredientDAO.getElementByID(ingredientId).getIngredientName() + "\t" + quantity + "\n";
+                content += ingredientDAO.getElementByID(ingredientId).getIngredientName() + "\t| " + quantity + "\n";
             }
         } catch (SQLException ex) {
             return "";
@@ -384,5 +422,18 @@ public class OrderDAO extends DBContext {
         str += " VND";
 
         return str;
+    }
+
+    public int cancel(int orderId) {
+        try {
+            String query = "UPDATE [order]\n"
+                    + "SET status = 'Cancel'\n"
+                    + "WHERE  (order_id = ?)";
+            return this.executeQuery(query, new Object[]{orderId});
+        } catch (SQLException ex) {
+            System.out.println("Error");
+        }
+
+        return 0;
     }
 }

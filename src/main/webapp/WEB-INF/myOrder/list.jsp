@@ -4,6 +4,9 @@
     Author     : Dai Minh Nhu - CE190213
 --%>
 
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<c:set var="title" value="My Order List - Yummy"/>
+
 <%@include file="/WEB-INF/include/headerCustomer.jsp" %>
 
 <main class="d-flex justify-content-center align-items-center vh-100 bg-light">
@@ -13,14 +16,6 @@
                 <div>
                     <h1 class="section-title mb-1">My Order list</h1>
                 </div>
-                <div class="actions d-flex flex-column flex-md-row gap-2 align-items-md-center justify-content-md-end">
-                    <div class="filters d-flex flex-wrap gap-2 justify-content-end">
-                        <a class="btn btn-primary add-btn" href="<c:url value="myOrder">
-                               <c:param name="view" value="add"/>
-                           </c:url>"><i class="bi bi-plus-circle"></i>Add</a>
-
-                    </div>
-                </div>
             </div>
 
             <div class="table-responsive px-4 pb-2">
@@ -28,11 +23,11 @@
                     <thead>
                         <tr>
                             <th width="10%" scope="col">Table Name</th>
-                            <th width="10%" scope="col">Voucher</th>
-                            <th width="10%" scope="col">Date</th>
-                            <th width="10%" scope="col">Time</th>
+                            <th width="20%" scope="col">Voucher</th>
+                            <th width="15%" scope="col">Date</th>
+                            <th width="15%" scope="col">Time</th>
                             <th width="10%" scope="col">Payment</th>
-                            <th width="10%" scope="col">Status</th>
+                            <th width="15%" scope="col">Status</th>
                             <th width="20%"scope="col" class="text-end">Actions</th>
                         </tr>
                     </thead>
@@ -55,18 +50,22 @@
 
                                         <td class="text-end">
                                             <div class="action-button-group d-flex justify-content-end gap-2">
-                                                <a class="btn btn-outline-success btn-icon btn-view"
-                                                   title="View details" aria-label="View details"
-                                                   href="<c:url value="myOrder">
-                                                       <c:param name="view" value="detail"/>
-                                                       <c:param name="orderId" value="${order.orderId}"/>
-                                                   </c:url>">
-                                                    <i class="bi bi-eye"></i>
-                                                </a>
-                                                <%--                                            <button type="button" class="btn btn-outline-secondary btn-icon btn-delete"
-                                                                                                    title="Delete" aria-label="Delete" onclick="showDeletePopup('${order.orderId}')">
-                                                                                                <i class="bi bi-x-circle"></i>
-                                                                                            </button>--%>
+                                                <form action="<c:url value="myOrder">
+                                                          <c:param name="orderId" value="${order.orderId}"/>
+                                                      </c:url>" method="post">
+                                                    <button class="btn btn-outline-success btn-icon btn-view"
+                                                            title="View details" aria-label="View details"
+                                                            type="submit" name="action" value="detail">
+                                                        <i class="bi bi-eye"></i>
+                                                    </button>
+                                                    <c:if test="${order.status eq 'Pending'}">
+                                                        <button class="btn btn-outline-danger btn-icon btn-delete"
+                                                                title="Cancel" aria-label="Cancel"
+                                                                type="submit" name="action" value="cancel">
+                                                            <i class="bi bi-x-circle"></i>
+                                                        </button>
+                                                    </c:if>
+                                                </form>
                                             </div>
                                         </td>
                                     </tr>

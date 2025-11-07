@@ -64,6 +64,8 @@
 
 </footer>
 
+
+
 <!-- Scroll Top -->
 <a href="#" id="scroll-top" class="scroll-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
 
@@ -80,6 +82,38 @@
 
 <!-- Main JS File -->
 <script src="assets/js/main.js"></script>
+
+<c:if  test="${not empty sessionScope.popupStatus}">
+    <div class="modal" id="exampleModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Action ${sessionScope.popupStatus eq true?"Successful":"Fail"}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <c:choose>
+                        <c:when test="${sessionScope.popupStatus eq true}">
+                            <p style="color: green;white-space: pre-wrap;"><c:out value="${sessionScope.popupMessage}"/></p>
+                        </c:when>
+                        <c:otherwise>
+                            <p style="color: red;white-space: pre-wrap;"><c:out value="${sessionScope.popupMessage}"/></p>
+                        </c:otherwise>
+                    </c:choose>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <!--<button type="button" class="btn btn-primary">Save changes</button>-->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        var myModal = new bootstrap.Modal(document.getElementById('exampleModal'));
+        myModal.show();
+    </script>
+</c:if>
 
 </body>
 

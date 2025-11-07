@@ -216,32 +216,6 @@ public class OrderServlet extends HttpServlet {
                     }
                 }
             } else if (action.equalsIgnoreCase("delete")) {
-//                int id;
-//
-//                try {
-//                    id = Integer.parseInt(request.getParameter("id"));
-//                } catch (NumberFormatException e) {
-//                    id = -1;
-//                }
-//
-////validate
-//                if (id <= 0) {
-//                    popupStatus = false;
-//                    popupMessage = "The delete action is NOT successfull.";
-//                } else {
-//                    popupMessage = "The object with id=" + id + " deleted successfull.";
-//                }
-////end
-//                if (popupStatus == true) {
-//                    int checkError = orderDAO.delete(id);
-//
-//                    if (checkError >= 1) {
-//
-//                    } else {
-//                        popupStatus = false;
-//                        popupMessage = "The delete action is NOT successfull. Check the information again.";
-//                    }
-//                }
             } else if (action.equalsIgnoreCase("approve")) {
 
                 int id;
@@ -253,7 +227,7 @@ public class OrderServlet extends HttpServlet {
                 }
 
 //validate
-                if (id <= 0) {
+                if (id <= 0 || !orderDAO.validateApprove(id)) {
                     popupStatus = false;
                     popupMessage = "The approve action is NOT successfull.";
                 } else {
