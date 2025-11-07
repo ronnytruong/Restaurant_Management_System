@@ -57,7 +57,7 @@ public class HomepageServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        request.getRequestDispatcher("/WEB-INF/template/" + "book-table" + ".html").forward(request, response);
+        request.getRequestDispatcher("/WEB-INF/template/" + "index" + ".html").forward(request, response);
 
     }
 
