@@ -24,6 +24,7 @@ public class OrderServlet extends HttpServlet {
 
     private final int MAX_ELEMENTS_PER_PAGE = 15;
     private final OrderDAO orderDAO = new OrderDAO();
+    private final OrderItemDAO orderItemDAO = new OrderItemDAO();
     private final VoucherDAO voucherDAO = new VoucherDAO();
     private final ReservationDAO reservationDAO = new ReservationDAO();
     private final TableDAO tableDAO = new TableDAO();
@@ -227,7 +228,7 @@ public class OrderServlet extends HttpServlet {
                 }
 
 //validate
-                if (id <= 0 || !orderDAO.validateApprove(id)) {
+                if (id <= 0 || !orderDAO.validateApprove(id) || orderItemDAO.getAllByOrderId(id).size() <= 0) {
                     popupStatus = false;
                     popupMessage = "The approve action is NOT successfull.";
                 } else {
