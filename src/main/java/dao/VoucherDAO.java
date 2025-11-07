@@ -223,4 +223,17 @@ public class VoucherDAO extends DBContext {
         }
         return 0;
     }
+
+    public int decrease1Quantity(int id) {
+        try {
+            String query = "UPDATE Voucher\n"
+                    + "SET quantity = quantity - 1\n"
+                    + "WHERE voucher_id = ?\n"
+                    + "  AND quantity > 0;";
+            return this.executeQuery(query, new Object[]{id});
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+        return -1;
+    }
 }
