@@ -4,6 +4,9 @@
     Author     : Dai Minh Nhu - CE190213
 --%>
 
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<c:set var="title" value="Order Item List - Yummy"/>
+
 <%@include file="/WEB-INF/include/headerDashboard.jsp" %>
 
 <section class="col-12 col-lg-9 col-xxl-10 table-section" aria-label="Listing table">

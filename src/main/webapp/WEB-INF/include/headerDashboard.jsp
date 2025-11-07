@@ -3,7 +3,7 @@
 <html>
     <head>
         <meta charset="utf-8">
-        <title>Restaurant Management System</title>
+        <title>${title}</title>
 
         <!-- Favicons -->
         <link href="<%=request.getContextPath()%>/assets/img/favicon.png" rel="icon">
