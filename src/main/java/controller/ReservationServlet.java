@@ -194,11 +194,9 @@ public class ReservationServlet extends HttpServlet {
                     + "/reservation?view=mylist&customerId=" + request.getParameter("customerId"));
             return;
         } else if (action.equalsIgnoreCase("edit")) {
-            // Admin edit reservation
             int id, tableId, party;
             Date date;
             Time time;
-            String status;
 
             try {
                 id = Integer.parseInt(request.getParameter("reservationId"));
@@ -206,22 +204,20 @@ public class ReservationServlet extends HttpServlet {
                 party = Integer.parseInt(request.getParameter("partySize"));
                 date = Date.valueOf(request.getParameter("reservationDate"));
                 time = Time.valueOf(request.getParameter("reservationTime") + ":00");
-                status = request.getParameter("status");
             } catch (Exception e) {
                 id = -1;
                 tableId = -1;
                 party = -1;
                 date = null;
                 time = null;
-                status = null;
             }
 
             if (!validateInteger(id, false, false, true) || tableId <= 0 || party <= 0
-                    || !validateString(status, -1) || date == null || time == null) {
+                    || date == null || time == null) {
                 popupStatus = false;
-                popupMessage = "The edit action is NOT successful.";
+                popupMessage = "The edit action failed. Invalid input data.";
             } else {
-                int check = reservationDAO.edit(id, tableId, date, time, party, status);
+                int check = reservationDAO.edit(id, tableId, date, time, party);
                 if (check < 1) {
                     popupStatus = false;
                     popupMessage = "Edit failed. SQL error: " + getSqlErrorCode(check);
@@ -229,6 +225,7 @@ public class ReservationServlet extends HttpServlet {
                     popupMessage = "Reservation (ID: " + id + ") updated successfully!";
                 }
             }
+
             setPopup(request, popupStatus, popupMessage);
             String from = request.getParameter("from");
             String customerIdStr = request.getParameter("customerId");
@@ -238,7 +235,6 @@ public class ReservationServlet extends HttpServlet {
             } else {
                 response.sendRedirect(request.getContextPath() + "/reservation");
             }
-
             return;
         } else if (action.equalsIgnoreCase("approve") || action.equalsIgnoreCase("reject")) {
             int id;
@@ -270,7 +266,7 @@ public class ReservationServlet extends HttpServlet {
                         popupMessage = "Update status failed. SQL error: " + getSqlErrorCode(check);
                     } else {
                         popupMessage = "Reservation (ID: " + id + ") -> " + status;
-                        
+
                         int tableId = current.getTable().getId();
                         if (status.equalsIgnoreCase("Approved")) {
                             tableDAO.updateStatus(tableId, "Reserved");

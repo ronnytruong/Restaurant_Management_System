@@ -64,7 +64,15 @@
                         <li><a href="<c:url value="homepage"/>#chefs">Chefs</a></li>
                         <li><a href="<c:url value="homepage"/>#gallery">Gallery</a></li>
                         <li><a href="<c:url value="homepage"/>#contact">Contact</a></li>
-                        <li><a href="<c:url value=""/>">My Reservation</a></li>
+                        <li>
+                            <a href="<c:url value='/reservation'>
+                                   <c:param name='view' value='mylist'/>
+                                   <c:param name='customerId' value='${sessionScope.customerSession.customerId}'/>
+                               </c:url>">
+                                My Reservation
+                            </a>
+                        </li>
+
                         <li><a href="<c:url value="myOrder"/>">My Order</a></li>
                     </ul>
                     <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
