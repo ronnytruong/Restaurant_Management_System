@@ -6,7 +6,6 @@ package dao;
 
 import static constant.Constants.*;
 import db.DBContext;
-import java.math.BigDecimal;
 import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -153,7 +152,7 @@ public class VoucherDAO extends DBContext {
         return list;
     }
 
-    public int add(String code, String name, String type, BigDecimal value, int qty, Date start, Date end, String status) {
+    public int add(String code, String name, String type, int value, int qty, Date start, Date end, String status) {
         try {
             String query = "INSERT INTO Voucher (voucher_code, voucher_name, discount_type, discount_value, quantity, start_date, end_date, status) "
                     + "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
@@ -164,7 +163,7 @@ public class VoucherDAO extends DBContext {
         return -1;
     }
 
-    public int edit(int id, String code, String name, String type, BigDecimal value, int qty, Date start, Date end, String status) {
+    public int edit(int id, String code, String name, String type, int value, int qty, Date start, Date end, String status) {
         try {
             String query = "UPDATE Voucher SET voucher_code=?, voucher_name=?, discount_type=?, discount_value=?, quantity=?, start_date=?, end_date=?, status=? "
                     + "WHERE voucher_id=?";

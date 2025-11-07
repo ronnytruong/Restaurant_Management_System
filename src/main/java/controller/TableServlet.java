@@ -194,6 +194,35 @@ public class TableServlet extends HttpServlet {
                         popupMessage = "The delete action failed. SQL Error: " + getSqlErrorCode(result);
                     }
                 }
+            } else if (action.equalsIgnoreCase("changeStatus")) {
+                // New action: change table status (Available, Reserved, Occupied)
+                int id;
+                String newStatus = request.getParameter("newStatus");
+                try {
+                    id = Integer.parseInt(request.getParameter("id"));
+                } catch (NumberFormatException e) {
+                    id = -1;
+                }
+
+                // validate id and status
+                if (!validateInteger(id, false, false, true)
+                        || newStatus == null
+                        || !(newStatus.equalsIgnoreCase("Available")
+                        || newStatus.equalsIgnoreCase("Reserved")
+                        || newStatus.equalsIgnoreCase("Occupied"))) {
+                    popupStatus = false;
+                    popupMessage = "Change status action is NOT successful. Invalid input.";
+                } else {
+                    // Normalize status to have capital first letter (matching DB conventions in this project)
+                    String normalizedStatus = newStatus.substring(0, 1).toUpperCase() + newStatus.substring(1).toLowerCase();
+                    int result = tableDAO.updateStatus(id, normalizedStatus);
+                    if (result >= 1) {
+                        popupMessage = "Table with ID=" + id + " status changed to " + normalizedStatus + " successfully.";
+                    } else {
+                        popupStatus = false;
+                        popupMessage = "Change status action failed. SQL Error: " + getSqlErrorCode(result);
+                    }
+                }
             }
         }
 

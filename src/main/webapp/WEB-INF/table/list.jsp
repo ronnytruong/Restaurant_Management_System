@@ -3,8 +3,8 @@
     Created on : 21 Sep 2025, 10:04:02 AM
     Author     : Dai Minh Nhu - CE190213
 --%>
-
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@include file="/WEB-INF/include/headerDashboard.jsp" %>
 
@@ -38,6 +38,7 @@
                             <th>ID</th>
                             <th>Number</th>
                             <th>Capacity</th>
+                            <th>Status</th>
                             <th class="text-end">Action</th>
                         </tr>
                     </thead>
@@ -45,7 +46,7 @@
                     <c:choose>
                         <c:when test="${tablesList == null || empty tablesList}">
                             <tr>
-                                <td colspan="4" style="color:red;">No data to display</td>
+                                <td colspan="5" style="color:red;">No data to display</td>
                             </tr>
                         </c:when>
                         <c:otherwise>
@@ -54,15 +55,29 @@
                                     <td><c:out value="${table.id}"/></td>
                                     <td><c:out value="${table.number}"/></td>
                                     <td><c:out value="${table.capacity}"/></td>
+                                    <td>
+                                        <c:choose>
+                                            <c:when test="${fn:toLowerCase(table.status) == 'available'}">
+                                                <span class="badge bg-success">Available</span>
+                                            </c:when>
+                                            <c:when test="${fn:toLowerCase(table.status) == 'reserved'}">
+                                                <span class="badge bg-warning text-dark">Reserved</span>
+                                            </c:when>
+                                            <c:when test="${fn:toLowerCase(table.status) == 'occupied'}">
+                                                <span class="badge bg-danger">Occupied</span>
+                                            </c:when>
+                                            <c:otherwise>
+                                                <span class="badge bg-secondary"><c:out value="${table.status}"/></span>
+                                            </c:otherwise>
+                                        </c:choose>
+                                    </td>
                                     <td class="text-end">
-                                        <div class="d-flex justify-content-end gap-2">
+                                        <div class="d-flex justify-content-end gap-2 align-items-center">
                                             <a class="btn btn-outline-secondary" title="Edit"
                                                href="<c:url value='table'>
                                                    <c:param name='view' value='edit'/>
                                                    <c:param name='id' value='${table.id}'/>
-                                                   <c:if test='${not empty param.keyword || not empty requestScope.keyword}'>
-                                                       <c:param name='keyword' value='${param.keyword != null ? param.keyword : requestScope.keyword }'/>
-                                                   </c:if>
+                                                   <c:if test='${not empty param.keyword || not empty requestScope.keyword}'><c:param name='keyword' value='${param.keyword != null ? param.keyword : requestScope.keyword }'/></c:if>
                                                </c:url>">
                                                 <i class="bi bi-pencil"></i>
                                             </a>
@@ -70,6 +85,43 @@
                                             <button type="button" class="btn btn-outline-danger" title="Delete" onclick="showDeletePopup(${table.id})">
                                                 <i class="bi bi-x-circle"></i>
                                             </button>
+
+                                            <!-- Change status dropdown -->
+                                            <div class="btn-group">
+                                                <button type="button" class="btn btn-outline-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                                                    Change status
+                                                </button>
+                                                <ul class="dropdown-menu dropdown-menu-end">
+                                                    <!-- For each possible status, show form to set it. The current status can still be shown but disabled -->
+                                                    <li>
+                                                        <form method="post" action="<c:url value='table'/>" class="px-2 py-1">
+                                                            <input type="hidden" name="id" value="${table.id}" />
+                                                            <input type="hidden" name="newStatus" value="Available" />
+                                                            <button type="submit" name="action" value="changeStatus" class="dropdown-item" ${fn:toLowerCase(table.status) == 'available' ? 'disabled' : ''}>
+                                                                Set Available
+                                                            </button>
+                                                        </form>
+                                                    </li>
+                                                    <li>
+                                                        <form method="post" action="<c:url value='table'/>" class="px-2 py-1">
+                                                            <input type="hidden" name="id" value="${table.id}" />
+                                                            <input type="hidden" name="newStatus" value="Reserved" />
+                                                            <button type="submit" name="action" value="changeStatus" class="dropdown-item" ${fn:toLowerCase(table.status) == 'reserved' ? 'disabled' : ''}>
+                                                                Set Reserved
+                                                            </button>
+                                                        </form>
+                                                    </li>
+                                                    <li>
+                                                        <form method="post" action="<c:url value='table'/>" class="px-2 py-1">
+                                                            <input type="hidden" name="id" value="${table.id}" />
+                                                            <input type="hidden" name="newStatus" value="Occupied" />
+                                                            <button type="submit" name="action" value="changeStatus" class="dropdown-item" ${fn:toLowerCase(table.status) == 'occupied' ? 'disabled' : ''}>
+                                                                Set Occupied
+                                                            </button>
+                                                        </form>
+                                                    </li>
+                                                </ul>
+                                            </div>
                                         </div>
                                     </td>
                                 </tr>
