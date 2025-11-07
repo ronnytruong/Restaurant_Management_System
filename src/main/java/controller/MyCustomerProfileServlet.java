@@ -2,7 +2,7 @@ package controller;
 
 import dao.CustomerDAO;
 import model.Customer;
-import constant.HashUtil;
+import db.DBContext;
 
 import java.io.IOException;
 import java.sql.Date;
@@ -21,7 +21,7 @@ import jakarta.servlet.http.HttpSession;
 public class MyCustomerProfileServlet extends HttpServlet {
 
     private CustomerDAO customerDAO = new CustomerDAO();
-
+private DBContext db = new DBContext();
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -93,20 +93,20 @@ public class MyCustomerProfileServlet extends HttpServlet {
         );
 
         if (result > 0) {
-            // Lấy dữ liệu mới từ DB
+           
             Customer updated = customerDAO.getElementByID(customer.getCustomerId());
 
-            // Cập nhật lại session
+          
             session.setAttribute("customerSession", updated);
 
-            // Thông báo thành công (lưu tạm trong session)
+           
             session.setAttribute("successMessage", "Profile updated successfully.");
 
-            // Redirect về trang view
+            
             response.sendRedirect(request.getContextPath() + "/customer-profile?action=view");
             return;
         } else {
-            // Nếu lỗi thì giữ nguyên form edit và hiển thị lỗi
+           
             request.setAttribute("errorMessage", "Failed to update profile.");
             request.setAttribute("customer", customer);
             request.getRequestDispatcher("/WEB-INF/profile/edit.jsp").forward(request, response);
@@ -123,14 +123,14 @@ public class MyCustomerProfileServlet extends HttpServlet {
 
         String errorMessage = null;
 
-        // --- Validation Checks ---
+       
         if (oldPassword == null || newPassword == null || confirmPassword == null
                 || oldPassword.isEmpty() || newPassword.isEmpty() || confirmPassword.isEmpty()) {
             errorMessage = "Please fill all fields.";
         }
 
         if (errorMessage == null) {
-            String hashedOld = HashUtil.toMD5(oldPassword);
+            String hashedOld = db.hashToMD5(oldPassword);
             if (!hashedOld.equals(customer.getPassword())) {
                 errorMessage = "Old password is incorrect.";
             }
@@ -142,10 +142,10 @@ public class MyCustomerProfileServlet extends HttpServlet {
             }
         }
 
-        // --- Execution or Final Forward ---
+       
         if (errorMessage == null) {
-            // SUCCESS PATH: No errors found, perform the update.
-            String hashedNew = HashUtil.toMD5(newPassword);
+           
+            String hashedNew = db.hashToMD5(newPassword);
             int result = customerDAO.edit(customer.getCustomerId(), hashedNew);
 
             if (result > 0) {

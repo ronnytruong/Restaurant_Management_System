@@ -14,14 +14,8 @@
             </div>
             <div class="actions d-flex flex-column flex-md-row gap-2 align-items-md-center justify-content-md-end">
                 <div class="filters d-flex flex-wrap gap-2 justify-content-end">
-                    <%--                    <form action="<c:url value="order">
-                                                  <c:param name="page" value="1"/>
-                                              </c:url>" method="get" class="search-box input-group">
-                                            <div class="search-box input-group">
-                                                <span class="input-group-text"><i class="bi bi-search"></i></span>
-                                                <input type="search" name="keyword" class="form-control" placeholder="Search by name or description">
-                                            </div>
-                                        </form>--%>
+                    Chua giam voucher khi them vao order, khi ??i tr?ng thái thì 
+                    Khi chuy?n tr?ng thái sang complete thì hay tr?
                     <a class="btn btn-primary add-btn" href="<c:url value="order">
                            <c:param name="view" value="add"/>
                        </c:url>"><i class="bi bi-plus-circle"></i>Add</a>
@@ -36,7 +30,7 @@
                     <tr>
                         <th width="5%" scope="col">ID</th>
                         <th width="15%" scope="col">Employee Name</th>
-                        <th width="15%" scope="col">Reservation Id</th>
+                        <th width="10%" scope="col">Table Name</th>
                         <th width="10%" scope="col">Voucher</th>
                         <th width="10%" scope="col">Date</th>
                         <th width="10%" scope="col">Time</th>
@@ -57,7 +51,7 @@
                                 <tr>
                                     <td><c:out value="${order.orderId}"/></td>
                                     <td><c:out value="${order.emp.empName}"/></td>
-                                    <td><c:out value="${order.reservation.reservationId}"/></td>
+                                    <td><c:out value="${order.reservation.table.number}"/></td>
                                     <td><c:out value="${order.voucher.voucherCode}"/></td>
                                     <td><c:out value="${order.orderDate}"/></td>
                                     <td><c:out value="${order.orderTime}"/></td>
@@ -70,7 +64,7 @@
                                                title="View details" aria-label="View details"
                                                href="<c:url value="orderItem">
                                                    <c:param name="view" value="list"/>
-                                                   <c:param name="orderDd" value="${order.orderId}"/>
+                                                   <c:param name="orderId" value="${order.orderId}"/>
                                                </c:url>">
                                                 <i class="bi bi-eye"></i>
                                             </a>
