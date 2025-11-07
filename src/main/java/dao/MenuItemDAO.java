@@ -107,7 +107,7 @@ public class MenuItemDAO extends DBContext {
 
         try {
 
-            String query = "SELECT TOP 6 category_name FROM category WHERE LOWER(status) = 'active' ORDER BY category_id";
+            String query = "SELECT TOP 4 category_name FROM category WHERE LOWER(status) = 'active' ORDER BY category_id";
 
             ResultSet rs = this.executeSelectionQuery(query, null);
 
@@ -129,6 +129,8 @@ public class MenuItemDAO extends DBContext {
 
     /**
      *
+     * @param categoryName
+     * @return 
      */
     public List<MenuItem> getTopMenuItemsByCategoryName(String categoryName) {
 
@@ -136,7 +138,7 @@ public class MenuItemDAO extends DBContext {
 
         try {
 
-            String query = "SELECT TOP 6\n"
+            String query = "SELECT TOP 4\n"
                     + " mi.menu_item_id, mi.category_id, mi.recipe_id, mi.item_name, \n"
                     + " mi.image_url, mi.price, mi.description, mi.status \n"
                     + "FROM menu_item mi \n"
