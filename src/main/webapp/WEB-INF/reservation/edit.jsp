@@ -1,12 +1,10 @@
 <%-- 
     Document   : edit
-    Created on : Oct 28, 2025, 8:30:59 PM
+    Created on : Oct 28, 2025, 8:30:59?PM
     Author     : Administrator
 --%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@page contentType="text/html" pageEncoding="UTF-8"%>
-
-<%@include file="/WEB-INF/include/headerDashboard.jsp" %>
+<%@include file="/WEB-INF/include/headerCustomer.jsp" %>
 
 <section class="col-12 col-lg-9 col-xxl-10 table-section" aria-label="Edit reservation">
     <div class="content-card shadow-sm">
@@ -15,12 +13,14 @@
                 Edit Reservation
                 <small class="text-muted">#<c:out value="${currentReservation.reservationId}"/></small>
             </h1>
+
             <a class="btn btn-outline-secondary" href="<c:url value='/reservation'>
-                   <c:param name='view' value='list'/>
-                   <c:param name='page' value='${empty param.page ? 1 : param.page}'/>
+                   <c:param name='view' value='mylist'/>
+                   <c:param name='customerId' value='${sessionScope.customerSession.customerId}'/>
                </c:url>">
                 <i class="bi bi-arrow-left"></i> Back
             </a>
+
         </div>
 
         <c:choose>
@@ -32,19 +32,22 @@
                     <form class="row g-3" method="post" action="<c:url value='/reservation'/>">
                         <input type="hidden" name="action" value="edit"/>
                         <input type="hidden" name="reservationId" value="${currentReservation.reservationId}"/>
+                        <input type="hidden" name="from" value="mylist"/>
+                        <input type="hidden" name="customerId" value="${sessionScope.customerSession.customerId}"/>
 
-                        <!-- ✅ Customer info (read-only) -->
+
+                        <!-- ? Customer info (read-only) -->
                         <div class="col-12 col-md-3">
                             <label class="form-label">Customer</label>
                             <input type="text" class="form-control" 
                                    value="${currentReservation.customer.customerName}" disabled>
                         </div>
 
-                        <!-- ✅ Table info -->
+                        <!-- ? Table info -->
                         <div class="col-12 col-md-3">
                             <label class="form-label">Table</label>
                             <input type="number" name="tableId" class="form-control" required
-                                   value="${currentReservation.table.id}">
+                                   value="${currentReservation.table.id}" disabled>
                             <small class="text-muted">Current: ${currentReservation.table.number}</small>
                         </div>
 
@@ -66,23 +69,19 @@
                                    value="${currentReservation.partySize}">
                         </div>
 
-                        <div class="col-12 col-md-3">
-                            <label class="form-label">Status</label>
-                            <select name="status" class="form-select" required>
-                                <option value="Pending"   ${currentReservation.status == 'Pending'   ? 'selected' : ''}>Pending</option>
-                                <option value="Approved"  ${currentReservation.status == 'Approved'  ? 'selected' : ''}>Approved</option>
-                                <option value="Rejected"  ${currentReservation.status == 'Rejected'  ? 'selected' : ''}>Rejected</option>
-                                <option value="Cancelled" ${currentReservation.status == 'Cancelled' ? 'selected' : ''}>Cancelled</option>
-                            </select>
-                        </div>
-
                         <div class="col-12 d-flex gap-2">
                             <button type="submit" class="btn btn-primary">
                                 <i class="bi bi-save2"></i> Save Changes
                             </button>
-                            <a class="btn btn-outline-secondary" href="<c:url value='/reservation'>
-                                   <c:param name='view' value='list'/>
-                               </c:url>">Cancel</a>
+
+                            <li>
+                                <a class="btn btn-outline-secondary" href="<c:url value='/reservation'>
+                                       <c:param name='view' value='mylist'/>
+                                       <c:param name='customerId' value='${sessionScope.customerSession.customerId}'/>
+                                   </c:url>">
+                                    Cancel
+                                </a>
+                            </li>
                         </div>
                     </form>
                 </div>
@@ -91,5 +90,5 @@
     </div>
 </section>
 
-<%@include file="/WEB-INF/include/footerDashboard.jsp" %>
+<%@include file="/WEB-INF/include/footerCustomer.jsp" %>
 
