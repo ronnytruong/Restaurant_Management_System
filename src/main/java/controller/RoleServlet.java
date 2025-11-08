@@ -21,7 +21,7 @@ import jakarta.servlet.http.HttpSession;
 @WebServlet(name = "RoleServlet", urlPatterns = {"/role"})
 public class RoleServlet extends HttpServlet {
 
-    private final int MAX_ELEMENTS_PER_PAGE = 1;
+    private final int MAX_ELEMENTS_PER_PAGE = 15;
     RoleDAO roleDAO = new RoleDAO();
 
     /**

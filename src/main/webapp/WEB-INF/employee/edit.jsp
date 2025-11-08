@@ -1,12 +1,11 @@
 <%-- 
     Document   : edit
-    Created on : Oct 11, 2025, 3:23:33 PM
+    Created on : Oct 11, 2025, 3:23:33?PM
     Author     : PHAT
 --%>
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@page contentType="text/html" pageEncoding="UTF-8"%>
-<%@include file="/WEB-INF/include/header.jsp" %>
+<c:set var="title" value="Edit Employee - Yummy"/>
 
 <%@include file="/WEB-INF/include/headerDashboard.jsp" %>
 
@@ -65,7 +64,7 @@
                                 <td>
                                     <select name="roleId" id="roleId" class="form-control" required>
                                         <c:forEach var="role" items="${rolesList}">
-                                            <option value="${role.id}" ${(role.id == currentEmployee.roleId)?'selected':''}>
+                                            <option value="${role.id}" ${(role.id == currentEmployee.role.id)?'selected':''}>
                                                 <c:out value='${role.name}'/>
                                             </option>
                                         </c:forEach>

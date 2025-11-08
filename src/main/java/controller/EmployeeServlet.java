@@ -22,7 +22,7 @@ import jakarta.servlet.http.HttpSession;
 @WebServlet(name = "EmployeeServlet", urlPatterns = {"/employee"})
 public class EmployeeServlet extends HttpServlet {
 
-    private final int MAX_ELEMENTS_PER_PAGE = 1;
+    private final int MAX_ELEMENTS_PER_PAGE = 15;
     EmployeeDAO employeeDAO = new EmployeeDAO();
     RoleDAO roleDAO = new RoleDAO();
 
