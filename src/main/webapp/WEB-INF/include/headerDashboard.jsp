@@ -23,7 +23,7 @@
         <link href="<%=request.getContextPath()%>/assets/css/main.css" rel="stylesheet">
 
         <!-- Admin Listing CSS -->
-        <link href="<%=request.getContextPath()%>/assets/css/dashboard.css" rel="stylesheet">
+        <link href="<%=request.getContextPath()%>/assets/css/dashboard0.css" rel="stylesheet">
 
         <c:if test="${not empty dashboard_cssjs}">
             <style>
