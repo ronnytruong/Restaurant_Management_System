@@ -1,11 +1,11 @@
 <%-- 
     Document   : list
-    Created on : Oct 11, 2025, 3:23:41 PM
+    Created on : Oct 11, 2025, 3:23:41?PM
     Author     : PHAT
 --%>
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@page contentType="text/html" pageEncoding="UTF-8"%>
+<c:set var="title" value="Employee List - Yummy"/>
 
 <%@include file="/WEB-INF/include/headerDashboard.jsp" %>
 
@@ -67,7 +67,7 @@
                                     <td><c:out value="${emp.phoneNumber}"/></td>
                                     <td><c:out value="${emp.email}"/></td>
                                     <td><c:out value="${emp.address}"/></td>
-                                    <td><c:out value="${emp.roleName}"/></td>
+                                    <td><c:out value="${emp.role.name}"/></td>
                                     <td><c:out value="${emp.status}"/></td>
 
                                     <td class="text-end">

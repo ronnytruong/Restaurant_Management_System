@@ -1,11 +1,11 @@
 <%-- 
     Document   : list
-    Created on : Oct 15, 2025, 5:09:24 PM
+    Created on : Oct 15, 2025, 5:09:24?PM
     Author     : TruongBinhTrong
 --%>
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@page contentType="text/html" pageEncoding="UTF-8"%>
+<c:set var="title" value="Role List - Yummy"/>
 
 <%@include file="/WEB-INF/include/headerDashboard.jsp" %>
 

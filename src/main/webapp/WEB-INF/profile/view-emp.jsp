@@ -175,8 +175,8 @@
                         <div class="info-label">Role</div>
                         <div class="info-value">
                             <c:choose>  
-                                <c:when test="${not empty employee.roleName}">
-                                    ${employee.roleName}
+                                <c:when test="${not empty employee.role.name}">
+                                    ${employee.role.name}
                                 </c:when>
                                 <c:otherwise>
                                     <span class="empty">Not provided</span>
