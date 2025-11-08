@@ -4,15 +4,11 @@
  */
 package dao;
 
-import static constant.CommonFunction.checkErrorSQL;
-import static constant.Constants.MAX_ELEMENTS_PER_PAGE;
 import db.DBContext;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import model.Role;
 
 /**
@@ -47,13 +43,13 @@ public class RoleDAO extends DBContext {
                 list.add(role);
             }
         } catch (SQLException ex) {
-            Logger.getLogger(RoleDAO.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println("Can't not load list");
         }
 
         return list;
     }
 
-    public List<Role> getAll(int page) {
+    public List<Role> getAll(int page, int maxElement) {
         List<Role> list = new ArrayList<>();
 
         try {
@@ -64,7 +60,7 @@ public class RoleDAO extends DBContext {
                     + "OFFSET ? ROWS \n"
                     + "FETCH NEXT ? ROWS ONLY;";
 
-            ResultSet rs = this.executeSelectionQuery(query, new Object[]{(page - 1) * MAX_ELEMENTS_PER_PAGE, MAX_ELEMENTS_PER_PAGE});
+            ResultSet rs = this.executeSelectionQuery(query, new Object[]{(page - 1) * maxElement, maxElement});
 
             while (rs.next()) {
                 int id = rs.getInt(1);
@@ -77,13 +73,13 @@ public class RoleDAO extends DBContext {
                 list.add(role);
             }
         } catch (SQLException ex) {
-            Logger.getLogger(RoleDAO.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println("Can't not load list");
         }
 
         return list;
     }
 
-    public List<Role> getAll(int page, String keyword) {
+    public List<Role> getAll(int page, int maxElement, String keyword) {
         List<Role> list = new ArrayList<>();
 
         try {
@@ -97,7 +93,7 @@ public class RoleDAO extends DBContext {
 
             keyword = "%" + keyword + "%";
 
-            ResultSet rs = this.executeSelectionQuery(query, new Object[]{keyword, keyword, (page - 1) * MAX_ELEMENTS_PER_PAGE, MAX_ELEMENTS_PER_PAGE});
+            ResultSet rs = this.executeSelectionQuery(query, new Object[]{keyword, keyword, (page - 1) * maxElement, maxElement});
 
             while (rs.next()) {
                 int id = rs.getInt(1);
@@ -110,7 +106,7 @@ public class RoleDAO extends DBContext {
                 list.add(role);
             }
         } catch (SQLException ex) {
-            Logger.getLogger(RoleDAO.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println("Can't not load list");
         }
 
         return list;
@@ -135,7 +131,7 @@ public class RoleDAO extends DBContext {
                 return role;
             }
         } catch (SQLException ex) {
-            Logger.getLogger(RoleDAO.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println("Can't not load object");
         }
 
         return null;
@@ -149,13 +145,7 @@ public class RoleDAO extends DBContext {
             return this.executeQuery(query, new Object[]{name, description, "Active"});
 
         } catch (SQLException ex) {
-
-            int sqlError = checkErrorSQL(ex);
-            if (sqlError != 0) {
-                return sqlError;
-            }
-
-            Logger.getLogger(RoleDAO.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println("Can't not add object");
         }
         return -1;
     }
@@ -170,13 +160,7 @@ public class RoleDAO extends DBContext {
             return this.executeQuery(query, new Object[]{name, description, id});
 
         } catch (SQLException ex) {
-
-            int sqlError = checkErrorSQL(ex);
-            if (sqlError != 0) {
-                return sqlError;
-            }
-
-            Logger.getLogger(RoleDAO.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println("Can't not edit object");
         }
         return -1;
     }
@@ -190,7 +174,7 @@ public class RoleDAO extends DBContext {
             return this.executeQuery(query, new Object[]{id});
 
         } catch (SQLException ex) {
-
+            System.out.println("Can't not delete object");
         }
         return -1;
     }

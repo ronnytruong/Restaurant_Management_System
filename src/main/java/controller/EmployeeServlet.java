@@ -4,7 +4,6 @@
  */
 package controller;
 
-import static constant.CommonFunction.*;
 import dao.EmployeeDAO;
 import dao.RoleDAO;
 import java.io.IOException;
@@ -14,6 +13,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 /**
  *
@@ -22,6 +22,7 @@ import jakarta.servlet.http.HttpServletResponse;
 @WebServlet(name = "EmployeeServlet", urlPatterns = {"/employee"})
 public class EmployeeServlet extends HttpServlet {
 
+    private final int MAX_ELEMENTS_PER_PAGE = 1;
     EmployeeDAO employeeDAO = new EmployeeDAO();
     RoleDAO roleDAO = new RoleDAO();
 
@@ -71,7 +72,7 @@ public class EmployeeServlet extends HttpServlet {
             keyword = "";
         }
 
-        if (!validateString(view, -1) || view.equalsIgnoreCase("list")) {
+        if (view == null || view.isBlank() || view.equalsIgnoreCase("list")) {
             namepage = "list";
         } else if (view.equalsIgnoreCase("add")) {
             namepage = "add";
@@ -102,7 +103,7 @@ public class EmployeeServlet extends HttpServlet {
 
         request.setAttribute("rolesList", roleDAO.getAll());
         request.setAttribute("totalPages", totalPages);
-        request.setAttribute("employeeList", employeeDAO.getAll(page, keyword));
+        request.setAttribute("employeeList", employeeDAO.getAll(page, MAX_ELEMENTS_PER_PAGE, keyword));
 
         request.getRequestDispatcher("/WEB-INF/employee/" + namepage + ".jsp").forward(request, response);
         removePopup(request);
@@ -142,10 +143,10 @@ public class EmployeeServlet extends HttpServlet {
                 }
 
 //validate
-                if (!validateString(empAccount, -1)
-                        || !validateString(password, -1)
-                        || !validateString(empName, -1)
-                        || !validateInteger(roleId, false, false, true)) {
+                if (empAccount == null || empAccount.isBlank()
+                        || password == null || password.isBlank()
+                        || empName == null || empName.isBlank()
+                        || roleId <= 0) {
                     popupStatus = false;
                     popupMessage = "The add action is NOT successfull. The input has some error.";
                 } else {
@@ -154,7 +155,7 @@ public class EmployeeServlet extends HttpServlet {
                             + "Password: " + password + ")";
                 }
 //end
-                
+
                 password = constant.HashUtil.toMD5(password);
 
                 if (popupStatus == true) {
@@ -162,7 +163,7 @@ public class EmployeeServlet extends HttpServlet {
                     if (checkError >= 1) {
                     } else {
                         popupStatus = false;
-                        popupMessage = "The add action is NOT successfull. The object has " + getSqlErrorCode(checkError) + " error.";
+                        popupMessage = "The add action is NOT successfull. Check the information again.";
                     }
                 }
 
@@ -173,7 +174,7 @@ public class EmployeeServlet extends HttpServlet {
                 try {
                     empId = Integer.parseInt(request.getParameter("id"));
                     roleId = Integer.parseInt(request.getParameter("roleId"));
-                    
+
                     if (roleDAO.isRoleDeleted(roleId)) {
                         throw new Exception();
                     }
@@ -183,8 +184,7 @@ public class EmployeeServlet extends HttpServlet {
                 }
 
 //validate
-                if (!validateInteger(empId, false, false, true)||
-                        !validateInteger(roleId, false, false, true)) {
+                if (empId <= 0 || roleId <= 0) {
                     popupStatus = false;
                     popupMessage = "The edit action is NOT successfull. The input has some error.";
                 } else {
@@ -198,7 +198,7 @@ public class EmployeeServlet extends HttpServlet {
                     if (checkError >= 1) {
                     } else {
                         popupStatus = false;
-                        popupMessage = "The edit action is NOT successfull. The object has " + getSqlErrorCode(checkError) + " error.";
+                        popupMessage = "The edit action is NOT successfull. Check the information again.";
                     }
                 }
             } else if (action.equalsIgnoreCase("delete")) {
@@ -211,7 +211,7 @@ public class EmployeeServlet extends HttpServlet {
                 }
 
 //validate
-                if (!validateInteger(id, false, false, true)) {
+                if (id <= 0) {
                     popupStatus = false;
                     popupMessage = "The delete action is NOT successfull.";
                 } else {
@@ -225,7 +225,7 @@ public class EmployeeServlet extends HttpServlet {
 
                     } else {
                         popupStatus = false;
-                        popupMessage = "The delete action is NOT successfull. The object has " + getSqlErrorCode(checkError) + " error.";
+                        popupMessage = "The delete action is NOT successfull. Check the information again.";
                     }
                 }
             } else if (action.equalsIgnoreCase("ban")) {
@@ -238,7 +238,7 @@ public class EmployeeServlet extends HttpServlet {
                 }
 
 //validate
-                if (!validateInteger(id, false, false, true)) {
+                if (id <= 0) {
                     popupStatus = false;
                     popupMessage = "The ban action is NOT successfull.";
                 } else {
@@ -252,7 +252,7 @@ public class EmployeeServlet extends HttpServlet {
 
                     } else {
                         popupStatus = false;
-                        popupMessage = "The ban action is NOT successfull. The object has " + getSqlErrorCode(checkError) + " error.";
+                        popupMessage = "The ban action is NOT successfull. Check the information again.";
                     }
                 }
             } else if (action.equalsIgnoreCase("unban")) {
@@ -265,7 +265,7 @@ public class EmployeeServlet extends HttpServlet {
                 }
 
 //validate
-                if (!validateInteger(id, false, false, true)) {
+                if (id <= 0) {
                     popupStatus = false;
                     popupMessage = "The unban action is NOT successfull.";
                 } else {
@@ -279,7 +279,7 @@ public class EmployeeServlet extends HttpServlet {
 
                     } else {
                         popupStatus = false;
-                        popupMessage = "The unban action is NOT successfull. The object has " + getSqlErrorCode(checkError) + " error.";
+                        popupMessage = "The unban action is NOT successfull. Check the information again.";
                     }
                 }
             }
@@ -297,5 +297,21 @@ public class EmployeeServlet extends HttpServlet {
     public String getServletInfo() {
         return "Short description";
     }// </editor-fold>
+
+    private int getTotalPages(int countItems) {
+        return (int) Math.ceil((double) countItems / MAX_ELEMENTS_PER_PAGE);
+    }
+
+    private void setPopup(HttpServletRequest request, boolean status, String message) {
+        HttpSession session = request.getSession(false);
+        session.setAttribute("popupStatus", status);
+        session.setAttribute("popupMessage", message);
+    }
+
+    private void removePopup(HttpServletRequest request) {
+        HttpSession session = request.getSession(false);
+        session.removeAttribute("popupStatus");
+        session.removeAttribute("popupMessage");
+    }
 
 }
