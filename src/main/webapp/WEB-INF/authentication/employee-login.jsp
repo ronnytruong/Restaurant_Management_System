@@ -76,7 +76,13 @@
 
                     <button type="submit" class="btn-login">Log In</button>
 
-                
+                 <div class="divider">
+                        <span>OR</span>
+                    </div>
+
+                    <p class="signup-link">
+                        If you are not an employee. <a href="login">Login here</a>
+                    </p>
 
                 
                 </form>
