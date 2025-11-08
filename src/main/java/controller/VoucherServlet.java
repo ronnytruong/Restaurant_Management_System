@@ -4,7 +4,7 @@
  */
 package controller;
 
-import static constant.CommonFunction.*;
+import static constant.Constants.*;
 import dao.VoucherDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -13,7 +13,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import java.math.BigDecimal;
+import jakarta.servlet.http.HttpSession;
 import java.sql.Date;
 
 /**
@@ -24,7 +24,6 @@ import java.sql.Date;
 public class VoucherServlet extends HttpServlet {
 
     VoucherDAO dao = new VoucherDAO();
-    int PAGE_SIZE = 10;
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -72,7 +71,7 @@ public class VoucherServlet extends HttpServlet {
         }
 
         // Xác định view
-        if (!validateString(view, -1) || view.equalsIgnoreCase("list")) {
+        if (!isValidString(view, -1) || view.equalsIgnoreCase("list")) {
             namepage = "list";
         } else if (view.equalsIgnoreCase("add")) {
             namepage = "add";
@@ -133,26 +132,26 @@ public class VoucherServlet extends HttpServlet {
 
                 int quantity;
                 Date startDate, endDate;
-                BigDecimal discountValue;
+                int discountValue;
 
                 try {
                     quantity = Integer.parseInt(request.getParameter("quantity"));
                     startDate = Date.valueOf(request.getParameter("start_date"));
                     endDate = Date.valueOf(request.getParameter("end_date"));
-                    discountValue = new BigDecimal(rawDiscount);
+                    discountValue = Integer.parseInt(rawDiscount);
                 } catch (Exception e) {
                     quantity = -1;
                     startDate = null;
                     endDate = null;
-                    discountValue = BigDecimal.ZERO;
+                    discountValue = -1;
                 }
 
                 // Validate dữ liệu
-                if (!validateString(code, -1)
-                        || !validateString(name, -1)
-                        || !validateString(discountType, -1)
-                        || !validateString(status, -1)
-                        || !validateInteger(quantity, false, true, true)
+                if (!isValidString(code, -1)
+                        || !isValidString(name, -1)
+                        || !isValidString(discountType, -1)
+                        || !isValidString(status, -1)
+                        || !isValidInteger(quantity, false, true, true)
                         || startDate == null || endDate == null
                         || startDate.after(endDate)) {
                     popupStatus = false;
@@ -176,26 +175,26 @@ public class VoucherServlet extends HttpServlet {
                 String status = request.getParameter("status");
 
                 Date startDate, endDate;
-                BigDecimal discountValue;
+                int discountValue;
 
                 try {
                     id = Integer.parseInt(request.getParameter("voucher_id"));
                     quantity = Integer.parseInt(request.getParameter("quantity"));
                     startDate = Date.valueOf(request.getParameter("start_date"));
                     endDate = Date.valueOf(request.getParameter("end_date"));
-                    discountValue = new BigDecimal(rawDiscount);
+                    discountValue = Integer.parseInt(rawDiscount);
                 } catch (Exception e) {
                     id = -1;
                     quantity = -1;
                     startDate = null;
                     endDate = null;
-                    discountValue = BigDecimal.ZERO;
+                    discountValue = -1;
                 }
 
-                if (!validateInteger(id, false, false, true)
-                        || !validateString(code, -1)
-                        || !validateString(name, -1)
-                        || !validateString(status, -1)
+                if (!isValidInteger(id, false, false, true)
+                        || !isValidString(code, -1)
+                        || !isValidString(name, -1)
+                        || !isValidString(status, -1)
                         || startDate == null || endDate == null
                         || startDate.after(endDate)) {
                     popupStatus = false;
@@ -218,7 +217,7 @@ public class VoucherServlet extends HttpServlet {
                     id = -1;
                 }
 
-                if (!validateInteger(id, false, false, true)) {
+                if (!isValidInteger(id, false, false, true)) {
                     popupStatus = false;
                     popupMessage = "The delete action is NOT successful. Invalid ID.";
                 } else {
@@ -234,7 +233,63 @@ public class VoucherServlet extends HttpServlet {
         }
         setPopup(request, popupStatus, popupMessage);
         response.sendRedirect(request.getContextPath() + "/voucher");
-        
+
+    }
+
+    private boolean isValidString(String str, int limitLength) {
+        if (limitLength < 0) {
+            limitLength = Integer.MAX_VALUE;
+        }
+
+        return !(str == null || str.isEmpty()) && str.length() <= limitLength;
+    }
+
+    private boolean isValidInteger(int value, boolean allowZero, boolean allowNegative, boolean allowPositive) {
+        if (!allowNegative && value < 0) {
+            return false;
+        }
+        if (!allowZero && value == 0) {
+            return false;
+        }
+
+        if (!allowPositive && value > 0) {
+            return false;
+        }
+        return true;
+    }
+
+    private int getTotalPages(int countItems) {
+        return (int) Math.ceil((double) countItems / MAX_ELEMENTS_PER_PAGE);
+    }
+
+    private String getSqlErrorCode(int temp_code) {
+        if (temp_code + DUPLICATE_KEY == 0) {                //check trung code/key
+            return "DUPLICATE_KEY";
+        } else if (temp_code + FOREIGN_KEY_VIOLATION == 0) {
+            return "FOREIGN_KEY_VIOLATION";
+        } else if (temp_code + NULL_INSERT_VIOLATION == 0) {
+            return "NULL_INSERT_VIOLATION";
+        } else if (temp_code + UNIQUE_INDEX == 0) {
+            return "DUPLICATE_UNIQUE";
+        }
+
+        return "Unknow Error Code:" + temp_code;
+    }
+
+    private void setPopup(HttpServletRequest request, boolean status, String message) {
+        HttpSession session = request.getSession(false);
+        if (session != null) {
+            session.setAttribute("popupStatus", status);
+            session.setAttribute("popupMessage", message);
+        }
+    }
+
+    private void removePopup(HttpServletRequest request) {
+        HttpSession session = request.getSession(false);
+        if (session != null) {
+            session.removeAttribute("popupStatus");
+            session.removeAttribute("popupMessage");
+        }
     }
 
     /**
