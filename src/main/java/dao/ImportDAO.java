@@ -125,16 +125,12 @@ public class ImportDAO extends DBContext {
         return -1;
     }
 
-    public int addDetail(String ingredientName, int typeId, String status, int importId,
-            int ingredientId, int quantity, String unit, int unitPrice, int totalPrice) {
+    public int addDetail(int importId, int ingredientId, int quantity, String unit, int unitPrice, int totalPrice) {
         try {
-            String query = "INSERT INTO ingredient (ingredient_name, type_id, status) "
-                    + "VALUES (?, ?, ?) "
-                    + "INSERT INTO import_detail (import_id, ingredient_id, quantity, unit, unit_price, total_price) "
-                    + "VALUES (?, ?, ?, ?, ?, ?)";
+            String query = "INSERT INTO import_detail (import_id, ingredient_id, quantity, unit, unit_price, total_price) "
+                         + "VALUES (?, ?, ?, ?, ?, ?)";
 
-            return this.executeQuery(query, new Object[]{ingredientName, typeId, "Active", importId,
-                ingredientId, quantity, unit, unitPrice, totalPrice});
+            return this.executeQuery(query, new Object[]{importId, ingredientId, quantity, unit, unitPrice, totalPrice});
 
         } catch (SQLException ex) {
 

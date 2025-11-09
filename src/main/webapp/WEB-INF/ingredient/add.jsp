@@ -18,7 +18,7 @@
         <div class="container px-4 py-3">
             <form method="post" action="<c:url value='ingredient'/>">
                 <table class="table">
-                    
+
                     <%-- Ingredient Name --%>
                     <tr>
                         <th width="30%">
@@ -28,7 +28,7 @@
                             <input type="text" name="ingredientName" id="ingredientName" class="form-control" required>
                         </td>
                     </tr>
-                    
+
                     <%-- Ingredient Type (Dropdown) --%>
                     <tr>
                         <th>
@@ -43,15 +43,14 @@
                             </select>
                         </td>
                     </tr>
-                   
+
 
                     <%-- Action Buttons --%>
                     <tr>
                         <td></td>
                         <td>
-                            
-                            <button class="btn btn-outline-dark" type="submit" name="action" value="add">Add</button>
-                                <a class="btn btn-outline-dark" href="<c:url value='ingredient'/>">Cancel</a>
+                            <button class="btn btn-success" type="submit" name="action" value="add">Save</button>
+                            <a class="btn btn-outline-dark" href="<c:url value='ingredient'/>">Cancel</a>
                         </td>
                     </tr>
                 </table>

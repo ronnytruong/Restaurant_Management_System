@@ -1,9 +1,3 @@
-<%-- 
-    Document   : add
-    Created on : Oct 11, 2025, 5:21:51 PM
-    Author     : PHAT
---%>
-
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@include file="/WEB-INF/include/headerDashboard.jsp" %>
@@ -20,24 +14,24 @@
                     <tr><td></td><td></td></tr>
 
                     <tr>
-                            <th>
-                                <label for="name">Supplier Name</label>
-                            </th>
+                        <th>
+                            <label for="name">Supplier Name</label>
+                        </th>
                             <td>
-                                <select name="supplierId">    
+                                <select name="supplierId" class="form-select">    
                                     <c:forEach var="supplier" items="${supplierList}">
                                         <option value="${supplier.supplierId}" required class="form-control">${supplier.supplierName}</option>
                                     </c:forEach>
                                 </select>
                             </td>
-                        </tr>
+                    </tr>
                         
                         <tr>
                             <th>
                                 <label for="name">Manager</label>
                             </th>
                             <td>
-                                <select name="empId">    
+                                <select name="empId" class="form-select">    
                                     <c:forEach var="employee" items="${employeeList}">
                                         <option value="${employee.empId}" required class="form-control">${employee.empName}</option>
                                     </c:forEach>
@@ -49,7 +43,7 @@
                             <td>
                             </td>
                             <td>
-                                <button class="btn btn-outline-dark" type="submit" name="action" value="add">Add</button>
+                                <button class="btn btn-success" type="submit" name="action" value="add">Save</button>
                                 <a class="btn btn-outline-dark" href="<c:url value='import'/>">Cancel</a>
                             </td>
                         </tr>

@@ -1,9 +1,3 @@
-<%-- 
-    Document   : list
-    Created on : Oct 15, 2025, 5:09:24 PM
-    Author     : TruongBinhTrong
---%>
-
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
@@ -91,10 +85,14 @@
                                 </div>
                                 <div class="actions d-flex flex-column flex-md-row gap-2 align-items-md-center justify-content-md-end">
                                     <div class="filters d-flex flex-wrap gap-2 justify-content-end">
-                                        <div class="search-box input-group">
-                                            <span class="input-group-text"><i class="bi bi-search"></i></span>
-                                            <input type="search" class="form-control" placeholder="Search">
-                                        </div>
+                                        <form action="<c:url value='import'><c:param name='page' value='1'/></c:url>" method="get" class="search-box input-group">
+                                                <div class="search-box input-group">
+                                                    <span class="input-group-text"><i class="bi bi-search"></i></span>
+                                                    <input type="search" name="keyword" class="form-control" 
+                                                           placeholder="Search by name"
+                                                           value="${param.keyword != null ? param.keyword : (requestScope.keyword != null ? requestScope.keyword : '')}">
+                                            </div>
+                                        </form>
                                         <a class="btn btn-primary add-btn" href="<c:url value="import">
                                                <c:param name="view" value="add"/>
                                            </c:url>"><i class="bi bi-plus-circle"></i> Add</a>
@@ -130,7 +128,7 @@
                                                         <td><c:out value="${imp.contactPerson}"/></td>
                                                         <td><c:out value="${imp.supplierName}"/></td>
                                                         <td><c:out value="${imp.importDate}"/></td>
-                                                        
+
                                                         <td class="text-end">
                                                             <div class="action-button-group d-flex justify-content-end gap-2">
                                                                 <c:url var="detail" value="import">
@@ -166,6 +164,33 @@
                                     </tbody>
                                 </table>
                             </div>
+                            <nav aria-label="Page navigation example">
+                                <ul class="pagination">
+                                    <li class="page-item ${((empty param.page) || param.page <= 1)?"disabled":""}">
+                                        <a class="page-link" href="<c:url value="/import">
+                                               <c:param name="view" value="list"/>
+                                               <c:param name="page" value="${param.page - 1}"/>
+                                           </c:url>" aria-label="Previous">
+                                            <span aria-hidden="true">&laquo;</span>
+                                        </a>
+                                    </li>
+                                    <c:forEach begin="1" end="${requestScope.totalPages}" var="i">
+                                        <li class="page-item ${((empty param.page && i == 1) || param.page == i)?"active":""}">
+                                            <a class="page-link" href="<c:url value="/import">
+                                                   <c:param name="view" value="list"/>
+                                                   <c:param name="page" value="${i}"/>
+                                               </c:url>">${i}</a></li>
+                                        </c:forEach>
+                                    <li class="page-item ${(requestScope.totalPages <= param.page || requestScope.totalPages eq 1 )?"disabled":""}">
+                                        <a class="page-link" href="<c:url value="/import">
+                                               <c:param name="view" value="list"/>
+                                               <c:param name="page" value="${(empty param.page)?2:param.page + 1}"/>
+                                           </c:url>" aria-label="Next">
+                                            <span aria-hidden="true">&raquo;</span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </nav>
                         </div>
                     </section>
                 </div>

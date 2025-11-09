@@ -21,6 +21,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import model.Type;
 
 /**
  *
@@ -112,7 +113,7 @@ public class ImportServlet extends HttpServlet {
                 request.setAttribute("currentImport", importDAO.getElementByID(id));
                 request.setAttribute("importDetails", importDAO.getImportDetails(id));
             }
-        } else if (view.equalsIgnoreCase("addDetail")) {
+        } else if (view.equalsIgnoreCase("addDetail")) { 
             namepage = "addDetail";
             int id;
 
@@ -180,17 +181,15 @@ public class ImportServlet extends HttpServlet {
                 }
 
             } else if (action.equalsIgnoreCase("addDetail")) {
-                String ingredientName = request.getParameter("ingredientName");
-                int typeId = Integer.parseInt(request.getParameter("typeId"));
                 int importId = Integer.parseInt(request.getParameter("importId"));
-                int ingredientId = ingredientDAO.getLastId() + 1;
+                int ingredientId = Integer.parseInt(request.getParameter("ingredientId"));
                 int quantity = Integer.parseInt(request.getParameter("quantity"));
                 String unit = request.getParameter("unit");
                 int unitPrice = Integer.parseInt(request.getParameter("unitPrice"));
                 int totalPrice = unitPrice * quantity;
 
                 if (passValidation == true) {
-                    if (importDAO.addDetail(ingredientName, typeId, "Active", importId, ingredientId, quantity, unit, unitPrice, totalPrice) >= 1) {
+                    if (importDAO.addDetail(importId, ingredientId, quantity, unit, unitPrice, totalPrice) >= 1) {
                     } else {
                         passValidation = false;
                     }
@@ -273,7 +272,7 @@ public class ImportServlet extends HttpServlet {
             }
         }
 
-        response.sendRedirect(request.getContextPath() + "/import" + "status=" + (passValidation ? "success" : "fail") + "&lastAction=" + addEDtoEverything(action));
+        response.sendRedirect(request.getContextPath() + "/import?" + "status=" + (passValidation ? "success" : "fail") + "&lastAction=" + addEDtoEverything(action));
 
     }
 

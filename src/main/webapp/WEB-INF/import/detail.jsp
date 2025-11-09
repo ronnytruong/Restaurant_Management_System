@@ -1,9 +1,3 @@
-<%-- 
-    Document   : list
-    Created on : Oct 15, 2025, 5:09:24 PM
-    Author     : TruongBinhTrong
---%>
-
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
@@ -89,6 +83,22 @@
                                 <div>
                                     <h1 class="section-title mb-1">Import Detail</h1>
                                 </div>
+                                <div class="filters d-flex flex-wrap gap-2 justify-content-end">
+                                    <form action="<c:url value='supplier'><c:param name='page' value='1'/></c:url>" method="get" class="search-box input-group">
+                                            <div class="search-box input-group text-end">
+                                                <span class="input-group-text"><i class="bi bi-search"></i></span>
+                                                <input type="search" name="keyword" class="form-control"
+                                                       placeholder="Search by name"
+                                                       value="${param.keyword != null ? param.keyword : (requestScope.keyword != null ? requestScope.keyword : '')}">
+                                        </div>
+                                    </form>
+                                    <a class="btn btn-primary add-btn" href="<c:url value="import">
+                                           <c:param name="view" value="addDetail"/>
+                                           <c:param name="id" value="${currentImport.importId}"/>
+                                       </c:url>"><i class="bi bi-plus-circle"></i> Add Detail</a>
+
+                                </div>
+
                             </div>
 
                             <c:choose>
@@ -125,13 +135,6 @@
                                                     <p class="mb-0 fw-semibold"><c:out value='${currentImport.importDate}'/></p>
                                                 </div>
                                             </div>
-                                                <div class="text-end">
-                                                <a class="btn btn-primary add-btn" href="<c:url value="import">
-                                                       <c:param name="view" value="addDetail"/>
-                                                       <c:param name="id" value="${currentImport.importId}"/>
-                                                   </c:url>"><i class="bi bi-plus-circle"></i> Add Detail</a>
-                                            </div>
-
                                         </div>
 
                                         <div class="table-responsive">
@@ -180,6 +183,12 @@
                                                 </tbody>
                                             </table>
                                         </div>
+                                        <div class="text-end">
+                                            <a class="btn btn-success add-btn" class="form-control" href="<c:url value="import">
+                                                   <c:param name="view" value="addDetail"/>
+                                                   <c:param name="id" value="${currentImport.importId}"/>
+                                               </c:url>"><i class="bi bi-download"></i>Accept</a></div>
+
                                     </div>
                                 </c:when>
                                 <c:otherwise>

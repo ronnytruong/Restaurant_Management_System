@@ -8,22 +8,33 @@ package model;
  * @author TruongBinhTrong
  */
 public class Ingredient {
+
     private int ingredientId;
     private String ingredientName;
     private int typeId;
     private String typeName;
+    private String unit;
     private double price;
+    private int totalQuantity;
     private String status;
 
     public Ingredient() {
     }
 
-    public Ingredient(int ingredientId, String ingredientName, int typeId, String typeName, double price, String status) {
+    public Ingredient(int ingredientId, String ingredientName, int typeId, String typeName, String status) {
         this.ingredientId = ingredientId;
         this.ingredientName = ingredientName;
         this.typeId = typeId;
         this.typeName = typeName;
-        this.price = price;
+        this.status = status;
+    }
+
+    public Ingredient(int ingredientId, String ingredientName, String typeName, String unit, int totalQuantity, String status) {
+        this.ingredientId = ingredientId;
+        this.ingredientName = ingredientName;
+        this.typeName = typeName;
+        this.unit = unit;
+        this.totalQuantity = totalQuantity;
         this.status = status;
     }
 
@@ -33,6 +44,22 @@ public class Ingredient {
 
     public void setIngredientId(int ingredientId) {
         this.ingredientId = ingredientId;
+    }
+
+    public String getUnit() {
+        return unit;
+    }
+
+    public void setUnit(String unit) {
+        this.unit = unit;
+    }
+
+    public int getTotalQuantity() {
+        return totalQuantity;
+    }
+
+    public void setTotalQuantity(int totalQuantity) {
+        this.totalQuantity = totalQuantity;
     }
 
     public String getIngredientName() {

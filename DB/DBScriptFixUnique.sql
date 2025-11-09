@@ -79,7 +79,6 @@ CREATE TABLE ingredient (
     ingredient_id INT IDENTITY(1,1) NOT NULL,
     ingredient_name NVARCHAR(100) NOT NULL,
     type_id INT NOT NULL,
-    price DECIMAL(10,2) NOT NULL DEFAULT 0.00,
     status NVARCHAR(20) NOT NULL DEFAULT 'Active',
     CONSTRAINT PK_ingredient PRIMARY KEY (ingredient_id),
     CONSTRAINT FK_type FOREIGN KEY (type_id) REFERENCES type(type_id)
@@ -235,9 +234,10 @@ CREATE TABLE import_detail (
     import_detail_id INT IDENTITY(1,1) PRIMARY KEY,
     import_id INT NOT NULL,
     ingredient_id INT NOT NULL,
+	unit NVARCHAR(20) NOT NULL,
     quantity INT NOT NULL,
     unit_price DECIMAL(10,2) NOT NULL,
-    total_price AS (quantity * unit_price) PERSISTED,
+    total_price DECIMAL(10,2) NOT NULL,
     CONSTRAINT FK_ImportDetail_Import FOREIGN KEY (import_id)
         REFERENCES Import(import_id),
     CONSTRAINT FK_ImportDetail_Ingredient FOREIGN KEY (ingredient_id)

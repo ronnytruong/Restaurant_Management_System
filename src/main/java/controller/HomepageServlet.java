@@ -81,8 +81,8 @@ public class HomepageServlet extends HttpServlet {
      
                 request.setAttribute(attributeName, menuItems);
             }
-
-           
+            
+            
             request.getRequestDispatcher("/WEB-INF/homepage/homepage.jsp").forward(request, response);
 
         } catch (Exception e) {

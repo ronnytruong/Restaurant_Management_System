@@ -51,6 +51,40 @@ public class SupplierDAO extends DBContext {
 
         return list;
     }
+    
+        public List<Supplier> getAll(int page, String keyword) {
+        List<Supplier> list = new ArrayList<>();
+
+        try {
+            String query = "SELECT *\n"
+                    + "FROM     supplier\n"
+                    + "WHERE  (LOWER(status) <> LOWER(N'Deleted'))\n"
+                    + "AND (LOWER(supplier_name) LIKE LOWER(?))\n"
+                    + "ORDER BY supplier_id\n"
+                    + "OFFSET ? ROWS \n"
+                    + "FETCH NEXT ? ROWS ONLY;";
+
+            keyword = "%" + keyword + "%";
+
+            ResultSet rs = this.executeSelectionQuery(query, new Object[]{keyword, (page - 1) * MAX_ELEMENTS_PER_PAGE, MAX_ELEMENTS_PER_PAGE});
+
+            while (rs.next()) {
+                Supplier supplier = new Supplier(
+                        rs.getInt("supplier_id"), 
+                        rs.getString("supplier_name"),
+                        rs.getString("phone_number"), 
+                        rs.getString("email"), 
+                        rs.getString("address"), 
+                        rs.getString("contact_person"), 
+                        rs.getString("status")
+                );
+                list.add(supplier);
+            }
+        } catch (SQLException ex) {
+        }
+
+        return list;
+    }
 
     public List<Supplier> getAll(int page) {
         List<Supplier> list = new ArrayList<>();
@@ -171,7 +205,7 @@ public class SupplierDAO extends DBContext {
 
     public int countItem() {
         try {
-            String query = "select count(supplier_id) as numrow from [dbo].[supplier]";
+            String query = "select count(supplier_id) as numrow from supplier ";
             ResultSet rs = this.executeSelectionQuery(query, null);
             if (rs.next()) {
                 return rs.getInt(1);

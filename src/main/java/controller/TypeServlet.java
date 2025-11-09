@@ -24,7 +24,9 @@ import jakarta.servlet.http.HttpServletResponse;
  */
 @WebServlet(name = "TypeServlet", urlPatterns = {"/type"})
 public class TypeServlet extends HttpServlet {
+
     TypeDAO typeDAO = new TypeDAO();
+
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -65,6 +67,10 @@ public class TypeServlet extends HttpServlet {
             throws ServletException, IOException {
         String namepage = "";
         String view = request.getParameter("view");
+        String keyword = request.getParameter("keyword");
+        if (keyword == null) {
+            keyword = "";
+        }
 
         if (!validateString(view, -1) || view.equalsIgnoreCase("list")) {
             namepage = "list";
@@ -96,7 +102,8 @@ public class TypeServlet extends HttpServlet {
         }
 
         request.setAttribute("totalPages", totalPages);
-        request.setAttribute("typesList", typeDAO.getAll());
+        request.setAttribute("keyword", keyword);
+        request.setAttribute("typesList", typeDAO.getAll(page, keyword));
 
         request.getRequestDispatcher("/WEB-INF/type/" + namepage + ".jsp").forward(request, response);
     }

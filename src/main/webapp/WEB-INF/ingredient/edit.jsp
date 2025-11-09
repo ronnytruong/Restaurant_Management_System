@@ -1,4 +1,4 @@
-<%--
+ <%--
     Document   : edit
     Created on : Oct 22, 2025
     Author     : TruongBinhTrong
@@ -62,23 +62,7 @@
                                     </select>
                                 </td>
                             </tr>
-                            
-                            <%-- Price --%>
-                            <tr>
-                                <th>
-                                    <label for="priceInput">Price</label>
-                                </th>
-                                <td>
-                                    <input type="number" 
-                                           name="price" 
-                                           id="priceInput" 
-                                           value="${currentIngredient.price}" 
-                                           class="form-control" 
-                                           step="0.01"
-                                           min="0.00"
-                                           required>
-                                </td>
-                            </tr>
+                           
                             
                             <%-- Action Buttons (Styled to match the provided template) --%>
                             <tr>

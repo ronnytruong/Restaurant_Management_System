@@ -1,9 +1,3 @@
-<%-- 
-    Document   : add
-    Created on : Oct 11, 2025, 5:21:51 PM
-    Author     : PHAT
---%>
-
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@include file="/WEB-INF/include/headerDashboard.jsp" %>
@@ -69,7 +63,7 @@
                             <label for="ingredientId">Ingredient Name</label>
                         </th>
                         <td>
-                            <select name="ingredientId">    
+                            <select name="ingredientId" class="form-select">    
                                 <c:forEach var="ing" items="${ingredientList}">
                                     <option value="${ing.ingredientId}" required class="form-control">${ing.ingredientName}</option>
                                 </c:forEach>
@@ -92,7 +86,7 @@
                         </th>
                         <td>
                             <div style="display: flex; gap: 10px; align-items: center;">
-                                <select id="unit" name="unit" onchange="toggleBoxInput()">
+                                <select id="unit" name="unit" onchange="toggleBoxInput()" class="form-select">
                                     <option value="">-- Select Unit --</option>
                                     <option value="Bottle">Bottle</option>
                                     <option value="Gram">Gram</option>
@@ -117,7 +111,8 @@
                         <td>
                         </td>
                         <td>
-                            <button class="btn btn-outline-dark" type="submit" name="action" value="addDetail">Add</button>
+                            <button class="btn btn-success" type="submit" name="action" value="addDetail">Save</button>
+                            <a class="btn btn-outline-dark" href="<c:url value='import?view=detail&id=${currentImport.importId}'/>">Cancel</a>
                         </td>
                     </tr>
                 </table>
