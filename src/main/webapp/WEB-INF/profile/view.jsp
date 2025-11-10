@@ -125,10 +125,10 @@
 
                                 <%-- Action Buttons --%>
                                 <div class="text-center mt-4 pt-4 border-top">
-                                    <a href="customer-profile?action=edit" class="btn btn-yummy-primary px-5 py-2 me-3">
+                                    <a href="customer-profile?action=edit" class="btn btn-danger px-5 py-2 me-3">
                                         <i class="bi bi-pencil-square me-1"></i> Edit Profile
                                     </a>
-                                    <a href="customer-profile?action=change-password" class="btn btn-outline-yummy px-5 py-2">
+                                    <a href="customer-profile?action=change-password" class="btn btn-outline-danger px-5 py-2">
                                         <i class="bi bi-key me-1"></i> Change Password
                                     </a>
                                 </div>
@@ -142,6 +142,6 @@
         </main>
 
         <%-- Include Footer --%>
-        <%@include file="/WEB-INF/include/customerFooter.jsp" %>
+        <%@include file="/WEB-INF/include/footerCustomer.jsp" %>
     </body>
 </html>

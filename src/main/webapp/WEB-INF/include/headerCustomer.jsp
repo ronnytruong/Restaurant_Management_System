@@ -59,8 +59,8 @@
 
                 <nav id="navmenu" class="navmenu">
                     <ul>
-                        <li><a href="<c:url value="homepage"/>#hero">Home<br></a></li>
-                        <li><a href="<c:url value="homepage"/>#menu">Menu</a></li>
+                        <li><a href="homepage">Home<br></a></li>
+                        <li><a href="menu">Menu</a></li>
                         <li><a href="<c:url value="homepage"/>#chefs">Chefs</a></li>
                         <li><a href="<c:url value="homepage"/>#gallery">Gallery</a></li>
                         <li><a href="<c:url value="homepage"/>#contact">Contact</a></li>
