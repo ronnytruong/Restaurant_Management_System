@@ -4,7 +4,6 @@
  */
 package controller;
 
-import static constant.CommonFunction.*;
 import dao.RoleDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -13,6 +12,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 /**
  *
@@ -21,6 +21,7 @@ import jakarta.servlet.http.HttpServletResponse;
 @WebServlet(name = "RoleServlet", urlPatterns = {"/role"})
 public class RoleServlet extends HttpServlet {
 
+    private final int MAX_ELEMENTS_PER_PAGE = 15;
     RoleDAO roleDAO = new RoleDAO();
 
     /**
@@ -69,7 +70,7 @@ public class RoleServlet extends HttpServlet {
             keyword = "";
         }
 
-        if (!validateString(view, -1) || view.equalsIgnoreCase("list")) {
+        if (view == null || view.isBlank() || view.equalsIgnoreCase("list")) {
             namepage = "list";
         } else if (view.equalsIgnoreCase("add")) {
             namepage = "add";
@@ -99,7 +100,7 @@ public class RoleServlet extends HttpServlet {
         }
 
         request.setAttribute("totalPages", totalPages);
-        request.setAttribute("rolesList", roleDAO.getAll(page, keyword));
+        request.setAttribute("rolesList", roleDAO.getAll(page, MAX_ELEMENTS_PER_PAGE, keyword));
 
         request.getRequestDispatcher("/WEB-INF/role/" + namepage + ".jsp").forward(request, response);
         removePopup(request);
@@ -129,7 +130,7 @@ public class RoleServlet extends HttpServlet {
                 String description = request.getParameter("description");
 
 //validate
-                if (!validateString(name, -1)) {
+                if (name == null || name.isBlank()) {
                     popupStatus = false;
                     popupMessage = "The add action is NOT successfull. The input has some error.";
                 } else {
@@ -141,7 +142,7 @@ public class RoleServlet extends HttpServlet {
                     if (checkError >= 1) {
                     } else {
                         popupStatus = false;
-                        popupMessage = "The add action is NOT successfull. The object has " + getSqlErrorCode(checkError) + " error.";
+                        popupMessage = "The add action is NOT successfull. Check the information again.";
                     }
                 }
 
@@ -157,8 +158,7 @@ public class RoleServlet extends HttpServlet {
                 }
 
 //validate
-                if (!validateString(name, -1)
-                        || !validateInteger(id, false, false, true)) {
+                if (name == null || name.isBlank() || id <= 0) {
                     popupStatus = false;
                     popupMessage = "The edit action is NOT successfull. The input has some error.";
                 } else {
@@ -171,7 +171,7 @@ public class RoleServlet extends HttpServlet {
                     if (checkError >= 1) {
                     } else {
                         popupStatus = false;
-                        popupMessage = "The edit action is NOT successfull. The object has " + getSqlErrorCode(checkError) + " error.";
+                        popupMessage = "The edit action is NOT successfull. Check the information again.";
                     }
                 }
             } else if (action.equalsIgnoreCase("delete")) {
@@ -185,7 +185,7 @@ public class RoleServlet extends HttpServlet {
                 }
 
 //validate
-                if (!validateInteger(id, false, false, true)) {
+                if (id <= 0) {
                     popupStatus = false;
                     popupMessage = "The delete action is NOT successfull.";
                 } else {
@@ -199,7 +199,7 @@ public class RoleServlet extends HttpServlet {
 
                     } else {
                         popupStatus = false;
-                        popupMessage = "The delete action is NOT successfull. The object has " + getSqlErrorCode(checkError) + " error.";
+                        popupMessage = "The delete action is NOT successfull.  Check the information again.";
                     }
                 }
             }
@@ -218,4 +218,20 @@ public class RoleServlet extends HttpServlet {
     public String getServletInfo() {
         return "Short description";
     }// </editor-fold>
+
+    private int getTotalPages(int countItems) {
+        return (int) Math.ceil((double) countItems / MAX_ELEMENTS_PER_PAGE);
+    }
+
+    private void setPopup(HttpServletRequest request, boolean status, String message) {
+        HttpSession session = request.getSession(false);
+        session.setAttribute("popupStatus", status);
+        session.setAttribute("popupMessage", message);
+    }
+
+    private void removePopup(HttpServletRequest request) {
+        HttpSession session = request.getSession(false);
+        session.removeAttribute("popupStatus");
+        session.removeAttribute("popupMessage");
+    }
 }

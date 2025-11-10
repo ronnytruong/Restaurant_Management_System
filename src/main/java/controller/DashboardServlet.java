@@ -5,6 +5,8 @@
 
 package controller;
 
+import dao.OrderDAO;
+import dao.OrderItemDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -12,6 +14,8 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.sql.Date;
+import java.util.List;
 
 /**
  *
@@ -20,6 +24,8 @@ import jakarta.servlet.http.HttpServletResponse;
 @WebServlet(name="DashboardServlet", urlPatterns={"/dashboard"})
 public class DashboardServlet extends HttpServlet {
    
+    private final OrderItemDAO orderItemDAO = new OrderItemDAO();
+    
     /** 
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
      * @param request servlet request
@@ -55,6 +61,13 @@ public class DashboardServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
+        
+        List<Date> datesList = orderItemDAO.statisticDate();
+        List<Long> incomeList = orderItemDAO.statisticIncome();
+        
+        request.setAttribute("datesList", datesList);
+        request.setAttribute("incomeList", incomeList);
+        
         request.getRequestDispatcher("/WEB-INF/dashboard/dashboard.jsp").forward(request, response);
     } 
 

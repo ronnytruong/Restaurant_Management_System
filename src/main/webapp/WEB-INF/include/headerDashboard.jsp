@@ -23,7 +23,28 @@
         <link href="<%=request.getContextPath()%>/assets/css/main.css" rel="stylesheet">
 
         <!-- Admin Listing CSS -->
-        <link href="<%=request.getContextPath()%>/assets/css/dashboard.css" rel="stylesheet">
+        <link href="<%=request.getContextPath()%>/assets/css/dashboard0.css" rel="stylesheet">
+
+        <c:if test="${not empty dashboard_cssjs}">
+            <style>
+                .bd-placeholder-img {
+                    font-size: 1.125rem;
+                    text-anchor: middle;
+                    -webkit-user-select: none;
+                    -moz-user-select: none;
+                    user-select: none;
+                }
+
+                @media (min-width: 768px) {
+                    .bd-placeholder-img-lg {
+                        font-size: 3.5rem;
+                    }
+                }
+            </style>
+            
+            <link href="<%=request.getContextPath()%>/assets/css/dashboard.css" rel="stylesheet">
+        </c:if>
+
     </head>
 
     <body class="admin-list-page">
@@ -46,7 +67,7 @@
                                 <div class="avatar">${employee.empName.charAt(0)}</div>
                                 <div>
                                     <p class="mb-0 fw-semibold text-dark">${employee.empName}</p>
-                                    <span class="role">${employee.roleName}</span>
+                                    <span class="role">${employee.role.name}</span>
                                 </div>
                             </a>
 
@@ -83,7 +104,8 @@
                                 <li><a href="recipe"><i class="bi bi-book"></i> Recipe List</a></li>
                                 <li><a href="import"><i class="bi bi-download"></i> Import List</a></li>
                                 <li><a href="supplier"><i class="bi bi-truck"></i> Supplier List</a></li>
-                                <li><a href="account"><i class="bi bi-person-badge"></i> Account List</a></li>
+                                <li><a href="employee"><i class="bi bi-person-badge"></i> Employee List</a></li>
+                                <li><a href="customer"><i class="bi bi-person-badge"></i> Customer List</a></li>
                                 <li><a href="role"><i class="bi bi-shield-lock"></i> Role List</a></li>
                                 <li><a href="voucher"><i class="bi bi-ticket-perforated"></i> Voucher List</a></li><li class="menu-separator mt-3 mb-3"></li>
                             </ul>
