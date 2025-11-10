@@ -73,6 +73,7 @@
         <%-- Include Employee Header (nav only Dashboard) --%>
         <%@ include file="/WEB-INF/include/employeeHeader.jsp" %>
 
+<<<<<<< HEAD
         <main class="main">
             <section id="profile" class="profile-section pt-5 section">
                 <div class="container" data-aos="fade-up" data-aos-delay="100">
@@ -215,8 +216,6 @@
                                 </div>
 
                             </div>
-                        </div>
-                    </div>
 
                 </div>
             </section>

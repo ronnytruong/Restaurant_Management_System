@@ -4,8 +4,7 @@
  */
 package controller;
 
-import static constant.CommonFunction.*;
-import constant.Constants;
+import static constant.Constants.*;
 import dao.TableDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -14,6 +13,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 /**
  *
@@ -69,7 +69,7 @@ public class TableServlet extends HttpServlet {
             keyword = "";
         }
 
-        if (!validateString(view, -1) || view.equalsIgnoreCase("list")) {
+        if (!isValidString(view, -1) || view.equalsIgnoreCase("list")) {
             namepage = "list";
         } else if (view.equalsIgnoreCase("add")) {
             namepage = "add";
@@ -131,7 +131,7 @@ public class TableServlet extends HttpServlet {
                 }
 
                 // validate
-                if (!validateString(number, 10) || !validateInteger(capacity, false, false, true)) {
+                if (!isValidString(number, 10) || !isValidInteger(capacity, false, false, true)) {
                     popupStatus = false;
                     popupMessage = "The add action is NOT successful. Invalid input.";
                 } else {
@@ -158,9 +158,9 @@ public class TableServlet extends HttpServlet {
                 }
 
                 // validate
-                if (!validateInteger(id, false, false, true)
-                        || !validateString(number, 10)
-                        || !validateInteger(capacity, false, false, true)) {
+                if (!isValidInteger(id, false, false, true)
+                        || !isValidString(number, 10)
+                        || !isValidInteger(capacity, false, false, true)) {
                     popupStatus = false;
                     popupMessage = "The edit action is NOT successful. Invalid input.";
                 } else {
@@ -182,7 +182,7 @@ public class TableServlet extends HttpServlet {
                 }
 
                 // validate
-                if (!validateInteger(id, false, false, true)) {
+                if (!isValidInteger(id, false, false, true)) {
                     popupStatus = false;
                     popupMessage = "The delete action is NOT successful. Invalid ID.";
                 } else {
@@ -205,7 +205,7 @@ public class TableServlet extends HttpServlet {
                 }
 
                 // validate id and status
-                if (!validateInteger(id, false, false, true)
+                if (!isValidInteger(id, false, false, true)
                         || newStatus == null
                         || !(newStatus.equalsIgnoreCase("Available")
                         || newStatus.equalsIgnoreCase("Reserved")
@@ -228,7 +228,63 @@ public class TableServlet extends HttpServlet {
 
         setPopup(request, popupStatus, popupMessage);
         response.sendRedirect(request.getContextPath() + "/table");
+    }
+
+    private boolean isValidString(String str, int limitLength) {
+        if (limitLength < 0) {
+            limitLength = Integer.MAX_VALUE;
         }
+
+        return !(str == null || str.isEmpty()) && str.length() <= limitLength;
+    }
+
+    private boolean isValidInteger(int value, boolean allowZero, boolean allowNegative, boolean allowPositive) {
+        if (!allowNegative && value < 0) {
+            return false;
+        }
+        if (!allowZero && value == 0) {
+            return false;
+        }
+
+        if (!allowPositive && value > 0) {
+            return false;
+        }
+        return true;
+    }
+
+    private int getTotalPages(int countItems) {
+        return (int) Math.ceil((double) countItems / MAX_ELEMENTS_PER_PAGE);
+    }
+
+    private String getSqlErrorCode(int temp_code) {
+        if (temp_code + DUPLICATE_KEY == 0) {                //check trung code/key
+            return "DUPLICATE_KEY";
+        } else if (temp_code + FOREIGN_KEY_VIOLATION == 0) {
+            return "FOREIGN_KEY_VIOLATION";
+        } else if (temp_code + NULL_INSERT_VIOLATION == 0) {
+            return "NULL_INSERT_VIOLATION";
+        } else if (temp_code + UNIQUE_INDEX == 0) {
+            return "DUPLICATE_UNIQUE";
+        }
+
+        return "Unknow Error Code:" + temp_code;
+    }
+
+    private void setPopup(HttpServletRequest request, boolean status, String message) {
+        HttpSession session = request.getSession(false);
+        if (session != null) {
+            session.setAttribute("popupStatus", status);
+            session.setAttribute("popupMessage", message);
+        }
+    }
+
+    private void removePopup(HttpServletRequest request) {
+        HttpSession session = request.getSession(false);
+        if (session != null) {
+            session.removeAttribute("popupStatus");
+            session.removeAttribute("popupMessage");
+        }
+    }
 
     /**
      * Returns a short description of the servlet.
