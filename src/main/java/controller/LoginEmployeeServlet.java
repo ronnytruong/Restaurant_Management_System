@@ -16,7 +16,7 @@ import jakarta.servlet.http.HttpSession;
  * @author Huynh Thai Duy Phuong - CE190603 
  */
 
-@WebServlet(name = "EmployeeLoginServlet", urlPatterns = {"/employee-login"})
+@WebServlet(name = "EmployeeLoginServlet", urlPatterns = {"/login_employee"})
 public class LoginEmployeeServlet extends HttpServlet {
 
    

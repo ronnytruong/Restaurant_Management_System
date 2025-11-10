@@ -84,7 +84,7 @@
                         Don't have an account? <a href="register">Register</a>
                     </p>
                     <p class="signup-link">
-                        Or if you are a member of restaurant. <a href="employee-login">Login as Employee</a>
+                        Or if you are a member of restaurant. <a href="login_employee">Login as Employee</a>
                     </p>
                 </form>
             </div>
