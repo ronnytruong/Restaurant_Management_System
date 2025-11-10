@@ -208,11 +208,7 @@ public class RecipeDAO extends DBContext {
         return null;
     }
 
-    /**
-     * Thêm item vào recipe. Trước khi insert: kiểm tra ingredient tồn tại và
-     * chưa bị Deleted (bảng ingredient thuộc team khác => chỉ kiểm tra). Nếu
-     * ingredient không hợp lệ trả về -2.
-     */
+    
     public int addItem(int recipeId, int ingredientId, double quantity, String unit, String note) {
         try {
             Ingredient ing = ingredientDAO.getElementByID(ingredientId);
@@ -231,10 +227,7 @@ public class RecipeDAO extends DBContext {
         return -1;
     }
 
-    /**
-     * Sửa recipe_item, trước đó kiểm tra ingredient hợp lệ (read-only check).
-     * Nếu ingredient không hợp lệ trả về -2.
-     */
+    
     public int editItem(int recipeItemId, int ingredientId, double quantity, String unit, String note, String status) {
         try {
             Ingredient ing = ingredientDAO.getElementByID(ingredientId);
