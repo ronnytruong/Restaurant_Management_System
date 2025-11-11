@@ -43,6 +43,26 @@
                             </select>
                         </td>
                     </tr>
+                    
+                    <tr>
+                        <th>
+                            <label for="unit">Unit</label>
+                        </th>
+                        <td>
+                            <div style="display: flex; gap: 10px; align-items: center;">
+                                <select id="unit" name="unit" onchange="toggleBoxInput()" class="form-select">
+                                    <option value="">-- Select Unit --</option>
+                                    <option value="Bottle">Bottle</option>
+                                    <option value="Gram">Gram</option>
+                                    <option value="Liter">Liter</option>
+                                    <option value="Piece">Piece</option>
+                                    <option value="Crate">Crate</option>
+                                </select>
+                            </div>
+                        </td>
+                    </tr>
+                    
+                    
 
 
                     <%-- Action Buttons --%>

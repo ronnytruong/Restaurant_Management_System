@@ -65,7 +65,7 @@
                         <td>
                             <select name="ingredientId" class="form-select">    
                                 <c:forEach var="ing" items="${ingredientList}">
-                                    <option value="${ing.ingredientId}" required class="form-control">${ing.ingredientName}</option>
+                                    <option value="${ing.ingredientId}" required class="form-control">${ing.ingredientName} : ${ing.unit}</option>
                                 </c:forEach>
                             </select>
                         </td>
@@ -77,24 +77,6 @@
                         </th>
                         <td>
                             <input type="number" name="quantity" id="quantity" class="form-control" required>
-                        </td>
-                    </tr>
-
-                    <tr>
-                        <th>
-                            <label for="unit">Unit</label>
-                        </th>
-                        <td>
-                            <div style="display: flex; gap: 10px; align-items: center;">
-                                <select id="unit" name="unit" onchange="toggleBoxInput()" class="form-select">
-                                    <option value="">-- Select Unit --</option>
-                                    <option value="Bottle">Bottle</option>
-                                    <option value="Gram">Gram</option>
-                                    <option value="Liter">Liter</option>
-                                    <option value="Piece">Piece</option>
-                                    <option value="Crate">Crate</option>
-                                </select>
-                            </div>
                         </td>
                     </tr>
 

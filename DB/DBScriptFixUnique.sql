@@ -78,6 +78,7 @@ WHERE status <> 'deleted';
 CREATE TABLE ingredient (
     ingredient_id INT IDENTITY(1,1) NOT NULL,
     ingredient_name NVARCHAR(100) NOT NULL,
+	unit NVARCHAR(20) NOT NULL,
     type_id INT NOT NULL,
     status NVARCHAR(20) NOT NULL DEFAULT 'Active',
     CONSTRAINT PK_ingredient PRIMARY KEY (ingredient_id),
@@ -233,8 +234,7 @@ CREATE TABLE import (
 CREATE TABLE import_detail (
     import_detail_id INT IDENTITY(1,1) PRIMARY KEY,
     import_id INT NOT NULL,
-    ingredient_id INT NOT NULL,
-	unit NVARCHAR(20) NOT NULL,
+    ingredient_id INT NOT NULL UNIQUE,
     quantity INT NOT NULL,
     unit_price DECIMAL(10,2) NOT NULL,
     total_price DECIMAL(10,2) NOT NULL,

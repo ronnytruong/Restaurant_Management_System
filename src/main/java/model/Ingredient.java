@@ -21,9 +21,10 @@ public class Ingredient {
     public Ingredient() {
     }
 
-    public Ingredient(int ingredientId, String ingredientName, int typeId, String typeName, String status) {
+    public Ingredient(int ingredientId, String ingredientName, String unit, int typeId, String typeName, String status) {
         this.ingredientId = ingredientId;
         this.ingredientName = ingredientName;
+        this.unit = unit;
         this.typeId = typeId;
         this.typeName = typeName;
         this.status = status;

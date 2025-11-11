@@ -24,6 +24,7 @@ public class OrderServlet extends HttpServlet {
 
     private final int MAX_ELEMENTS_PER_PAGE = 15;
     private final OrderDAO orderDAO = new OrderDAO();
+    private final OrderItemDAO orderItemDAO = new OrderItemDAO();
     private final VoucherDAO voucherDAO = new VoucherDAO();
     private final ReservationDAO reservationDAO = new ReservationDAO();
     private final TableDAO tableDAO = new TableDAO();
@@ -69,11 +70,7 @@ public class OrderServlet extends HttpServlet {
             throws ServletException, IOException {
         String namepage = "";
         String view = request.getParameter("view");
-
-//        String keyword = request.getParameter("keyword");
-//        if (keyword == null) {
-//            keyword = "";
-//        }
+        
         if (view == null || view.isBlank() || view.equalsIgnoreCase("list")) {
             namepage = "list";
         } else if (view.equalsIgnoreCase("add")) {
@@ -220,32 +217,6 @@ public class OrderServlet extends HttpServlet {
                     }
                 }
             } else if (action.equalsIgnoreCase("delete")) {
-                int id;
-
-                try {
-                    id = Integer.parseInt(request.getParameter("id"));
-                } catch (NumberFormatException e) {
-                    id = -1;
-                }
-
-//validate
-                if (id <= 0) {
-                    popupStatus = false;
-                    popupMessage = "The delete action is NOT successfull.";
-                } else {
-                    popupMessage = "The object with id=" + id + " deleted successfull.";
-                }
-//end
-                if (popupStatus == true) {
-                    int checkError = orderDAO.delete(id);
-
-                    if (checkError >= 1) {
-
-                    } else {
-                        popupStatus = false;
-                        popupMessage = "The delete action is NOT successfull. Check the information again.";
-                    }
-                }
             } else if (action.equalsIgnoreCase("approve")) {
 
                 int id;
@@ -257,7 +228,7 @@ public class OrderServlet extends HttpServlet {
                 }
 
 //validate
-                if (id <= 0) {
+                if (id <= 0 || !orderDAO.validateApprove(id) || orderItemDAO.getAllByOrderId(id).size() <= 0) {
                     popupStatus = false;
                     popupMessage = "The approve action is NOT successfull.";
                 } else {
@@ -351,13 +322,13 @@ public class OrderServlet extends HttpServlet {
         return (int) Math.ceil((double) countItems / MAX_ELEMENTS_PER_PAGE);
     }
 
-    public static void setPopup(HttpServletRequest request, boolean status, String message) {
+    private void setPopup(HttpServletRequest request, boolean status, String message) {
         HttpSession session = request.getSession(false);
         session.setAttribute("popupStatus", status);
         session.setAttribute("popupMessage", message);
     }
 
-    public static void removePopup(HttpServletRequest request) {
+    private void removePopup(HttpServletRequest request) {
         HttpSession session = request.getSession(false);
         session.removeAttribute("popupStatus");
         session.removeAttribute("popupMessage");

@@ -115,7 +115,7 @@
         </nav>
     </div>
 </section>
-<div class="modal" id="del  etePopup" tabindex="-1">
+<div class="modal" id="deletePopup" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">

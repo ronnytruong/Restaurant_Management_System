@@ -21,11 +21,10 @@ public class Employee {
     private String phoneNumber;
     private String email;
     private String address;
-    private int roleId;
-    private String roleName;
+    private Role role;
     private String status;
 
-    public Employee(int empId, String empAccount, String password, String empName, String gender, Date dob, String phoneNumber, String email, String address, int roleId, String roleName, String status) {
+    public Employee(int empId, String empAccount, String password, String empName, String gender, Date dob, String phoneNumber, String email, String address, Role role, String status) {
         this.empId = empId;
         this.empAccount = empAccount;
         this.password = password;
@@ -35,8 +34,7 @@ public class Employee {
         this.phoneNumber = phoneNumber;
         this.email = email;
         this.address = address;
-        this.roleId = roleId;
-        this.roleName = roleName;
+        this.role = role;
         this.status = status;
     }
 
@@ -112,20 +110,12 @@ public class Employee {
         this.address = address;
     }
 
-    public int getRoleId() {
-        return roleId;
+    public Role getRole() {
+        return role;
     }
 
-    public void setRoleId(int roleId) {
-        this.roleId = roleId;
-    }
-
-    public String getRoleName() {
-        return roleName;
-    }
-
-    public void setRoleName(String roleName) {
-        this.roleName = roleName;
+    public void setRole(Role role) {
+        this.role = role;
     }
 
     public String getStatus() {
@@ -136,4 +126,5 @@ public class Employee {
         this.status = status;
     }
 
+    
 }

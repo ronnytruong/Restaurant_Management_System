@@ -84,7 +84,7 @@ public class IngredientServlet extends HttpServlet {
         if (!validateString(view, -1) || view.equalsIgnoreCase("list")) {
             int id = 0;
             namepage = "list";
-            request.setAttribute("importList", importDAO.getImportDetails(id));
+            request.setAttribute("importList", importDAO.getImportDetails(id, page, keyword));
         } else if (view.equalsIgnoreCase("add")) {
             namepage = "add";
         } else if (view.equalsIgnoreCase("edit")) {
@@ -132,7 +132,9 @@ public class IngredientServlet extends HttpServlet {
 
             if (action.equalsIgnoreCase("add")) {
                 String name = request.getParameter("ingredientName");
+                String unit = request.getParameter("unit");
                 int typeId;
+                
 
                 try {
                     typeId = Integer.parseInt(request.getParameter("typeId"));
@@ -146,7 +148,7 @@ public class IngredientServlet extends HttpServlet {
                 }
                 //end
                 if (passValidation == true) {
-                    if (ingredientDAO.add(name, typeId) >= 1) {
+                    if (ingredientDAO.add(name, typeId, unit) >= 1) {
                     } else {
                         passValidation = false;
                     }
@@ -154,8 +156,10 @@ public class IngredientServlet extends HttpServlet {
 
             } else if (action.equalsIgnoreCase("edit")) {
                 int id;
-                String name = request.getParameter("ingredientName");
                 int typeId;
+                String name = request.getParameter("ingredientName");
+                String unit = request.getParameter("unit");
+
 
                 try {
                     id = Integer.parseInt(request.getParameter("id"));
@@ -178,7 +182,7 @@ public class IngredientServlet extends HttpServlet {
                 }
                 //end
                 if (passValidation == true) {
-                    int checkError = ingredientDAO.edit(id, name, typeId);
+                    int checkError = ingredientDAO.edit(id, name, typeId, unit);
 
                     if (checkError >= 1) {
 

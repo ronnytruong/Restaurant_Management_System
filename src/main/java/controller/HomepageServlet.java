@@ -61,38 +61,29 @@ public class HomepageServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         MenuItemDAO menuItemDAO = new MenuItemDAO();
-           
         try {
-           
+
             List<String> categoryNames = menuItemDAO.getTopCategoryNames();
 
-          
             request.setAttribute("categoryNames", categoryNames);
 
-     
             for (String categoryName : categoryNames) {
-                
-                
+
                 List<MenuItem> menuItems = menuItemDAO.getTopMenuItemsByCategoryName(categoryName);
-                
-               
+
                 String attributeName = categoryName.toLowerCase().replace(" ", "").concat("List");
-                
-     
+
                 request.setAttribute(attributeName, menuItems);
             }
-            
-            
+
             request.getRequestDispatcher("/WEB-INF/homepage/homepage.jsp").forward(request, response);
 
         } catch (Exception e) {
-            
+
             log("Error in MenuItemServlet: " + e.getMessage(), e);
-          
+
             throw new ServletException("Could not load menu data.", e);
         }
-       
-
     }
 
     /**

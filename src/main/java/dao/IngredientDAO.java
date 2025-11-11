@@ -28,7 +28,7 @@ public class IngredientDAO extends DBContext {
                     + "    i.ingredient_id,\n"
                     + "    i.ingredient_name,\n"
                     + "    t.type_name,\n"
-                    + "	COALESCE(im.unit, 'NULL') AS unit,\n"
+                    + "	i.unit,\n"
                     + "    COALESCE(SUM(im.quantity), 0) AS TotalQuantity,\n"
                     + "	i.status\n"
                     + "FROM ingredient i\n"
@@ -41,7 +41,7 @@ public class IngredientDAO extends DBContext {
                     + "    i.ingredient_id,\n"
                     + "    i.ingredient_name,\n"
                     + "    t.type_name,\n"
-                    + "	im.unit,\n"
+                    + "	i.unit,\n"
                     + "    i.status\n"
                     + "ORDER BY \n"
                     + "    i.ingredient_id\n";
@@ -73,13 +73,13 @@ public class IngredientDAO extends DBContext {
         try {
             String query
                     = "SELECT i.ingredient_id, i.ingredient_name, t.type_name, "
-                    + "COALESCE(im.unit, 'NULL') AS unit, COALESCE(SUM(im.quantity), 0) AS TotalQuantity, i.status "
+                    + "i.unit, COALESCE(SUM(im.quantity), 0) AS TotalQuantity, i.status "
                     + "FROM ingredient i "
                     + "JOIN type t ON i.type_id = t.type_id "
                     + "LEFT JOIN import_detail im ON im.ingredient_id = i.ingredient_id "
                     + "WHERE LOWER(i.status) != LOWER('Deleted') "
                     + "  AND LOWER(i.ingredient_name) LIKE LOWER(?) "
-                    + "GROUP BY i.ingredient_id, i.ingredient_name, t.type_name, im.unit, i.status "
+                    + "GROUP BY i.ingredient_id, i.ingredient_name, t.type_name, i.unit, i.status "
                     + "ORDER BY i.ingredient_id "
                     + "OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
 
@@ -109,7 +109,7 @@ public class IngredientDAO extends DBContext {
     public Ingredient getElementByID(int id) {
 
         try {
-            String query = "SELECT i.ingredient_id, i.ingredient_name, i.type_id, t.type_name, i.price, i.status\n"
+            String query = "SELECT i.ingredient_id, i.ingredient_name, i.unit, i.type_id, t.type_name, i.price, i.status\n"
                     + "FROM ingredient AS i\n"
                     + "LEFT JOIN type AS t ON i.type_id = t.type_id\n"
                     + "WHERE (i.ingredient_id = ? and LOWER(i.status) != LOWER(N'Deleted'))\n";
@@ -121,6 +121,7 @@ public class IngredientDAO extends DBContext {
                 Ingredient ing = new Ingredient(
                         rs.getInt("ingredient_id"),
                         rs.getString("ingredient_name"),
+                        rs.getString("unit"),
                         rs.getInt("type_id"),
                         rs.getString("type_name"),
                         rs.getString("status")
@@ -151,13 +152,13 @@ public class IngredientDAO extends DBContext {
         return -1;
     }
 
-    public int add(String ingredient_name, int type_id) {
+    public int add(String ingredient_name, int type_id, String unit) {
 
         try {
-            String query = "INSERT INTO ingredient (ingredient_name, type_id, status)\n"
-                    + "VALUES (?, ?, ?)";
+            String query = "INSERT INTO ingredient (ingredient_name, type_id, unit, status)\n"
+                    + "VALUES (?, ?, ?, ?)";
 
-            return this.executeQuery(query, new Object[]{ingredient_name, type_id, "Active"});
+            return this.executeQuery(query, new Object[]{ingredient_name, type_id, unit, "Active"});
 
         } catch (SQLException ex) {
 
@@ -171,14 +172,14 @@ public class IngredientDAO extends DBContext {
         return -1;
     }
 
-    public int edit(int ingredient_id, String ingredient_name, int type_id) {
+    public int edit(int ingredient_id, String ingredient_name, int type_id, String unit){
         try {
 
             String query = "UPDATE ingredient\n"
-                    + "SET ingredient_name = ?, type_id = ?\n"
+                    + "SET ingredient_name = ?, type_id = ?, unit = ?\n"
                     + "WHERE  (ingredient_id = ?)";
 
-            return this.executeQuery(query, new Object[]{ingredient_name, type_id, ingredient_id});
+            return this.executeQuery(query, new Object[]{ingredient_name, type_id, unit, ingredient_id});
 
         } catch (SQLException ex) {
 
@@ -223,7 +224,7 @@ public class IngredientDAO extends DBContext {
     public List<Ingredient> search(String keyword) {
         List<Ingredient> list = new ArrayList<>();
         try {
-            String query = "SELECT i.ingredient_id, i.ingredient_name, i.type_id, t.type_name, i.status "
+            String query = "SELECT i.ingredient_id, i.ingredient_name, i.unit, i.type_id, t.type_name, i.status "
                     + "FROM ingredient AS i "
                     + "LEFT JOIN type AS t ON i.type_id = t.type_id "
                     + "WHERE LOWER(i.status) != LOWER(N'Deleted') "
@@ -237,6 +238,7 @@ public class IngredientDAO extends DBContext {
                 Ingredient ing = new Ingredient(
                         rs.getInt("ingredient_id"),
                         rs.getString("ingredient_name"),
+                        rs.getString("unit"),
                         rs.getInt("type_id"),
                         rs.getString("type_name"),
                         rs.getString("status")

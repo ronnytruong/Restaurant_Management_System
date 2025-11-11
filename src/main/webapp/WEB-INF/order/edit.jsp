@@ -4,6 +4,9 @@
     Author     : Dai Minh Nhu - CE190213
 --%>
 
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<c:set var="title" value="Edit Order - Yummy"/>
+
 <%@include file="/WEB-INF/include/headerDashboard.jsp" %>
 
 <section class="col-12 col-lg-9 col-xxl-10 table-section" aria-label="Listing table">
@@ -58,11 +61,18 @@
                                     <label for="employee" class="form-label">Employee</label>
                                 </th>
                                 <td>
-                                    <label id="employee" class="form-control">
-                                        <c:out value="${sessionScope.employeeSession.empName}"/>
-                                    </label>
-                                    <input type="hidden" name="empId" value="${sessionScope.employeeSession.empId}">
-                                </td>
+                                    <c:choose>
+                                        <c:when test="${not empty sessionScope.employeeSession}">
+                                            <label id="employee" class="form-control">
+                                                <c:out value="${sessionScope.employeeSession.empName}"/>
+                                            </label>
+                                            <input type="hidden" name="empId" value="${sessionScope.employeeSession.empId}">
+                                        </c:when>
+                                        <c:otherwise>
+                                            <label class="form-control" style="color: red">Please login employee account</label>
+                                        </c:otherwise>
+                                    </c:choose>
+                                <td>
                             </tr>
 
                             <tr>

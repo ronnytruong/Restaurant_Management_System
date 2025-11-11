@@ -17,7 +17,7 @@ import jakarta.servlet.http.HttpSession;
  */
 
 @WebServlet(name = "EmployeeLoginServlet", urlPatterns = {"/employee-login"})
-public class EmployeeLoginServlet extends HttpServlet {
+public class LoginEmployeeServlet extends HttpServlet {
 
    
     private EmployeeDAO employeeDAO = new EmployeeDAO();
@@ -85,10 +85,12 @@ public class EmployeeLoginServlet extends HttpServlet {
 
             if (employee != null) {
                 
-              
-                HttpSession session = request.getSession();
+                   HttpSession session = request.getSession(false);
+                if (session != null) {
+                    session.invalidate();
+                }
 
-
+  session = request.getSession(true);
                 session.setAttribute("employeeSession", employee);
                 session.setMaxInactiveInterval(30 * 60); 
      

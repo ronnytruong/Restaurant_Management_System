@@ -33,10 +33,10 @@
 
                             <tr>
                                 <th>
-                                    <label for="name">Name</label>
+                                    <label for="typeName">Name</label>
                                 </th>
                                 <td>
-                                    <input type="text" name="name" id="name" value="<c:out value='${currentType.typeName}'/>" class="form-control" required>
+                                    <input type="text" name="typeName" id="typeName" value="<c:out value='${currentType.typeName}'/>" class="form-control" required>
                                 </td>
                             </tr>
 
@@ -48,10 +48,6 @@
                                     <input type="text" name="description" id="description" value="<c:out value='${currentType.description}'/>" class="form-control">
                                 </td>
                             </tr>
-
-                            <input type="hidden" name="status" id="status" value="${currentSupplier.status}">
-
-
                             <tr>
                                 <td>
                                 </td>

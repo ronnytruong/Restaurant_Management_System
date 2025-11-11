@@ -4,91 +4,64 @@
  */
 package controller;
 
-import static constant.CommonFunction.addEDtoEverything;
+import static constant.CommonFunction.getSqlErrorCode;
 import static constant.CommonFunction.getTotalPages;
+import static constant.CommonFunction.removePopup;
+import static constant.CommonFunction.setPopup;
 import static constant.CommonFunction.validateInteger;
 import static constant.CommonFunction.validateString;
-import constant.Constants;
 import dao.EmployeeDAO;
 import dao.ImportDAO;
 import dao.IngredientDAO;
 import dao.SupplierDAO;
 import dao.TypeDAO;
 import java.io.IOException;
-import java.io.PrintWriter;
+import java.sql.Date;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import model.Type;
 
-/**
- *
- * @author TruongBinhTrong
- */
 @WebServlet(name = "ImportServlet", urlPatterns = {"/import"})
 public class ImportServlet extends HttpServlet {
 
-    ImportDAO importDAO = new ImportDAO();
-    SupplierDAO supplierDAO = new SupplierDAO();
-    EmployeeDAO employeeDAO = new EmployeeDAO();
-    TypeDAO typeDAO = new TypeDAO();
-    IngredientDAO ingredientDAO = new IngredientDAO();
+    private final ImportDAO importDAO = new ImportDAO();
+    private final SupplierDAO supplierDAO = new SupplierDAO();
+    private final EmployeeDAO employeeDAO = new EmployeeDAO();
+    private final IngredientDAO ingredientDAO = new IngredientDAO();
+    private final TypeDAO typeDAO = new TypeDAO();
 
-    /**
-     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
-     * methods.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
-    protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        response.setContentType("text/html;charset=UTF-8");
-        try (PrintWriter out = response.getWriter()) {
-            /* TODO output your page here. You may use following sample code. */
-            out.println("<!DOCTYPE html>");
-            out.println("<html>");
-            out.println("<head>");
-            out.println("<title>Servlet ImportServlet</title>");
-            out.println("</head>");
-            out.println("<body>");
-            out.println("<h1>Servlet ImportServlet at " + request.getContextPath() + "</h1>");
-            out.println("</body>");
-            out.println("</html>");
-        }
-    }
-
-    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
-    /**
-     * Handles the HTTP <code>GET</code> method.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        String namepage = "";
         String view = request.getParameter("view");
+        String keyword = request.getParameter("keyword");
+        if (keyword == null) {
+            keyword = "";
+        }
 
-        if (!validateString(view, -1)) {
+        int page;
+        try {
+            page = Integer.parseInt(request.getParameter("page"));
+        } catch (NumberFormatException e) {
+            page = 1;
+        }
+
+        String namepage;
+        if (!validateString(view, -1) || "list".equalsIgnoreCase(view)) {
             namepage = "list";
-        } else if (view.equalsIgnoreCase("add")) {
+            request.setAttribute("totalPages", getTotalPages(importDAO.countItem()));
+            request.setAttribute("keyword", keyword);
+            request.setAttribute("importList", importDAO.getAll(page, keyword));
+        } else if ("add".equalsIgnoreCase(view)) {
             namepage = "add";
             request.setAttribute("supplierList", supplierDAO.getAll());
             request.setAttribute("employeeList", employeeDAO.getAll());
-
-        } else if (view.equalsIgnoreCase("edit")) {
+        } else if ("edit".equalsIgnoreCase(view)) {
             namepage = "edit";
 
             int id;
-
             try {
                 id = Integer.parseInt(request.getParameter("id"));
             } catch (NumberFormatException e) {
@@ -98,11 +71,10 @@ public class ImportServlet extends HttpServlet {
             request.setAttribute("currentImport", importDAO.getElementByID(id));
             request.setAttribute("supplierList", supplierDAO.getAll());
             request.setAttribute("employeeList", employeeDAO.getAll());
-        } else if (view.equalsIgnoreCase("detail")) {
+        } else if ("detail".equalsIgnoreCase(view)) {
             namepage = "detail";
 
             int id;
-
             try {
                 id = Integer.parseInt(request.getParameter("id"));
             } catch (NumberFormatException e) {
@@ -111,12 +83,12 @@ public class ImportServlet extends HttpServlet {
 
             if (id > 0) {
                 request.setAttribute("currentImport", importDAO.getElementByID(id));
-                request.setAttribute("importDetails", importDAO.getImportDetails(id));
+                request.setAttribute("importDetails", importDAO.getImportDetails(id, page, keyword));
             }
-        } else if (view.equalsIgnoreCase("addDetail")) { 
+        } else if ("addDetail".equalsIgnoreCase(view)) {
             namepage = "addDetail";
-            int id;
 
+            int id;
             try {
                 id = Integer.parseInt(request.getParameter("id"));
             } catch (NumberFormatException e) {
@@ -125,165 +97,204 @@ public class ImportServlet extends HttpServlet {
 
             if (id > 0) {
                 request.setAttribute("currentImport", importDAO.getElementByID(id));
-                request.setAttribute("typeList", typeDAO.getAll());
                 request.setAttribute("ingredientList", ingredientDAO.getAll());
             }
-
-        } else if (view.equalsIgnoreCase("delete")) {
-            namepage = "delete";
+        } else {
+            namepage = "list";
+            request.setAttribute("totalPages", getTotalPages(importDAO.countItem()));
+            request.setAttribute("keyword", keyword);
+            request.setAttribute("importList", importDAO.getAll(page, keyword));
         }
-
-        int page;
-        int totalPages = getTotalPages(importDAO.countItem());
-
-        try {
-            page = Integer.parseInt(request.getParameter("page"));
-        } catch (NumberFormatException e) {
-            page = 1;
-        }
-
-        request.setAttribute("totalPages", totalPages);
-        request.setAttribute("importList", importDAO.getAll());
 
         request.getRequestDispatcher("/WEB-INF/import/" + namepage + ".jsp").forward(request, response);
+        removePopup(request);
     }
 
-    /**
-     * Handles the HTTP <code>POST</code> method.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         String action = request.getParameter("action");
 
-        boolean passValidation = true;
-        if (action != null && !action.isEmpty()) {
+        boolean popupStatus = true;
+        String popupMessage = "";
+        String redirectUrl = request.getContextPath() + "/import";
 
-            if (action.equalsIgnoreCase("add")) {
-                int supplierId = Integer.parseInt(request.getParameter("supplierId"));
-                int empId = Integer.parseInt(request.getParameter("empId"));
+        boolean handled = action != null && !action.isEmpty();
 
-//validate
-//                if (!validateString(name, -1)) {
-//                    passValidation = false;
-//                }
-//end
-                if (passValidation == true) {
-                    if (importDAO.add(supplierId, empId) >= 1) {
+        if (handled) {
+            if ("add".equalsIgnoreCase(action)) {
+                int supplierId;
+                int empId;
+
+                try {
+                    supplierId = Integer.parseInt(request.getParameter("supplierId"));
+                    empId = Integer.parseInt(request.getParameter("empId"));
+                } catch (NumberFormatException e) {
+                    supplierId = -1;
+                    empId = -1;
+                }
+
+                if (!validateInteger(supplierId, false, false, true)
+                        || !validateInteger(empId, false, false, true)) {
+                    popupStatus = false;
+                    popupMessage = "The add action is NOT successfull. The input has some error.";
+                } else {
+                    int checkError = importDAO.add(supplierId, empId);
+                    if (checkError >= 1) {
+                        popupMessage = "The import created successfully.";
                     } else {
-                        passValidation = false;
+                        popupStatus = false;
+                        popupMessage = "The add action is NOT successfull. The object has " + getSqlErrorCode(checkError) + " error.";
                     }
                 }
 
-            } else if (action.equalsIgnoreCase("addDetail")) {
-                int importId = Integer.parseInt(request.getParameter("importId"));
-                int ingredientId = Integer.parseInt(request.getParameter("ingredientId"));
-                int quantity = Integer.parseInt(request.getParameter("quantity"));
+            } else if ("addDetail".equalsIgnoreCase(action)) {
+                int typeId;
+                int importId;
+                int ingredientId;
+                int quantity;
+                int unitPrice;
+                int totalPrice;
+
                 String unit = request.getParameter("unit");
-                int unitPrice = Integer.parseInt(request.getParameter("unitPrice"));
-                int totalPrice = unitPrice * quantity;
-
-                if (passValidation == true) {
-                    if (importDAO.addDetail(importId, ingredientId, quantity, unit, unitPrice, totalPrice) >= 1) {
-                    } else {
-                        passValidation = false;
-                    }
+                if (unit != null) {
+                    unit = unit.trim();
                 }
-
-                response.sendRedirect(request.getContextPath() + "/import?view=detail&id="
-                        + importId + "&status=" + (passValidation ? "success" : "fail")
-                        + "&lastAction=" + addEDtoEverything(action));
-                return;
-
-            } else if (action.equalsIgnoreCase("edit")) {
-                int id;
-                String name = request.getParameter("name");
-                String description = request.getParameter("description");
 
                 try {
-                    id = Integer.parseInt(request.getParameter("id"));
+                    importId = Integer.parseInt(request.getParameter("importId"));
                 } catch (NumberFormatException e) {
-                    id = -1;
-
-                    passValidation = false;
+                    importId = -1;
                 }
 
-//validate
-                if (!validateString(name, -1)
-                        || !validateInteger(id, false, false, true)) {
-                    passValidation = false;
+                if (importId > 0) {
+                    redirectUrl = request.getContextPath() + "/import?view=detail&id=" + importId;
+                } else {
+                    redirectUrl = request.getContextPath() + "/import";
                 }
-//end
-                if (passValidation == true) {
-                    int checkError = importDAO.edit(id, name, description);
 
+                try {
+                    ingredientId = Integer.parseInt(request.getParameter("ingredientId"));
+                } catch (NumberFormatException e) {
+                    ingredientId = -1;
+                }
+
+                String ingredientName = ingredientDAO.getElementByID(ingredientId).getIngredientName();
+                if (ingredientName != null) {
+                    ingredientName = ingredientName.trim();
+                }
+                
+                typeId = typeDAO.getTypeByIngredient(ingredientName);
+
+                try {
+                    quantity = Integer.parseInt(request.getParameter("quantity"));
+                } catch (NumberFormatException e) {
+                    quantity = -1;
+                }
+
+                try {
+                    unitPrice = Integer.parseInt(request.getParameter("unitPrice"));
+                } catch (NumberFormatException e) {
+                    unitPrice = -1;
+                }
+
+                totalPrice = unitPrice * quantity;
+
+                if (!validateInteger(importId, false, false, true)
+                        || !validateInteger(ingredientId, false, false, true)
+                        || !validateInteger(quantity, false, false, true)
+                        || !validateInteger(unitPrice, false, true, true)
+                        || !validateString(unit, -1)) {
+                    popupStatus = false;
+                    popupMessage = "The add detail action is NOT successfull. The input has some error.";
+                } else {
+                    int checkError = importDAO.addDetail(importId, ingredientId, unit, quantity, unitPrice, totalPrice);
                     if (checkError >= 1) {
-
+                        popupMessage = "The import detail added successfully.";
                     } else {
-                        if (checkError - Constants.DUPLICATE_KEY == 0) {                //check trung code/key
-                            System.err.println("DUPLICATE_KEY");
-                        } else if (checkError - Constants.FOREIGN_KEY_VIOLATION == 0) {
-                            System.err.println("FOREIGN_KEY_VIOLATION");
-                        } else if (checkError - Constants.NULL_INSERT_VIOLATION == 0) {
-                            System.err.println("NULL_INSERT_VIOLATION");
-                        }
-
-                        passValidation = false;
+                        popupStatus = false;
+                        popupMessage = "The add detail action is NOT successfull. The object has " + getSqlErrorCode(checkError) + " error.";
                     }
                 }
-            } else if (action.equalsIgnoreCase("delete")) {
-                int id;
 
+            } else if ("edit".equalsIgnoreCase(action)) {
+                int importId;
+                int supplierId;
+                int empId;
+                Date importDate;
+
+                try {
+                    importId = Integer.parseInt(request.getParameter("id"));
+                } catch (NumberFormatException e) {
+                    importId = -1;
+                }
+
+                try {
+                    supplierId = Integer.parseInt(request.getParameter("supplierId"));
+                } catch (NumberFormatException e) {
+                    supplierId = -1;
+                }
+
+                try {
+                    empId = Integer.parseInt(request.getParameter("empId"));
+                } catch (NumberFormatException e) {
+                    empId = -1;
+                }
+
+                String importDateRaw = request.getParameter("importDate");
+                try {
+                    importDate = Date.valueOf(importDateRaw);
+                } catch (IllegalArgumentException | NullPointerException e) {
+                    importDate = null;
+                }
+
+                if (!validateInteger(importId, false, false, true)
+                        || !validateInteger(supplierId, false, false, true)
+                        || !validateInteger(empId, false, false, true)
+                        || importDate == null) {
+                    popupStatus = false;
+                    popupMessage = "The edit action is NOT successfull. The input has some error.";
+                } else {
+                    int checkError = importDAO.edit(importId, supplierId, empId);
+                    if (checkError >= 1) {
+                        popupMessage = "The import with id=" + importId + " edited successfully.";
+                    } else {
+                        popupStatus = false;
+                        popupMessage = "The edit action is NOT successfull. The object has " + getSqlErrorCode(checkError) + " error.";
+                    }
+                }
+
+            } else if ("delete".equalsIgnoreCase(action)) {
+                int id;
                 try {
                     id = Integer.parseInt(request.getParameter("id"));
                 } catch (NumberFormatException e) {
                     id = -1;
-
-                    passValidation = false;
                 }
 
-//validate
                 if (!validateInteger(id, false, false, true)) {
-                    passValidation = false;
-                }
-//end
-                if (passValidation == true) {
+                    popupStatus = false;
+                    popupMessage = "The delete action is NOT successfull.";
+                } else {
                     int checkError = importDAO.delete(id);
-
                     if (checkError >= 1) {
-
+                        popupMessage = "The import with id=" + id + " deleted successfully.";
                     } else {
-                        if (checkError - Constants.DUPLICATE_KEY == 0) {                //check trung code/key
-                            System.err.println("DUPLICATE_KEY");
-                        } else if (checkError - Constants.FOREIGN_KEY_VIOLATION == 0) {
-                            System.err.println("FOREIGN_KEY_VIOLATION");
-                        } else if (checkError - Constants.NULL_INSERT_VIOLATION == 0) {
-                            System.err.println("NULL_INSERT_VIOLATION");
-                        }
-
-                        passValidation = false;
+                        popupStatus = false;
+                        popupMessage = "The delete action is NOT successfull. The object has " + getSqlErrorCode(checkError) + " error.";
                     }
                 }
             }
         }
 
-        response.sendRedirect(request.getContextPath() + "/import?" + "status=" + (passValidation ? "success" : "fail") + "&lastAction=" + addEDtoEverything(action));
-
+        if (handled) {
+            setPopup(request, popupStatus, popupMessage);
+        }
+        response.sendRedirect(redirectUrl);
     }
 
-    /**
-     * Returns a short description of the servlet.
-     *
-     * @return a String containing servlet description
-     */
     @Override
     public String getServletInfo() {
-        return "Short description";
-    }// </editor-fold>
-
+        return "Import management servlet";
+    }
 }

@@ -29,7 +29,8 @@ public class ReservationDAO extends DBContext {
             String sql = "SELECT r.reservation_id, r.customer_id, r.table_id, r.reservation_date, r.reservation_time, r.party_size, r.status\n"
                     + "FROM     reservation AS r INNER JOIN\n"
                     + "                  [table] AS t ON r.table_id = t.table_id\n"
-                    + "WHERE  (t.table_id = ?) AND (LOWER(r.status) = LOWER('Seated'))";
+                    + "WHERE  (t.table_id = ?) AND (LOWER(r.status) = LOWER('Approved'))\n"
+                    + "ORDER BY r.reservation_id DESC";
             ResultSet rs = this.executeSelectionQuery(sql, new Object[]{id});
             if (rs.next()) {
                 return extract(rs);
@@ -189,12 +190,12 @@ public class ReservationDAO extends DBContext {
         return -1;
     }
 
-    public int edit(int reservationId, int tableId, Date date, Time time, int partySize, String status) {
+    public int edit(int reservationId, int tableId, Date date, Time time, int partySize) {
         try {
             String sql = "UPDATE reservation "
-                    + "SET table_id = ?, reservation_date = ?, reservation_time = ?, party_size = ?, status = ? "
+                    + "SET table_id = ?, reservation_date = ?, reservation_time = ?, party_size = ? "
                     + "WHERE reservation_id = ?";
-            return this.executeQuery(sql, new Object[]{tableId, date, time, partySize, status, reservationId});
+            return this.executeQuery(sql, new Object[]{tableId, date, time, partySize, reservationId});
         } catch (SQLException ex) {
             int err = checkErrorSQL(ex);
             if (err != 0) {
@@ -259,19 +260,19 @@ public class ReservationDAO extends DBContext {
 
         return new Reservation(id, customer, table, date, time, party, status);
     }
-    
+
     public boolean hasActiveReservationForTable(int tableId) {
-    try {
-        String sql = "SELECT COUNT(*) FROM reservation "
-                   + "WHERE table_id = ? AND LOWER(status) IN ('approved', 'seated')";
-        ResultSet rs = this.executeSelectionQuery(sql, new Object[]{tableId});
-        if (rs.next()) {
-            return rs.getInt(1) > 0;
+        try {
+            String sql = "SELECT COUNT(*) FROM reservation "
+                    + "WHERE table_id = ? AND LOWER(status) IN ('approved', 'seated')";
+            ResultSet rs = this.executeSelectionQuery(sql, new Object[]{tableId});
+            if (rs.next()) {
+                return rs.getInt(1) > 0;
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(ReservationDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
-    } catch (SQLException ex) {
-        Logger.getLogger(ReservationDAO.class.getName()).log(Level.SEVERE, null, ex);
+        return false;
     }
-    return false;
-}
 
 }
