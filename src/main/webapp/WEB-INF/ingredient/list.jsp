@@ -13,17 +13,18 @@
             </div>
             <div class="actions d-flex flex-column flex-md-row gap-2 align-items-md-center justify-content-md-end">
                 <div class="filters d-flex flex-wrap gap-2 justify-content-end">
-
-                    <form method="GET" action="ingredient" class="search-box input-group">
-                        <span class="input-group-text"><i class="bi bi-search"></i></span>
-                        <input type="search" name="search" class="form-control" placeholder="Search by name or ID"
-                               value="<c:out value='${searchKeyword}'/>">
-
+                    <form action="<c:url value='ingredient'><c:param name='page' value='1'/></c:url>" method="get" class="search-box input-group">
+                            <div class="search-box input-group">
+                                <span class="input-group-text"><i class="bi bi-search"></i></span>
+                                <input type="search" name="keyword" class="form-control" 
+                                       placeholder="Search by name"
+                                       value="${param.keyword != null ? param.keyword : (requestScope.keyword != null ? requestScope.keyword : '')}">
+                        </div>
                     </form>
-                    <c:url var="addUrl" value="ingredient">
-                        <c:param name="view" value="add"/>
-                    </c:url>
-                    <a class="btn btn-primary add-btn" href="${addUrl}"><i class="bi bi-plus-circle"></i> Add</a>
+                    <a class="btn btn-primary add-btn" href="<c:url value="ingredient">
+                           <c:param name="view" value="add"/>
+                       </c:url>"><i class="bi bi-plus-circle"></i> Add</a>
+
                 </div>
             </div>
         </div>
@@ -34,8 +35,9 @@
                         <th scope="col">No.</th>
                         <th scope="col">Name</th>
                         <th scope="col">Type</th>
-                        <th scope="col">Quantity</th>
                         <th scope="col">Unit</th>
+                        <th scope="col">Quantity</th>
+                        <th scope="col">Status</th>
                         <th scope="col" class="text-end">Actions</th>
                     </tr>
                 </thead>
@@ -61,12 +63,9 @@
                                     <td><c:out value="${loop.index + 1}"/></td>
                                     <td><c:out value="${ing.ingredientName}"/></td>
                                     <td><c:out value="${ing.typeName}"/></td>
-                                    <td>
-                                        <c:out value='${ing.ingredientName}'/>
-                                    </td>
-                                    <td>
-                                        <c:out value='${ing.ingredientName}'/>
-                                    </td>
+                                    <td><c:out value='${ing.unit}'/></td>
+                                    <td><c:out value='${ing.totalQuantity}'/></td>
+                                    <td><c:out value='${ing.status}'/></td>
                                     <td class="text-end">
                                         <div class="action-button-group d-flex justify-content-end gap-2">
                                             <c:url var="edit" value="ingredient">

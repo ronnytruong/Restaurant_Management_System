@@ -20,6 +20,7 @@ import model.Type;
  * @author TruongBinhTrong
  */
 public class TypeDAO extends DBContext {
+
     public List<Type> getAll() {
         List<Type> list = new ArrayList<>();
 
@@ -33,9 +34,9 @@ public class TypeDAO extends DBContext {
 
             while (rs.next()) {
                 Type type = new Type(
-                        rs.getInt("type_id"), 
+                        rs.getInt("type_id"),
                         rs.getString("type_name"),
-                        rs.getString("description"), 
+                        rs.getString("description"),
                         rs.getString("status")
                 );
 
@@ -43,6 +44,37 @@ public class TypeDAO extends DBContext {
             }
         } catch (SQLException ex) {
             Logger.getLogger(TypeDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        return list;
+    }
+
+    public List<Type> getAll(int page, String keyword) {
+        List<Type> list = new ArrayList<>();
+
+        try {
+            String query = "SELECT *\n"
+                    + "FROM     type\n"
+                    + "WHERE  (LOWER(status) <> LOWER(N'Deleted'))\n"
+                    + "AND (LOWER(type_name) LIKE LOWER(?))\n"
+                    + "ORDER BY type_id\n"
+                    + "OFFSET ? ROWS \n"
+                    + "FETCH NEXT ? ROWS ONLY;";
+
+            keyword = "%" + keyword + "%";
+
+            ResultSet rs = this.executeSelectionQuery(query, new Object[]{keyword, (page - 1) * MAX_ELEMENTS_PER_PAGE, MAX_ELEMENTS_PER_PAGE});
+
+            while (rs.next()) {
+                Type type = new Type(
+                        rs.getInt("type_id"),
+                        rs.getString("type_name"),
+                        rs.getString("description"),
+                        rs.getString("status")
+                );
+                list.add(type);
+            }
+        } catch (SQLException ex) {
         }
 
         return list;
@@ -63,9 +95,9 @@ public class TypeDAO extends DBContext {
 
             while (rs.next()) {
                 Type type = new Type(
-                        rs.getInt("type_id"), 
+                        rs.getInt("type_id"),
                         rs.getString("type_name"),
-                        rs.getString("description"), 
+                        rs.getString("description"),
                         rs.getString("status")
                 );
 
@@ -76,6 +108,22 @@ public class TypeDAO extends DBContext {
         }
 
         return list;
+    }
+
+    public int getTypeByIngredient(String ingredientName) {
+        try {
+            String query = "SELECT t.type_id FROM type t JOIN ingredient i ON t.type_id = i.type_id "
+                    + "WHERE i.ingredient_name =  ? AND (LOWER(t.status) != LOWER(N'Deleted'))";
+
+            ResultSet rs = this.executeSelectionQuery(query, new Object[]{ingredientName});
+
+            while (rs.next()) {
+                int typeId = rs.getInt(1);
+                return typeId;
+            }
+        } catch (SQLException ex) {
+        }
+        return -1;
     }
 
     public Type getElementByID(int id) {
@@ -90,9 +138,9 @@ public class TypeDAO extends DBContext {
             while (rs.next()) {
 
                 Type type = new Type(
-                        rs.getInt(1), 
-                        rs.getString(2), 
-                        rs.getString(3), 
+                        rs.getInt(1),
+                        rs.getString(2),
+                        rs.getString(3),
                         rs.getString(4)
                 );
 

@@ -5,10 +5,13 @@
 package dao;
 
 import static constant.CommonFunction.checkErrorSQL;
+import static constant.Constants.MAX_ELEMENTS_PER_PAGE;
 import db.DBContext;
 import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -21,7 +24,7 @@ import model.Import;
  */
 public class ImportDAO extends DBContext {
 
-    public List<Import> getAll() {
+    public List<Import> getAll(int page, String keyword) {
         List<Import> list = new ArrayList<>();
 
         try {
@@ -50,17 +53,28 @@ public class ImportDAO extends DBContext {
         return list;
     }
 
-    public List<Import> getImportDetails(int importId) {
+    public List<Import> getImportDetails(int importId, int page, String keyword) {
         List<Import> list = new ArrayList<>();
 
         try {
-            String query = "SELECT igd.ingredient_name, id.quantity, id.unit, id.unit_price, id.total_price "
-                    + "FROM import i "
-                    + "JOIN import_detail id ON i.import_id = id.import_id "
-                    + "JOIN ingredient igd ON id.ingredient_id = igd.ingredient_id "
-                    + "WHERE i.import_id = ?";
+            String query = "SELECT \n"
+                    + "    igd.ingredient_name, \n"
+                    + "    id.quantity, \n"
+                    + "    igd.unit, \n"
+                    + "    id.unit_price, \n"
+                    + "    id.total_price\n"
+                    + "FROM import i\n"
+                    + "JOIN import_detail id ON i.import_id = id.import_id\n"
+                    + "JOIN ingredient igd ON id.ingredient_id = igd.ingredient_id\n"
+                    + "WHERE i.import_id = ?\n"
+                    + "AND (LOWER(igd.ingredient_name) LIKE LOWER(?))\n"
+                    + "ORDER BY import_detail_id\n"
+                    + "OFFSET ? ROWS\n"
+                    + "FETCH NEXT ? ROWS ONLY;";
 
-            ResultSet rs = this.executeSelectionQuery(query, new Object[]{importId});
+            keyword = "%" + keyword + "%";
+
+            ResultSet rs = this.executeSelectionQuery(query, new Object[]{importId, keyword, (page - 1) * MAX_ELEMENTS_PER_PAGE, MAX_ELEMENTS_PER_PAGE});
 
             while (rs.next()) {
                 String ingredientName = rs.getString(1);
@@ -74,7 +88,6 @@ public class ImportDAO extends DBContext {
                 list.add(imp);
             }
         } catch (SQLException ex) {
-            Logger.getLogger(ImportDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
 
         return list;
@@ -109,9 +122,47 @@ public class ImportDAO extends DBContext {
 
     public int add(int supplierId, int empId) {
         try {
-            String query = "INSERT INTO import (supplierId, empId, status) VALUES (? , ?, ?)";
+            String query = "INSERT INTO import (supplier_id, emp_id, import_date, status) VALUES (?, ?, ?, ?)";
 
-            return this.executeQuery(query, new Object[]{supplierId, empId, "Active"});
+            Timestamp now = Timestamp.valueOf(LocalDateTime.now());
+
+            return this.executeQuery(
+                    query,
+                    new Object[]{supplierId, empId, now, "Active"}
+            );
+
+        } catch (SQLException ex) {
+            int sqlError = checkErrorSQL(ex);
+            if (sqlError != 0) {
+                return sqlError;
+            }
+        }
+        return -1;
+    }
+
+    public int addDetail(int importId, int ingredientId, int quantity, int unitPrice, int totalPrice) {
+        try {
+            String query = "INSERT INTO import_detail (import_id, ingredient_id, quantity, unit_price, total_price) "
+                    + "VALUES (?, ?, ?, ?, ?)";
+
+            return this.executeQuery(query, new Object[]{importId, ingredientId, quantity, unitPrice, totalPrice});
+
+        } catch (SQLException ex) {
+
+            int sqlError = checkErrorSQL(ex);
+            if (sqlError != 0) {
+                return sqlError;
+            }
+        }
+        return -1;
+    }
+
+    public int edit(int categoryId, int supplierId, int employeeId) {
+        try {
+
+            String query = "UPDATE import SET supplier_id = ?, emp_id = ? WHERE import_id = ?";
+
+            return this.executeQuery(query, new Object[]{categoryId, supplierId, employeeId});
 
         } catch (SQLException ex) {
 
@@ -125,37 +176,12 @@ public class ImportDAO extends DBContext {
         return -1;
     }
 
-    public int addDetail(String ingredientName, int typeId, String status, int importId,
-            int ingredientId, int quantity, String unit, int unitPrice, int totalPrice) {
-        try {
-            String query = "INSERT INTO ingredient (ingredient_name, type_id, status) "
-                    + "VALUES (?, ?, ?) "
-                    + "INSERT INTO import_detail (import_id, ingredient_id, quantity, unit, unit_price, total_price) "
-                    + "VALUES (?, ?, ?, ?, ?, ?)";
-
-            return this.executeQuery(query, new Object[]{ingredientName, typeId, "Active", importId,
-                ingredientId, quantity, unit, unitPrice, totalPrice});
-
-        } catch (SQLException ex) {
-
-            int sqlError = checkErrorSQL(ex);
-            if (sqlError != 0) {
-                return sqlError;
-            }
-
-            Logger.getLogger(ImportDAO.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return -1;
-    }
-
-    public int edit(int categoryId, String categoryName, String description) {
+    public int editDetail(int categoryId, int supplierId, int employeeId) {
         try {
 
-            String query = "UPDATE category\n"
-                    + "SET category_name = ?, description = ?\n"
-                    + "WHERE  (category_id = ?)";
+            String query = "UPDATE import SET supplier_id = ?, emp_id = ? WHERE import_id = ?";
 
-            return this.executeQuery(query, new Object[]{categoryName, description, categoryId});
+            return this.executeQuery(query, new Object[]{categoryId, supplierId, employeeId});
 
         } catch (SQLException ex) {
 

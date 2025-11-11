@@ -4,11 +4,7 @@
  */
 package controller;
 
-import static constant.CommonFunction.addEDtoEverything;
-import static constant.CommonFunction.getTotalPages;
-import static constant.CommonFunction.validateInteger;
-import static constant.CommonFunction.validateString;
-import constant.Constants;
+import static constant.CommonFunction.*;
 import dao.SupplierDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -18,13 +14,13 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-
 /**
  *
  * @author TruongBinhTrong
  */
 @WebServlet(name = "SupplierServlet", urlPatterns = {"/supplier"})
 public class SupplierServlet extends HttpServlet {
+
     SupplierDAO supplierDAO = new SupplierDAO();
 
     /**
@@ -67,6 +63,10 @@ public class SupplierServlet extends HttpServlet {
             throws ServletException, IOException {
         String namepage = "";
         String view = request.getParameter("view");
+        String keyword = request.getParameter("keyword");
+        if (keyword == null) {
+            keyword = "";
+        }
 
         if (!validateString(view, -1) || view.equalsIgnoreCase("list")) {
             namepage = "list";
@@ -98,9 +98,11 @@ public class SupplierServlet extends HttpServlet {
         }
 
         request.setAttribute("totalPages", totalPages);
-        request.setAttribute("suppliersList", supplierDAO.getAll());
+        request.setAttribute("keyword", keyword);
+        request.setAttribute("suppliersList", supplierDAO.getAll(page, keyword));
 
         request.getRequestDispatcher("/WEB-INF/supplier/" + namepage + ".jsp").forward(request, response);
+        removePopup(request);
     }
 
     /**
@@ -116,7 +118,9 @@ public class SupplierServlet extends HttpServlet {
             throws ServletException, IOException {
         String action = request.getParameter("action");
 
-        boolean passValidation = true;
+        boolean popupStatus = true;
+        String popupMessage = "";
+
         if (action != null && !action.isEmpty()) {
 
             if (action.equalsIgnoreCase("add")) {
@@ -125,17 +129,21 @@ public class SupplierServlet extends HttpServlet {
                 String email = request.getParameter("email");
                 String address = request.getParameter("address");
                 String contactPerson = request.getParameter("contactPerson");
-                       
 
 //validate
                 if (!validateString(name, -1)) {
-                    passValidation = false;
+                    popupStatus = false;
+                    popupMessage = "The add action is NOT successfull. The input has some error.";
+                } else {
+                    popupMessage = "The object with name=" + name + " added successfull.";
                 }
 //end
-                if (passValidation == true) {
-                    if (supplierDAO.add(name, phoneNumber, email, address, contactPerson) >= 1) {
+                if (popupStatus == true) {
+                    int checkError = supplierDAO.add(name, phoneNumber, email, address, contactPerson);
+                    if (checkError >= 1) {
                     } else {
-                        passValidation = false;
+                        popupStatus = false;
+                        popupMessage = "The add action is NOT successfull. The object has " + getSqlErrorCode(checkError) + " error.";
                     }
                 }
 
@@ -147,76 +155,66 @@ public class SupplierServlet extends HttpServlet {
                 String address = request.getParameter("address");
                 String contactPerson = request.getParameter("contactPerson");
                 String status = request.getParameter("status");
-                
 
                 try {
                     id = Integer.parseInt(request.getParameter("id"));
                 } catch (NumberFormatException e) {
                     id = -1;
-
-                    passValidation = false;
                 }
 
 //validate
                 if (!validateString(name, -1)
+                        || !validateString(status, -1)
                         || !validateInteger(id, false, false, true)) {
-                    passValidation = false;
+                    popupStatus = false;
+                    popupMessage = "The edit action is NOT successfull. The input has some error.";
+                } else {
+                    popupMessage = "The object with id=" + id + " edited successfull.";
                 }
 //end
-                if (passValidation == true) {
+                if (popupStatus == true) {
                     int checkError = supplierDAO.edit(id, name, phoneNumber, email, address, contactPerson, status);
 
                     if (checkError >= 1) {
 
                     } else {
-                        if (checkError - Constants.DUPLICATE_KEY == 0) {                //check trung code/key
-                            System.err.println("DUPLICATE_KEY");
-                        } else if (checkError - Constants.FOREIGN_KEY_VIOLATION == 0) {
-                            System.err.println("FOREIGN_KEY_VIOLATION");
-                        } else if (checkError - Constants.NULL_INSERT_VIOLATION == 0) {
-                            System.err.println("NULL_INSERT_VIOLATION");
-                        }
-
-                        passValidation = false;
+                        popupStatus = false;
+                        popupMessage = "The edit action is NOT successfull. The object has " + getSqlErrorCode(checkError) + " error.";
                     }
                 }
             } else if (action.equalsIgnoreCase("delete")) {
+
                 int id;
 
                 try {
                     id = Integer.parseInt(request.getParameter("id"));
                 } catch (NumberFormatException e) {
                     id = -1;
-
-                    passValidation = false;
                 }
 
 //validate
                 if (!validateInteger(id, false, false, true)) {
-                    passValidation = false;
+                    popupStatus = false;
+                    popupMessage = "The delete action is NOT successfull.";
+                } else {
+                    popupMessage = "The object with id=" + id + " deleted successfull.";
                 }
 //end
-                if (passValidation == true) {
+                if (popupStatus == true) {
                     int checkError = supplierDAO.delete(id);
 
                     if (checkError >= 1) {
 
                     } else {
-                        if (checkError - Constants.DUPLICATE_KEY == 0) {                //check trung code/key
-                            System.err.println("DUPLICATE_KEY");
-                        } else if (checkError - Constants.FOREIGN_KEY_VIOLATION == 0) {
-                            System.err.println("FOREIGN_KEY_VIOLATION");
-                        } else if (checkError - Constants.NULL_INSERT_VIOLATION == 0) {
-                            System.err.println("NULL_INSERT_VIOLATION");
-                        }
-
-                        passValidation = false;
+                        popupStatus = false;
+                        popupMessage = "The delete action is NOT successfull. The object has " + getSqlErrorCode(checkError) + " error.";
                     }
                 }
             }
         }
 
-        response.sendRedirect(request.getContextPath() + "/supplier?" + "status=" + (passValidation ? "success" : "fail") + "&lastAction=" + addEDtoEverything(action));
+        setPopup(request, popupStatus, popupMessage);
+        response.sendRedirect(request.getContextPath() + "/supplier");
 
     }
 

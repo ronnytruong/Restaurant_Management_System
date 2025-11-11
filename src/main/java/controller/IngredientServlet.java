@@ -27,6 +27,7 @@ import model.Ingredient;
  */
 @WebServlet(name = "IngredientServlet", urlPatterns = {"/ingredient"})
 public class IngredientServlet extends HttpServlet {
+
     IngredientDAO ingredientDAO = new IngredientDAO();
     TypeDAO typeDAO = new TypeDAO();
     ImportDAO importDAO = new ImportDAO();
@@ -39,7 +40,7 @@ public class IngredientServlet extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet IngredientServlet</title>");            
+            out.println("<title>Servlet IngredientServlet</title>");
             out.println("</head>");
             out.println("<body>");
             out.println("<h1>Servlet IngredientServlet at " + request.getContextPath() + "</h1>");
@@ -52,34 +53,38 @@ public class IngredientServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-   String namepage = "";
+        String namepage = "";
         String view = request.getParameter("view");
-     
+
         String searchKeyword = request.getParameter("search");
         List<Ingredient> ingredients;
-        int totalPages = 1; 
+        int totalPages = 1;
         int page = 1;
-        
+
+        String keyword = request.getParameter("keyword");
+        if (keyword == null) {
+            keyword = "";
+        }
+
         if (searchKeyword != null && !searchKeyword.trim().isEmpty()) {
-     
+
             ingredients = ingredientDAO.search(searchKeyword);
-            request.setAttribute("searchKeyword", searchKeyword); 
+            request.setAttribute("searchKeyword", searchKeyword);
         } else {
-           
+
             try {
                 page = Integer.parseInt(request.getParameter("page"));
             } catch (NumberFormatException e) {
                 page = 1;
             }
             totalPages = getTotalPages(ingredientDAO.countItem());
-            ingredients = ingredientDAO.getAll(page);
+            ingredients = ingredientDAO.getAll(page, keyword);
         }
-      
 
         if (!validateString(view, -1) || view.equalsIgnoreCase("list")) {
             int id = 0;
             namepage = "list";
-            request.setAttribute("importList", importDAO.getImportDetails(id));
+            request.setAttribute("importList", importDAO.getImportDetails(id, page, keyword));
         } else if (view.equalsIgnoreCase("add")) {
             namepage = "add";
         } else if (view.equalsIgnoreCase("edit")) {
@@ -101,13 +106,11 @@ public class IngredientServlet extends HttpServlet {
         // The old pagination logic is now integrated above
         // int page;
         // int totalPages = getTotalPages(ingredientDAO.countItem()); // Moved up
-
         // try {
         //     page = Integer.parseInt(request.getParameter("page"));
         // } catch (NumberFormatException e) {
         //     page = 1;
         // }
-
         // Set attributes based on search or list view
         request.setAttribute("totalPages", totalPages);
         request.setAttribute("ingredientsList", ingredients); // Changed to 'ingredients' list
@@ -115,7 +118,7 @@ public class IngredientServlet extends HttpServlet {
         request.setAttribute("typesList", typeDAO.getAll());
 
         request.getRequestDispatcher("/WEB-INF/ingredient/" + namepage + ".jsp").forward(request, response);
-    
+
     }
 
     // POST
@@ -129,20 +132,14 @@ public class IngredientServlet extends HttpServlet {
 
             if (action.equalsIgnoreCase("add")) {
                 String name = request.getParameter("ingredientName");
-                String priceStr = request.getParameter("price");
+                String unit = request.getParameter("unit");
                 int typeId;
-                double price;
+                
 
                 try {
                     typeId = Integer.parseInt(request.getParameter("typeId"));
                 } catch (NumberFormatException e) {
                     typeId = -1;
-                }
-
-                try {
-                    price = Double.parseDouble(priceStr);
-                } catch (NumberFormatException e) {
-                    price = 0.0;
                 }
 
                 //validate
@@ -151,7 +148,7 @@ public class IngredientServlet extends HttpServlet {
                 }
                 //end
                 if (passValidation == true) {
-                    if (ingredientDAO.add(name, typeId, price) >= 1) {
+                    if (ingredientDAO.add(name, typeId, unit) >= 1) {
                     } else {
                         passValidation = false;
                     }
@@ -159,10 +156,10 @@ public class IngredientServlet extends HttpServlet {
 
             } else if (action.equalsIgnoreCase("edit")) {
                 int id;
-                String name = request.getParameter("ingredientName");
-                String priceStr = request.getParameter("price");
                 int typeId;
-                double price;
+                String name = request.getParameter("ingredientName");
+                String unit = request.getParameter("unit");
+
 
                 try {
                     id = Integer.parseInt(request.getParameter("id"));
@@ -177,12 +174,6 @@ public class IngredientServlet extends HttpServlet {
                     typeId = -1;
                 }
 
-                try {
-                    price = Double.parseDouble(priceStr);
-                } catch (NumberFormatException e) {
-                    price = 0.0;
-                }
-
                 //validate
                 if (!validateString(name, -1)
                         || !validateInteger(id, false, false, true)
@@ -191,12 +182,12 @@ public class IngredientServlet extends HttpServlet {
                 }
                 //end
                 if (passValidation == true) {
-                    int checkError = ingredientDAO.edit(id, name, typeId, price);
+                    int checkError = ingredientDAO.edit(id, name, typeId, unit);
 
                     if (checkError >= 1) {
 
                     } else {
-                        if (checkError - Constants.DUPLICATE_KEY == 0) {                
+                        if (checkError - Constants.DUPLICATE_KEY == 0) {
                             System.err.println("DUPLICATE_KEY");
                         } else if (checkError - Constants.FOREIGN_KEY_VIOLATION == 0) {
                             System.err.println("FOREIGN_KEY_VIOLATION");
@@ -229,7 +220,7 @@ public class IngredientServlet extends HttpServlet {
                     if (checkError >= 1) {
 
                     } else {
-                        if (checkError - Constants.DUPLICATE_KEY == 0) {                
+                        if (checkError - Constants.DUPLICATE_KEY == 0) {
                             System.err.println("DUPLICATE_KEY");
                         } else if (checkError - Constants.FOREIGN_KEY_VIOLATION == 0) {
                             System.err.println("FOREIGN_KEY_VIOLATION");
