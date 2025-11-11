@@ -10,6 +10,8 @@ import db.DBContext;
 import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -120,9 +122,47 @@ public class ImportDAO extends DBContext {
 
     public int add(int supplierId, int empId) {
         try {
-            String query = "INSERT INTO import (supplierId, empId, status) VALUES (? , ?, ?)";
+            String query = "INSERT INTO import (supplier_id, emp_id, import_date, status) VALUES (?, ?, ?, ?)";
 
-            return this.executeQuery(query, new Object[]{supplierId, empId, "Active"});
+            Timestamp now = Timestamp.valueOf(LocalDateTime.now());
+
+            return this.executeQuery(
+                    query,
+                    new Object[]{supplierId, empId, now, "Active"}
+            );
+
+        } catch (SQLException ex) {
+            int sqlError = checkErrorSQL(ex);
+            if (sqlError != 0) {
+                return sqlError;
+            }
+        }
+        return -1;
+    }
+
+    public int addDetail(int importId, int ingredientId, int quantity, int unitPrice, int totalPrice) {
+        try {
+            String query = "INSERT INTO import_detail (import_id, ingredient_id, quantity, unit_price, total_price) "
+                    + "VALUES (?, ?, ?, ?, ?)";
+
+            return this.executeQuery(query, new Object[]{importId, ingredientId, quantity, unitPrice, totalPrice});
+
+        } catch (SQLException ex) {
+
+            int sqlError = checkErrorSQL(ex);
+            if (sqlError != 0) {
+                return sqlError;
+            }
+        }
+        return -1;
+    }
+
+    public int edit(int categoryId, int supplierId, int employeeId) {
+        try {
+
+            String query = "UPDATE import SET supplier_id = ?, emp_id = ? WHERE import_id = ?";
+
+            return this.executeQuery(query, new Object[]{categoryId, supplierId, employeeId});
 
         } catch (SQLException ex) {
 
@@ -136,25 +176,7 @@ public class ImportDAO extends DBContext {
         return -1;
     }
 
-    public int addDetail(int importId, int ingredientId, String unit, int quantity, int unitPrice, int totalPrice) {
-        try {
-            String query = "INSERT INTO import_detail (import_id, ingredient_id, unit, quantity, unit_price, total_price) "
-                    + "VALUES (?, ?, ?, ?, ?, ?)";
-
-            return this.executeQuery(query, new Object[]{importId, ingredientId, unit, quantity, unitPrice, totalPrice});
-
-        } catch (SQLException ex) {
-
-            int sqlError = checkErrorSQL(ex);
-            if (sqlError != 0) {
-                return sqlError;
-            }
-        }
-        return -1;
-    }
-    
-
-    public int edit(int categoryId, int supplierId, int employeeId) {
+    public int editDetail(int categoryId, int supplierId, int employeeId) {
         try {
 
             String query = "UPDATE import SET supplier_id = ?, emp_id = ? WHERE import_id = ?";

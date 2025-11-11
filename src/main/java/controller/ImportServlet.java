@@ -149,17 +149,12 @@ public class ImportServlet extends HttpServlet {
                 }
 
             } else if ("addDetail".equalsIgnoreCase(action)) {
-                int typeId;
                 int importId;
                 int ingredientId;
                 int quantity;
                 int unitPrice;
                 int totalPrice;
 
-                String unit = request.getParameter("unit");
-                if (unit != null) {
-                    unit = unit.trim();
-                }
 
                 try {
                     importId = Integer.parseInt(request.getParameter("importId"));
@@ -179,13 +174,6 @@ public class ImportServlet extends HttpServlet {
                     ingredientId = -1;
                 }
 
-                String ingredientName = ingredientDAO.getElementByID(ingredientId).getIngredientName();
-                if (ingredientName != null) {
-                    ingredientName = ingredientName.trim();
-                }
-                
-                typeId = typeDAO.getTypeByIngredient(ingredientName);
-
                 try {
                     quantity = Integer.parseInt(request.getParameter("quantity"));
                 } catch (NumberFormatException e) {
@@ -203,12 +191,11 @@ public class ImportServlet extends HttpServlet {
                 if (!validateInteger(importId, false, false, true)
                         || !validateInteger(ingredientId, false, false, true)
                         || !validateInteger(quantity, false, false, true)
-                        || !validateInteger(unitPrice, false, true, true)
-                        || !validateString(unit, -1)) {
+                        || !validateInteger(unitPrice, false, true, true)) {
                     popupStatus = false;
                     popupMessage = "The add detail action is NOT successfull. The input has some error.";
                 } else {
-                    int checkError = importDAO.addDetail(importId, ingredientId, unit, quantity, unitPrice, totalPrice);
+                    int checkError = importDAO.addDetail(importId, ingredientId, quantity, unitPrice, totalPrice);
                     if (checkError >= 1) {
                         popupMessage = "The import detail added successfully.";
                     } else {
