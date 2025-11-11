@@ -355,8 +355,8 @@ public class OrderItemDAO extends DBContext {
             ResultSet rs = this.executeSelectionQuery(query, null);
 
             while (rs.next()) {
-                int orderId = rs.getInt(1);
-                int orderItemId = rs.getInt(2);
+//                int orderId = rs.getInt(1);
+//                int orderItemId = rs.getInt(2);
                 Integer voucherId = rs.getInt(3);
                 Date date = rs.getDate(4);
 
@@ -370,10 +370,11 @@ public class OrderItemDAO extends DBContext {
                     sum = 0;
                 }
 
-                Order order = orderDAO.getElementByID(orderId);
-                OrderItem orderItem = getElementByID(orderItemId);
+//                Order order = orderDAO.getElementByID(orderId);
+//                OrderItem orderItem = getElementByID(orderItemId); loi do dung chinh dbcontext cua ban than, gay du lieu bi sai
 
-                long mini_sum = orderItem.getQuantity() * orderItem.getUnitPrice();
+                long mini_sum = rs.getInt(6) * rs.getInt(5);
+//                long mini_sum = orderItem.getQuantity() * orderItem.getUnitPrice();
 
                 if (voucherId.intValue() <= 0) {
                     sum += mini_sum;
