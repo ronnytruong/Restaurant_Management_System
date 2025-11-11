@@ -4,235 +4,98 @@
     Author     : PHAT
 --%>
 
-<%@ page contentType="text/html;charset=UTF-8" %>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<!DOCTYPE html>
-<html>
-    <head>
-        <title>Edit Profile - Yummy</title>
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <style>
-            * {
-                margin: 0;
-                padding: 0;
-                box-sizing: border-box;
-            }
-            body {
-                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-                background-color: #f5f5f5;
-                color: #333;
-            }
-            .container {
-                max-width: 800px;
-                margin: 60px auto;
-                padding: 0 20px;
-            }
-            .profile-card {
-                background: white;
-                border-radius: 8px;
-                padding: 40px;
-                box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            }
-            h2 {
-                font-size: 32px;
-                color: #333;
-                margin-bottom: 10px;
-                font-weight: 600;
-            }
-            .subtitle {
-                color: #666;
-                margin-bottom: 30px;
-                font-size: 14px;
-            }
-            .message {
-                padding: 12px 20px;
-                border-radius: 4px;
-                margin-bottom: 20px;
-                font-size: 14px;
-            }
-            .message.success {
-                background-color: #e8f5e9;
-                color: #2e7d32;
-                border-left: 4px solid #4caf50;
-            }
-            .message.error {
-                background-color: #ffebee;
-                color: #c62828;
-                border-left: 4px solid #f44336;
-            }
-            .form-group {
-                margin-bottom: 10px;
-            }
-            .info-row {
-                display: flex;
-                padding: 16px 0;
-                border-bottom: 1px solid #f0f0f0;
-            }
-            .info-row:last-of-type {
-                border-bottom: none;
-            }
-            .info-label {
-                flex: 0 0 180px;
-                font-weight: 600;
-                color: #555;
-                font-size: 14px;
-                align-self: center;
-            }
-            .info-value {
-                flex: 1;
-                color: #333;
-                font-size: 14px;
-            }
-            .info-value input[type="text"],
-            .info-value input[type="email"],
-            .info-value input[type="date"],
-            .info-value select {
-                width: 100%;
-                padding: 10px;
-                border: 1px solid #ddd;
-                border-radius: 4px;
-                font-size: 14px;
-            }
-            .info-value input[readonly] {
-                background-color: #eee;
-                cursor: not-allowed;
-            }
-            .info-value.empty {
-                color: #999;
-                font-style: italic;
-            }
-            .button-group {
-                display: flex;
-                gap: 15px;
-                margin-top: 30px;
-                padding-top: 20px;
-                border-top: 1px solid #f0f0f0;
-            }
-            .btn {
-                display: inline-block;
-                padding: 14px 40px;
-                border-radius: 50px;
-                font-size: 16px;
-                font-weight: 500;
-                text-decoration: none;
-                text-align: center;
-                transition: all 0.3s;
-                cursor: pointer;
-                border: none;
-            }
-            .btn-primary {
-                background-color: #d32f2f;
-                color: white;
-            }
-            .btn-primary:hover {
-                background-color: #b71c1c;
-                transform: translateY(-2px);
-                box-shadow: 0 4px 12px rgba(211, 47, 47, 0.3);
-            }
-            .btn-secondary {
-                background-color: white;
-                color: #d32f2f;
-                border: 2px solid #d32f2f;
-            }
-            .btn-secondary:hover {
-                background-color: #d32f2f;
-                color: white;
-            }
-            @media (max-width: 768px) {
-                .profile-card {
-                    padding: 30px 20px;
-                }
-                .info-row {
-                    flex-direction: column;
-                    gap: 8px;
-                }
-                .info-label {
-                    flex: none;
-                }
-                .button-group {
-                    flex-direction: column;
-                }
-                .btn {
-                    width: 100%;
-                }
-            }
-        </style>
-    </head>
-    <body>
-        <div class="container">
-            <div class="profile-card">
-                <h2>Edit My Profile</h2>
-                <p class="subtitle">Update your account information below</p>
 
-                <c:if test="${not empty successMessage}">
-                    <div class="message success">${successMessage}</div>
-                </c:if>
+<c:set var="title" value="Edit Profile - Yummy Dashboard"/>
 
-                <c:if test="${not empty errorMessage}">
-                    <div class="message error">${errorMessage}</div>
-                </c:if>
+<%@ include file="/WEB-INF/include/headerDashboard.jsp" %>
 
-                <form action="employee-profile" method="post">
-                    <input type="hidden" name="action" value="edit"/>
+<section class="col-12 col-lg-9 col-xxl-10" aria-label="Edit Profile section">
+    <div class="content-card shadow-sm p-4 p-md-5 mt-3">
 
-                    <div class="info-row">
-                        <div class="info-label">Username</div>
-                        <div class="info-value">
-                            <input type="text" value="${employee.empAccount}" readonly />
-                        </div>
-                    </div>
+        <h3 class="mb-4 text-center">Edit My Profile</h3>
+        <p class="text-center text-secondary mb-4">Update your account information below</p>
 
-                    <div class="info-row">
-                        <div class="info-label">Full Name</div>
-                        <div class="info-value">
-                            <input type="text" name="emp_name" value="${employee.empName}" required/>
-                        </div>
-                    </div>
-
-                    <div class="info-row">
-                        <div class="info-label">Gender</div>
-                        <div class="info-value">
-                            <select name="gender">
-                                <option value="Male" <c:if test="${employee.gender eq 'Male'}">selected</c:if>>Male</option>
-                                <option value="Female" <c:if test="${employee.gender eq 'Female'}">selected</c:if>>Female</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <div class="info-row">
-                            <div class="info-label">Phone Number</div>
-                            <div class="info-value">
-                                <input type="text" name="phone_number" value="${employee.phoneNumber}"/>
-                        </div>
-                    </div>
-
-                    <div class="info-row">
-                        <div class="info-label">Email Address</div>
-                        <div class="info-value">
-                            <input type="email" name="email" value="${employee.email}"/>
-                        </div>
-                    </div>
-
-                    <div class="info-row">
-                        <div class="info-label">Address</div>
-                        <div class="info-value">
-                            <input type="text" name="address" value="${employee.address}"/>
-                        </div>
-                    </div>
-
-                    <div class="info-row">
-                        <div class="info-label">Date of Birth</div>
-                        <div class="info-value">
-                            <input type="date" name="dob" value="${employee.dob}"/>
-                        </div>
-                    </div>
-
-                    <div class="button-group">
-                        <button type="submit" class="btn btn-primary">Save Changes</button>
-                        <a href="employee-profile?action=view" class="btn btn-secondary">Cancel</a>
-                    </div>
-                </form>
+        <c:if test="${not empty successMessage}">
+            <div class="alert alert-success d-flex align-items-center" role="alert">
+                <i class="bi bi-check-circle-fill me-2"></i>
+                <div>${successMessage}</div>
             </div>
-        </div>
-    </body>
-</html>
+        </c:if>
+
+        <c:if test="${not empty errorMessage}">
+            <div class="alert alert-danger d-flex align-items-center" role="alert">
+                <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                <div>${errorMessage}</div>
+            </div>
+        </c:if>
+
+        <form action="employee-profile" method="post">
+            <input type="hidden" name="action" value="edit"/>
+
+            <div class="row mb-3">
+                <label class="col-sm-3 col-form-label fw-semibold">Username</label>
+                <div class="col-sm-9">
+                    <input type="text" class="form-control bg-light" value="${employee.empAccount}" readonly />
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <label class="col-sm-3 col-form-label fw-semibold">Full Name</label>
+                <div class="col-sm-9">
+                    <input type="text" name="emp_name" class="form-control" value="${employee.empName}" required/>
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <label class="col-sm-3 col-form-label fw-semibold">Gender</label>
+                <div class="col-sm-9">
+                    <select name="gender" class="form-select">
+                        <option value="Male" <c:if test="${employee.gender eq 'Male'}">selected</c:if>>Male</option>
+                        <option value="Female" <c:if test="${employee.gender eq 'Female'}">selected</c:if>>Female</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <label class="col-sm-3 col-form-label fw-semibold">Phone Number</label>
+                <div class="col-sm-9">
+                    <input type="text" name="phone_number" class="form-control" value="${employee.phoneNumber}"/>
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <label class="col-sm-3 col-form-label fw-semibold">Email</label>
+                <div class="col-sm-9">
+                    <input type="email" name="email" class="form-control" value="${employee.email}"/>
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <label class="col-sm-3 col-form-label fw-semibold">Address</label>
+                <div class="col-sm-9">
+                    <input type="text" name="address" class="form-control" value="${employee.address}"/>
+                </div>
+            </div>
+
+            <div class="row mb-4">
+                <label class="col-sm-3 col-form-label fw-semibold">Date of Birth</label>
+                <div class="col-sm-9">
+                    <input type="date" name="dob" class="form-control" value="${employee.dob}"/>
+                </div>
+            </div>
+
+            <div class="text-center mt-4 pt-4 border-top">
+                <button type="submit" class="btn btn-danger px-5 py-2 me-3">
+                    <i class="bi bi-save me-1"></i> Save Changes
+                </button>
+                <a href="employee-profile?action=view" class="btn btn-outline-danger px-5 py-2">
+                    <i class="bi bi-x-circle me-1"></i> Cancel
+                </a>
+            </div>
+        </form>
+    </div>
+</section>
+
+<%@ include file="/WEB-INF/include/footerDashboard.jsp" %>
