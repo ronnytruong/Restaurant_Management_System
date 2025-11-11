@@ -17,8 +17,6 @@
             </div>
             <div class="actions d-flex flex-column flex-md-row gap-2 align-items-md-center justify-content-md-end">
                 <div class="filters d-flex flex-wrap gap-2 justify-content-end">
-                    Chua giam voucher khi them vao order, khi ??i tr?ng thái thì 
-                    Khi chuy?n tr?ng thái sang complete thì hay tr?
                     <a class="btn btn-primary add-btn" href="<c:url value="order">
                            <c:param name="view" value="add"/>
                        </c:url>"><i class="bi bi-plus-circle"></i>Add</a>
