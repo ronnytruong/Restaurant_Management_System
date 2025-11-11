@@ -1,21 +1,13 @@
-<%-- 
-    Document   : headerCustomer
-    Created on : 7 Nov 2025, 4:33:24 AM
-    Author     : Dai Minh Nhu - CE190213
---%>
-
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <!DOCTYPE html>
 <html lang="en">
-
     <head>
         <meta charset="utf-8">
         <meta content="width=device-width, initial-scale=1.0" name="viewport">
-        <title>${title}</title>
-        <meta name="description" content="">
-        <meta name="keywords" content="">
+        <title>Book a Table - Yummy Restaurant</title>
+        <meta name="description" content="Reserve your seat and explore available tables at Yummy Restaurant.">
+        <meta name="keywords" content="restaurant reservation, book table, dining">
 
         <!-- Favicons -->
         <link href="assets/img/favicon.png" rel="icon">
@@ -24,25 +16,18 @@
         <!-- Fonts -->
         <link href="https://fonts.googleapis.com" rel="preconnect">
         <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
-        <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&family=Inter:wght@100;200;300;400;500;600;700;800;900&family=Amatic+SC:wght@400;700&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Inter:wght@400;600;700&family=Amatic+SC:wght@700&display=swap" rel="stylesheet">
 
-        <!-- Vendor CSS Files -->
+        <!-- Vendor CSS -->
         <link href="assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
         <link href="assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
         <link href="assets/vendor/aos/aos.css" rel="stylesheet">
         <link href="assets/vendor/glightbox/css/glightbox.min.css" rel="stylesheet">
         <link href="assets/vendor/swiper/swiper-bundle.min.css" rel="stylesheet">
 
-        <!-- Main CSS File -->
+        <!-- Main CSS -->
         <link href="assets/css/main.css" rel="stylesheet">
-
-        <!-- =======================================================
-        * Template Name: Yummy
-        * Template URL: https://bootstrapmade.com/yummy-bootstrap-restaurant-website-template/
-        * Updated: Aug 07 2024 with Bootstrap v5.3.3
-        * Author: BootstrapMade.com
-        * License: https://bootstrapmade.com/license/
-        ======================================================== -->
+        <link href="assets/css/booktable.css" rel="stylesheet">
     </head>
 
     <body class="index-page">
@@ -59,8 +44,8 @@
 
                 <nav id="navmenu" class="navmenu">
                     <ul>
-                        <li><a href="homepage">Home<br></a></li>
-                        <li><a href="menu">Menu</a></li>
+                        <li><a href="<c:url value="homepage"/>#hero">Home<br></a></li>
+                        <li><a href="<c:url value="homepage"/>#menu">Menu</a></li>
                         <li><a href="<c:url value="homepage"/>#chefs">Chefs</a></li>
                         <li><a href="<c:url value="homepage"/>#gallery">Gallery</a></li>
                         <li><a href="<c:url value="homepage"/>#contact">Contact</a></li>

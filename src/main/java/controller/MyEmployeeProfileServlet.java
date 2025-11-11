@@ -66,7 +66,7 @@ public class MyEmployeeProfileServlet extends HttpServlet {
             throws ServletException, IOException {
         HttpSession session = request.getSession(false);
         if (session == null || session.getAttribute("employeeSession") == null) {
-            response.sendRedirect("login");
+            response.sendRedirect("employee-login");
             return;
         }
 
@@ -97,7 +97,7 @@ public class MyEmployeeProfileServlet extends HttpServlet {
             throws ServletException, IOException {
         HttpSession session = request.getSession(false);
         if (session == null || session.getAttribute("employeeSession") == null) {
-            response.sendRedirect("login");
+            response.sendRedirect("employee-login");
             return;
         }
 

@@ -43,7 +43,7 @@
                 </div>
 
 
-                <form class="login-form" action="employee-login" method="POST">
+                <form class="login-form" action="login_employee" method="POST">
                     <h2>Sign In</h2>
 
                     <c:if test="${not empty sessionScope.popupMessage}">
