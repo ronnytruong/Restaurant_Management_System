@@ -47,7 +47,7 @@
                         <div class="col-12 col-md-3">
                             <label class="form-label">Table</label>
                             <input type="number" name="tableId" class="form-control" required
-                                   value="${currentReservation.table.id}" disabled>
+                                   value="${currentReservation.table.id}" disabled  >
                             <small class="text-muted">Current: ${currentReservation.table.number}</small>
                         </div>
 
