@@ -1,72 +1,5 @@
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
-<!DOCTYPE html>
-<html lang="en">
 
-    <head>
-        <meta charset="utf-8">
-        <meta content="width=device-width, initial-scale=1.0" name="viewport">
-        <title>My Profile - Yummy Restaurant</title>
-        <meta name="description" content="View and edit your personal account information.">
-        <meta name="keywords" content="user profile, account settings, customer details">
-
-        <link href="assets/img/favicon.png" rel="icon">
-        <link href="assets/img/apple-touch-icon.png" rel="apple-touch-icon">
-
-        <link href="https://fonts.googleapis.com" rel="preconnect">
-        <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
-        <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&family=Inter:wght@100;200;300;400;500;600;700;800;900&family=Amatic+SC:wght@400;700&display=swap" rel="stylesheet">
-
-        <link href="assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-        <link href="assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
-        <link href="assets/vendor/aos/aos.css" rel="stylesheet">
-        <link href="assets/vendor/glightbox/css/glightbox.min.css" rel="stylesheet">
-        <link href="assets/vendor/swiper/swiper-bundle.min.css" rel="stylesheet">
-
-        <link href="assets/css/main.css" rel="stylesheet">
-
-        <style>
-            
-            .profile-section .card {
-                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-                border: none;
-            }
-            .info-label {
-                font-weight: 600;
-                color: #7a7a7a;
-            }
-            .info-value.empty {
-                color: #ccc;
-                font-style: italic;
-            }
-            .btn-yummy-primary {
-                background-color: #ce1212; 
-                border-color: #ce1212;
-                color: white;
-                transition: all 0.3s;
-            }
-            .btn-yummy-primary:hover {
-                background-color: #a00f0f;
-                border-color: #a00f0f;
-                transform: translateY(-1px);
-            }
-            .btn-outline-yummy {
-                color: #ce1212;
-                border-color: #ce1212;
-                transition: all 0.3s;
-            }
-            .btn-outline-yummy:hover {
-                background-color: #ce1212;
-                color: white;
-            }
-        </style>
-    </head>
-
-    <body class="inner-page">
-
-        <%-- Include Header --%>
-        <%@include file="/WEB-INF/include/customerHeader.jsp" %>
+        <%@include file="/WEB-INF/include/headerCustomer.jsp" %>
 
         <main class="main">
 
@@ -192,10 +125,10 @@
 
                                 <%-- Action Buttons --%>
                                 <div class="text-center mt-4 pt-4 border-top">
-                                    <a href="customer-profile?action=edit" class="btn btn-yummy-primary px-5 py-2 me-3">
+                                    <a href="customer-profile?action=edit" class="btn btn-danger px-5 py-2 me-3">
                                         <i class="bi bi-pencil-square me-1"></i> Edit Profile
                                     </a>
-                                    <a href="customer-profile?action=change-password" class="btn btn-outline-yummy px-5 py-2">
+                                    <a href="customer-profile?action=change-password" class="btn btn-outline-danger px-5 py-2">
                                         <i class="bi bi-key me-1"></i> Change Password
                                     </a>
                                 </div>
@@ -209,6 +142,6 @@
         </main>
 
         <%-- Include Footer --%>
-        <%@include file="/WEB-INF/include/customerFooter.jsp" %>
+        <%@include file="/WEB-INF/include/footerCustomer.jsp" %>
     </body>
 </html>

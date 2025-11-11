@@ -761,4 +761,4 @@
 
   </main>
 
-  <%@include file="/WEB-INF/include/customerFooter.jsp" %>
+  <%@include file="/WEB-INF/include/footerCustomer.jsp" %>
