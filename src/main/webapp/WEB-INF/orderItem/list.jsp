@@ -86,7 +86,6 @@
                 </c:otherwise>
             </c:choose>
 
-            chi cho them edit, xoa khi trang thai khac completed, rejected
             <div class="card-footer actions d-flex flex-column flex-md-row gap-2 align-items-md-center justify-content-md-end">
                 <div class="filters d-flex flex-wrap gap-2 justify-content-end">
                     <c:if test="${not empty currentOrder}">
