@@ -24,7 +24,7 @@
                     
                     <tr>
                         <th><label for="itemName" class="form-label">Item Name</label></th>
-                        <td><input type="text" id="itemName" name="itemName" class="form-control" required></td>
+                        <td><input type="text" id="itemName" name="itemName" class="form-control" required pattern="^[A-Za-z\s]+$" title="Item name must contain only letters and spaces. No numbers or special characters."></td>
                     </tr>
                     
                     <tr>
@@ -51,7 +51,15 @@
 
                     <tr>
                         <th><label for="price" class="form-label">Price(VND)</label></th>
-                        <td><input type="number" id="price" name="price" class="form-control" step="1" min="1" required></td>
+                        <td><input type="number"
+                                    id="price"
+                                    name="price"
+                                    class="form-control"
+                                    step="1"
+                                    min="25000"
+                                    max="5000000"
+                                    required
+                                    title="Price must be between 25,000 and 5,000,000 VND."></td>
                     </tr>
                     
                     <tr>

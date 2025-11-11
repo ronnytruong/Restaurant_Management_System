@@ -21,7 +21,8 @@ import jakarta.servlet.http.HttpSession;
 public class MyCustomerProfileServlet extends HttpServlet {
 
     private CustomerDAO customerDAO = new CustomerDAO();
-private DBContext db = new DBContext();
+    private DBContext db = new DBContext();
+
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -30,6 +31,12 @@ private DBContext db = new DBContext();
             response.sendRedirect("login");
             return;
         }
+        
+        String successMessage = (String) session.getAttribute("successMessage");
+    if (successMessage != null) {
+        request.setAttribute("successMessage", successMessage);
+        session.removeAttribute("successMessage"); // **Dòng quan trọng: Xóa ngay lập tức**
+    }
 
         Customer customer = (Customer) session.getAttribute("customerSession");
         String action = request.getParameter("action");
@@ -80,7 +87,36 @@ private DBContext db = new DBContext();
         if (dobStr != null && !dobStr.isEmpty()) {
             dob = Date.valueOf(dobStr);
         }
+        String errorMessage = null;
+        Date today = new Date(System.currentTimeMillis());
+        long YEARDATE = 1000L * 60 * 60 * 24 * 365;
+        // validation
+        if (dob != null && dob.after(today) ) {
+            errorMessage = "Invalid date of birth.";
+        } else if (dob != null && ((today.getTime() - dob.getTime()) / (YEARDATE)) < 18) {
+            errorMessage = "Invalid date of birth. You must be at least 18 years old.";
+        } else if (dob != null && ((today.getTime() - dob.getTime()) / (YEARDATE)) > 100){
+             errorMessage = "Invalid date of birth.";
+    }else if (!email.equalsIgnoreCase(customer.getEmail()) && customerDAO.checkEmailExist(email)) {
+            errorMessage = "Email already exists. This email is already taken by another account";
+        } else if (!phone.equals(customer.getPhoneNumber()) && customerDAO.checkPhoneExist(phone)) {
+            errorMessage = "Phone number already exists. This phone is already taken by another account";
+        }
 
+        if (errorMessage != null) {
+            request.setAttribute("errorMessage", errorMessage);
+            request.setAttribute("customer", customer);
+            request.getRequestDispatcher("/WEB-INF/profile/edit.jsp").forward(request, response);
+            return;
+        }
+
+// If any validation failed
+        if (errorMessage != null) {
+            request.setAttribute("errorMessage", errorMessage);
+            request.setAttribute("customer", customer);
+            request.getRequestDispatcher("/WEB-INF/profile/edit.jsp").forward(request, response);
+            return;
+        }
         int result = customerDAO.edit(
                 customer.getCustomerId(),
                 customer.getCustomerAccount(),
@@ -91,22 +127,13 @@ private DBContext db = new DBContext();
                 address,
                 dob
         );
-
         if (result > 0) {
-           
             Customer updated = customerDAO.getElementByID(customer.getCustomerId());
-
-          
             session.setAttribute("customerSession", updated);
-
-           
             session.setAttribute("successMessage", "Profile updated successfully.");
-
-            
             response.sendRedirect(request.getContextPath() + "/customer-profile?action=view");
             return;
         } else {
-           
             request.setAttribute("errorMessage", "Failed to update profile.");
             request.setAttribute("customer", customer);
             request.getRequestDispatcher("/WEB-INF/profile/edit.jsp").forward(request, response);
@@ -123,7 +150,6 @@ private DBContext db = new DBContext();
 
         String errorMessage = null;
 
-       
         if (oldPassword == null || newPassword == null || confirmPassword == null
                 || oldPassword.isEmpty() || newPassword.isEmpty() || confirmPassword.isEmpty()) {
             errorMessage = "Please fill all fields.";
@@ -142,9 +168,8 @@ private DBContext db = new DBContext();
             }
         }
 
-       
         if (errorMessage == null) {
-           
+
             String hashedNew = db.hashToMD5(newPassword);
             int result = customerDAO.edit(customer.getCustomerId(), hashedNew);
 
