@@ -275,4 +275,43 @@ public class ReservationDAO extends DBContext {
         return false;
     }
 
+    public List<Reservation> getReservationsByTable(int tableId) {
+        List<Reservation> list = new ArrayList<>();
+        try {
+            String sql = "SELECT reservation_date, reservation_time FROM reservation "
+                    + "WHERE table_id = ? AND status IN ('Pending','Approved','Seated')";
+            ResultSet rs = this.executeSelectionQuery(sql, new Object[]{tableId});
+            while (rs.next()) {
+                list.add(new Reservation(0, null, null, rs.getDate("reservation_date"), rs.getTime("reservation_time"), 0, null));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
+    public List<Time[]> getStartEndTimesByTableAndDate(int tableId, Date date) {
+        List<Time[]> list = new ArrayList<>();
+        try {
+            String sql
+                    = "SELECT "
+                    + "    DATEADD(MINUTE, -15, reservation_time) AS start_time, "
+                    + "    DATEADD(HOUR, 3, reservation_time)     AS end_time "
+                    + "FROM reservation "
+                    + "WHERE table_id = ? "
+                    + "  AND reservation_date = ? "
+                    + "  AND LOWER(status) IN ('pending','approved','seated') "
+                    + "ORDER BY reservation_time";
+
+            ResultSet rs = this.executeSelectionQuery(sql, new Object[]{tableId, date});
+            while (rs.next()) {
+                Time start = rs.getTime("start_time");
+                Time end = rs.getTime("end_time");
+                list.add(new Time[]{start, end});
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(ReservationDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return list;
+    }
 }

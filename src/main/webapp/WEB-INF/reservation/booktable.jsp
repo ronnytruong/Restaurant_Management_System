@@ -137,11 +137,9 @@
                             <div class="table-card <%= status%> h-100 text-center p-4"
                                  style="<%= clickable ? "cursor:pointer;" : "cursor:not-allowed; opacity:0.6;"%>"
                                  <%= clickable
-                                         ? "data-table-id='" + t.getId()
-                                         + "' data-table-number='" + t.getNumber()
-                                         + "' data-table-capacity='" + t.getCapacity()
-                                         + "' onclick='openBookingModal(this)' data-bs-toggle=\"modal\" data-bs-target=\"#bookingModal\""
+                                         ? "onclick=\"window.location.href='booktable?view=add&tableId=" + t.getId() + "'\""
                                          : ""%>>
+
                                 <h4>Table <%= t.getNumber()%></h4>
                                 <p class="capacity"><%= t.getCapacity()%> Guests</p>
                                 <span class="status"><%= t.getStatus()%></span>

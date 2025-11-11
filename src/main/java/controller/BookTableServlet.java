@@ -21,7 +21,10 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import java.sql.Date;
 import java.sql.Time;
+import java.time.LocalDate;
+import java.util.List;
 import model.Customer;
+import model.Reservation;
 
 /**
  *
@@ -46,7 +49,7 @@ public class BookTableServlet extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
-        try (PrintWriter out = response.getWriter()) {
+        try ( PrintWriter out = response.getWriter()) {
             /* TODO output your page here. You may use following sample code. */
             out.println("<!DOCTYPE html>");
             out.println("<html>");
@@ -81,6 +84,23 @@ public class BookTableServlet extends HttpServlet {
 
         } else if (view.equalsIgnoreCase("add")) {
             namepage = "add";
+            try {
+                Date date = Date.valueOf(LocalDate.now());
+                int tableId = Integer.parseInt(request.getParameter("tableId"));
+                request.setAttribute("selectedTable", tableDAO.getElementByID(tableId));
+                List<Reservation> list = reservationDAO.getReservationsByTable(tableId);
+                List<Time[]> ranges = reservationDAO.getStartEndTimesByTableAndDate(tableId, date);
+                request.setAttribute("reservedRanges", ranges);
+
+                if (list == null) {
+                    list = java.util.Collections.emptyList();
+                }
+                System.out.println("existingReservations size = " + list.size());
+                request.setAttribute("existingReservations", list);
+            } catch (Exception e) {
+                request.setAttribute("selectedTable", null);
+                request.setAttribute("existingReservations", java.util.Collections.emptyList());
+            }
         } else if (view.equalsIgnoreCase("edit")) {
             namepage = "edit";
 
@@ -147,7 +167,6 @@ public class BookTableServlet extends HttpServlet {
 
             Time time;
             if (timeStr != null && timeStr.contains("T")) {
-
                 String[] parts = timeStr.split("T");
                 time = Time.valueOf(parts[1] + ":00");
             } else {

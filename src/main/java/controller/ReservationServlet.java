@@ -46,7 +46,7 @@ public class ReservationServlet extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
-        try (PrintWriter out = response.getWriter()) {
+        try ( PrintWriter out = response.getWriter()) {
             /* TODO output your page here. You may use following sample code. */
             out.println("<!DOCTYPE html>");
             out.println("<html>");
@@ -269,7 +269,7 @@ public class ReservationServlet extends HttpServlet {
 
                         int tableId = current.getTable().getId();
                         if (status.equalsIgnoreCase("Approved")) {
-                            tableDAO.updateStatus(tableId, "Reserved");
+
                         } else if (status.equalsIgnoreCase("Rejected")) {
                             // Chỉ set lại Available nếu KHÔNG có reservation nào khác đang Approved/Seated cho cùng bàn
                             boolean hasActive = reservationDAO.hasActiveReservationForTable(tableId);
