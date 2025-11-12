@@ -1,5 +1,5 @@
 <%-- 
-    Document   : add
+    Document   : edit
     Created on : Oct 28, 2025, 8:30:59 PM
     Author     : Administrator
 --%>
@@ -51,13 +51,17 @@
                 Book Table <%= (selected != null) ? selected.getNumber() : ""%>
             </h4>
 
-            <form id="bookingForm" action="<c:url value='/booktable'/>" method="post">
-                <input type="hidden" name="tableId" id="tableId" value="<%= (selected != null) ? selected.getId() : ""%>">
+            <form id="bookingForm" action="<c:url value='/reservation'/>" method="post">
+                <input type="hidden" name="action" value="edit">
+                <input type="hidden" name="reservationId" value="${currentReservation.reservationId}">
+                <input type="hidden" name="customerId" value="${sessionScope.customerSession.customerId}">
+                <input type="hidden" name="from" value="mylist">
 
                 <div class="md-3">
-                    <label class="form-label">Table</label>
+                    <label class="form-label">Table</label>  
                     <input type="number" name="tableId" class="form-control" required
-                           value="${currentReservation.table.id}" disabled  >
+                           value="${currentReservation.table.id}" readonly  >
+                    <input type="hidden" name="tableId" value="${currentReservation.table.id}">
                     <small class="text-muted">Current: ${currentReservation.table.number}</small>
                 </div>
 
