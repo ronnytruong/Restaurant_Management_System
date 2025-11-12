@@ -34,7 +34,6 @@
                         <th width="9%">Table</th>
                         <th width="14%">Date</th>
                         <th width="12%">Time</th>
-                        <th width="10%">Party</th>
                         <th width="12%">Status</th>
                         <th width="16%">Action</th>
                     </tr>
@@ -52,7 +51,6 @@
                                     <td><c:out value="${r.table.number}"/></td>
                                     <td><c:out value="${r.reservationDate}"/></td>
                                     <td><c:out value="${r.reservationTime}"/></td>
-                                    <td><c:out value="${r.partySize}"/></td>
                                     <td>
                                         <span class="badge 
                                               ${r.status == 'Approved' ? 'bg-success' : 
