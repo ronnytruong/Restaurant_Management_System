@@ -160,12 +160,12 @@
                         return;
                     }
 
-//                    const hour = parseInt(time.split(':')[0]);
-//                    if (hour < 5 || hour >= 22) {
-//                        showMessage('Không thể đặt trong khoảng 22:00 - 05:00.', 'danger');
-//                        btnSubmit.disabled = true;
-//                        return;
-//                    }
+                    const hour = parseInt(time.split(':')[0]);
+                    if (hour < 5 || hour >= 22) {
+                        showMessage('Không thể đặt trong khoảng 22:00 - 05:00.', 'danger');
+                        btnSubmit.disabled = true;
+                        return;
+                    }
 
                     if (isConflict(date, time)) {
                         showMessage('This time has already been booked. Please choose another time slot.', 'danger');
