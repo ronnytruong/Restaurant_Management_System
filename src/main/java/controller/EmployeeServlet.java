@@ -15,10 +15,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
-/**
- *
- * @author PHAT
- */
 @WebServlet(name = "EmployeeServlet", urlPatterns = {"/employee"})
 public class EmployeeServlet extends HttpServlet {
 
@@ -156,7 +152,7 @@ public class EmployeeServlet extends HttpServlet {
                 }
 //end
 
-                password = constant.HashUtil.toMD5(password);
+                password = employeeDAO.hashToMD5(password);
 
                 if (popupStatus == true) {
                     int checkError = employeeDAO.add(empAccount, password, empName, roleId);

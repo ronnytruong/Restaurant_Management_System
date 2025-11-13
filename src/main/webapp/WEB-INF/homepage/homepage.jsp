@@ -1,163 +1,6 @@
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-  <meta charset="utf-8">
-  <meta content="width=device-width, initial-scale=1.0" name="viewport">
-  <title>Index - Yummy Bootstrap Template</title>
-  <meta name="description" content="">
-  <meta name="keywords" content="">
-
-  <!-- Favicons -->
-  <link href="assets/img/favicon.png" rel="icon">
-  <link href="assets/img/apple-touch-icon.png" rel="apple-touch-icon">
-
-  <!-- Fonts -->
-  <link href="https://fonts.googleapis.com" rel="preconnect">
-  <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&family=Inter:wght@100;200;300;400;500;600;700;800;900&family=Amatic+SC:wght@400;700&display=swap" rel="stylesheet">
-
-  <!-- Vendor CSS Files -->
-  <link href="assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-  <link href="assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
-  <link href="assets/vendor/aos/aos.css" rel="stylesheet">
-  <link href="assets/vendor/glightbox/css/glightbox.min.css" rel="stylesheet">
-  <link href="assets/vendor/swiper/swiper-bundle.min.css" rel="stylesheet">
-
-  <!-- Main CSS File -->
-  <link href="assets/css/main.css" rel="stylesheet">
-
-  <!-- =======================================================
-  * Template Name: Yummy
-  * Template URL: https://bootstrapmade.com/yummy-bootstrap-restaurant-website-template/
-  * Updated: Aug 07 2024 with Bootstrap v5.3.3
-  * Author: BootstrapMade.com
-  * License: https://bootstrapmade.com/license/
-  ======================================================== -->
-</head>
-
-<body class="index-page">
-
-  <header id="header" class="header d-flex align-items-center sticky-top">
-    <div class="container position-relative d-flex align-items-center justify-content-between">
-
-      <a href="homepage" class="logo d-flex align-items-center me-auto me-xl-0">
-        <!-- Uncomment the line below if you also wish to use an image logo -->
-        <!-- <img src="assets/img/logo.png" alt=""> -->
-        <h1 class="sitename">Yummy</h1>
-        <span>.</span>
-      </a>
-
-      <nav id="navmenu" class="navmenu">
-        <ul>
-          <li><a href="#hero" class="active">Home<br></a></li>
-          <li><a href="#menu">Menu</a></li>
-          <li><a href="#events">Events</a></li>
-          <li><a href="#chefs">Chefs</a></li>
-          <li><a href="#gallery">Gallery</a></li>
-          <li><a href="#contact">Contact</a></li>
-          <c:if test="${not empty sessionScope.customerSession}">
-                            <li>
-                                <a href="<c:url value='/reservation'>
-                                            <c:param name='view' value='mylist'/>
-                                            <c:param name='customerId' value='${sessionScope.customerSession.customerId}'/>
-                                       </c:url>">
-                                    My Reservation
-                                </a>
-                            </li>
-
-                            <li><a href="<c:url value="myOrder"/>">My Order</a></li>
-                        </c:if>
-        </ul>
-        <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
-      </nav>
-     <div class="d-flex align-items-center gap-2">
-
-
-    <a class="btn-getstarted" href="booktable">Book a Table</a>
-
-    <c:choose>
-       
-        <c:when test="${empty sessionScope.customerSession and empty sessionScope.employeeSession}">
-            <a class="btn btn-outline-danger text-danger round" href="login">Login</a>
-        </c:when>
-
-       
-        <c:when test="${not empty sessionScope.customerSession}">
-            <div class="dropdown">
-                <a class="btn btn-link dropdown-toggle p-0" href="#" role="button"
-                   id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                    <img src="https://ui-avatars.com/api/?name=${sessionScope.customerSession.customerName}&background=f5f5f5&color=000000&size=40"
-                         alt="User Avatar"
-                         class="rounded-circle"
-                         style="width: 40px; height: 40px; object-fit: cover;">
-                </a>
-                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-                    <li>
-                        <h5 class="dropdown-header text-center text-dark">
-                            Hello, ${sessionScope.customerSession.customerName}!
-                        </h5>
-                    </li>
-                    <li><hr class="dropdown-divider"></li>
-                    <li>
-                        <a class="dropdown-item" href="customer-profile">
-                            <i class="bi bi-person-circle me-2"></i>My Profile
-                        </a>
-                    </li>
-                    <li><hr class="dropdown-divider"></li>
-                    <li>
-                        <a class="dropdown-item text-danger" href="logout">
-                            <i class="bi bi-box-arrow-right me-2"></i>Logout
-                        </a>
-                    </li>
-                </ul>
-            </div>
-        </c:when>
-
-       
-        <c:when test="${not empty sessionScope.employeeSession}">
-            <div class="dropdown">
-                <a class="btn btn-link dropdown-toggle p-0" href="#" role="button"
-                   id="employeeDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                    <img src="https://ui-avatars.com/api/?name=${sessionScope.employeeSession.empName}&background=eeeeee&color=000000&size=40"
-                         alt="Employee Avatar"
-                         class="rounded-circle"
-                         style="width: 40px; height: 40px; object-fit: cover;">
-                </a>
-                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="employeeDropdown">
-                    <li>
-                        <h5 class="dropdown-header text-center text-dark">
-                            Hello, ${sessionScope.employeeSession.empName}!
-                        </h5>
-                    </li>
-                    <li><hr class="dropdown-divider"></li>
-                    <li>
-                        <a class="dropdown-item" href="dashboard">
-                            <i class="bi bi-speedometer2 me-2"></i>Dashboard
-                        </a>
-                    </li>
-                   
-                    <li>
-                        <a class="dropdown-item" href="employee-profile">
-                            <i class="bi bi-speedometer2 me-2"></i>My Profile
-                        </a>
-                    </li>
-                     <li><hr class="dropdown-divider"></li>
-                    <li>
-                        <a class="dropdown-item text-danger" href="logout">
-                            <i class="bi bi-box-arrow-right me-2"></i>Logout
-                        </a>
-                    </li>
-                </ul>
-            </div>
-        </c:when>
-    </c:choose>
-</div>
-    </div>
-  </header>
+<c:set var="title" value="Homepage - Yummy"/>
+<%@include file="/WEB-INF/include/headerCustomer.jsp" %>
 
   <main class="main">
 
@@ -192,12 +35,11 @@
             <div class="why-box">
               <h3>Why Choose Yummy</h3>
               <p>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Duis aute irure dolor in reprehenderit
-                Asperiores dolores sed et. Tenetur quia eos. Autem tempore quibusdam vel necessitatibus optio ad corporis.
+                At Yummy Restaurant, we serve fresh ingredients, crafted by passionate chefs, in a cozy and welcoming atmosphere. Your satisfaction is always our top priority.
               </p>
-              <div class="text-center">
+<!--              <div class="text-center">
                 <a href="#" class="more-btn"><span>Learn More</span> <i class="bi bi-chevron-right"></i></a>
-              </div>
+              </div>-->
             </div>
           </div><!-- End Why Box -->
 
@@ -206,25 +48,25 @@
 
               <div class="col-xl-4">
                 <div class="icon-box d-flex flex-column justify-content-center align-items-center">
-                  <i class="bi bi-clipboard-data"></i>
-                  <h4>Corporis voluptates officia eiusmod</h4>
-                  <p>Consequuntur sunt aut quasi enim aliquam quae harum pariatur laboris nisi ut aliquip</p>
+                  <i class="bi bi-star-fill"></i>
+                  <h4>Fresh & Quality Ingredients</h4>
+                  <p>We select only the finest and freshest ingredients every day.</p>
                 </div>
               </div><!-- End Icon Box -->
 
               <div class="col-xl-4" data-aos="fade-up" data-aos-delay="300">
                 <div class="icon-box d-flex flex-column justify-content-center align-items-center">
                   <i class="bi bi-gem"></i>
-                  <h4>Ullamco laboris ladore lore pan</h4>
-                  <p>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt</p>
+                  <h4>Professional Chefs</h4>
+                  <p>Our experienced chefs create dishes that combine flavor, creativity, and care.</p>
                 </div>
               </div><!-- End Icon Box -->
 
               <div class="col-xl-4" data-aos="fade-up" data-aos-delay="400">
                 <div class="icon-box d-flex flex-column justify-content-center align-items-center">
-                  <i class="bi bi-inboxes"></i>
-                  <h4>Labore consequatur incidid dolore</h4>
-                  <p>Aut suscipit aut cum nemo deleniti aut omnis. Doloribus ut maiores omnis facere</p>
+                  <i class="bi bi-person-circle"></i>
+                  <h4>Friendly Service & Cozy Space</h4>
+                  <p>Enjoy delicious meals in a warm atmosphere with attentive service.</p>
                 </div>
               </div><!-- End Icon Box -->
 
@@ -248,28 +90,28 @@
 
           <div class="col-lg-3 col-md-6">
             <div class="stats-item text-center w-100 h-100">
-              <span data-purecounter-start="0" data-purecounter-end="232" data-purecounter-duration="1" class="purecounter"></span>
+              <span data-purecounter-start="0" data-purecounter-end="${numberOfCustomer}" data-purecounter-duration="1" class="purecounter"></span>
               <p>Clients</p>
             </div>
           </div><!-- End Stats Item -->
 
           <div class="col-lg-3 col-md-6">
             <div class="stats-item text-center w-100 h-100">
-              <span data-purecounter-start="0" data-purecounter-end="521" data-purecounter-duration="1" class="purecounter"></span>
-              <p>Projects</p>
+              <span data-purecounter-start="0" data-purecounter-end="${numberOfReservation}" data-purecounter-duration="1" class="purecounter"></span>
+              <p>Reservations</p>
             </div>
           </div><!-- End Stats Item -->
 
           <div class="col-lg-3 col-md-6">
             <div class="stats-item text-center w-100 h-100">
-              <span data-purecounter-start="0" data-purecounter-end="1453" data-purecounter-duration="1" class="purecounter"></span>
-              <p>Hours Of Support</p>
+              <span data-purecounter-start="0" data-purecounter-end="${numberOfOrder}" data-purecounter-duration="1" class="purecounter"></span>
+              <p>Orders</p>
             </div>
           </div><!-- End Stats Item -->
 
           <div class="col-lg-3 col-md-6">
             <div class="stats-item text-center w-100 h-100">
-              <span data-purecounter-start="0" data-purecounter-end="32" data-purecounter-duration="1" class="purecounter"></span>
+              <span data-purecounter-start="0" data-purecounter-end="${numberOfEmployee}" data-purecounter-duration="1" class="purecounter"></span>
               <p>Workers</p>
             </div>
           </div><!-- End Stats Item -->
@@ -348,15 +190,15 @@
         </div>
         </div>
 </section>
-
-    <!-- Testimonials Section -->
+<!--
+     Testimonials Section 
     <section id="testimonials" class="testimonials section light-background">
 
-      <!-- Section Title -->
+       Section Title 
       <div class="container section-title" data-aos="fade-up">
         <h2>TESTIMONIALS</h2>
         <p>What Are They <span class="description-title">Saying About Us</span></p>
-      </div><!-- End Section Title -->
+      </div> End Section Title 
 
       <div class="container" data-aos="fade-up" data-aos-delay="100">
 
@@ -400,7 +242,7 @@
                   </div>
                 </div>
               </div>
-            </div><!-- End testimonial item -->
+            </div> End testimonial item 
 
             <div class="swiper-slide">
               <div class="testimonial-item">
@@ -424,7 +266,7 @@
                   </div>
                 </div>
               </div>
-            </div><!-- End testimonial item -->
+            </div> End testimonial item 
 
             <div class="swiper-slide">
               <div class="testimonial-item">
@@ -448,7 +290,7 @@
                   </div>
                 </div>
               </div>
-            </div><!-- End testimonial item -->
+            </div> End testimonial item 
 
             <div class="swiper-slide">
               <div class="testimonial-item">
@@ -472,7 +314,7 @@
                   </div>
                 </div>
               </div>
-            </div><!-- End testimonial item -->
+            </div> End testimonial item 
 
           </div>
           <div class="swiper-pagination"></div>
@@ -480,9 +322,9 @@
 
       </div>
 
-    </section><!-- /Testimonials Section -->
+    </section> /Testimonials Section -->
 
-    <!-- Events Section -->
+<!--     Events Section 
     <section id="events" class="events section">
 
       <div class="container-fluid" data-aos="fade-up" data-aos-delay="100">
@@ -521,7 +363,7 @@
               <p class="description">
                 Quo corporis voluptas ea ad. Consectetur inventore sapiente ipsum voluptas eos omnis facere. Enim facilis veritatis id est rem repudiandae nulla expedita quas.
               </p>
-            </div><!-- End Event item -->
+            </div> End Event item 
 
             <div class="swiper-slide event-item d-flex flex-column justify-content-end" style="background-image: url(assets/img/events-2.jpg)">
               <h3>Private Parties</h3>
@@ -529,7 +371,7 @@
               <p class="description">
                 In delectus sint qui et enim. Et ab repudiandae inventore quaerat doloribus. Facere nemo vero est ut dolores ea assumenda et. Delectus saepe accusamus aspernatur.
               </p>
-            </div><!-- End Event item -->
+            </div> End Event item 
 
             <div class="swiper-slide event-item d-flex flex-column justify-content-end" style="background-image: url(assets/img/events-3.jpg)">
               <h3>Birthday Parties</h3>
@@ -537,7 +379,7 @@
               <p class="description">
                 Laborum aperiam atque omnis minus omnis est qui assumenda quos. Quis id sit quibusdam. Esse quisquam ducimus officia ipsum ut quibusdam maxime. Non enim perspiciatis.
               </p>
-            </div><!-- End Event item -->
+            </div> End Event item 
 
             <div class="swiper-slide event-item d-flex flex-column justify-content-end" style="background-image: url(assets/img/events-4.jpg)">
               <h3>Wedding Parties</h3>
@@ -545,7 +387,7 @@
               <p class="description">
                 Laborum aperiam atque omnis minus omnis est qui assumenda quos. Quis id sit quibusdam. Esse quisquam ducimus officia ipsum ut quibusdam maxime. Non enim perspiciatis.
               </p>
-            </div><!-- End Event item -->
+            </div> End Event item 
 
           </div>
           <div class="swiper-pagination"></div>
@@ -553,7 +395,7 @@
 
       </div>
 
-    </section><!-- /Events Section -->
+    </section> /Events Section -->
 
     <!-- Chefs Section -->
     <section id="chefs" class="chefs section">
@@ -609,7 +451,7 @@
           <div class="col-lg-4 d-flex align-items-stretch" data-aos="fade-up" data-aos-delay="300">
             <div class="team-member">
               <div class="member-img">
-                <img src="assets/img/chefs/chefs-3.jpg" class="img-fluid" alt="">
+                <img src="assets/img/chefs/MinhNhuChef.jpg" class="img-fluid" alt="">
                 <div class="social">
                   <a href=""><i class="bi bi-twitter-x"></i></a>
                   <a href=""><i class="bi bi-facebook"></i></a>
@@ -618,9 +460,9 @@
                 </div>
               </div>
               <div class="member-info">
-                <h4>William Anderson</h4>
+                <h4>Minh Nhu</h4>
                 <span>Cook</span>
-                <p>Vero omnis enim consequatur. Voluptas consectetur unde qui molestiae deserunt. Voluptates enim aut architecto porro aspernatur molestiae modi.</p>
+                <p>Can only cook simple things and make Trung chien</p>
               </div>
             </div>
           </div><!-- End Chef Team Member -->
@@ -714,7 +556,7 @@
               <i class="icon bi bi-geo-alt flex-shrink-0"></i>
               <div>
                 <h3>Address</h3>
-                <p>A108 Adam Street, New York, NY 535022</p>
+                <p>Nguyen Van Truong St., Can Tho City, Vietnam</p>
               </div>
             </div>
           </div><!-- End Info Item -->
@@ -724,7 +566,7 @@
               <i class="icon bi bi-telephone flex-shrink-0"></i>
               <div>
                 <h3>Call Us</h3>
-                <p>+1 5589 55488 55</p>
+                <p>0925 XXX YYY</p>
               </div>
             </div>
           </div><!-- End Info Item -->
@@ -734,7 +576,7 @@
               <i class="icon bi bi-envelope flex-shrink-0"></i>
               <div>
                 <h3>Email Us</h3>
-                <p>info@example.com</p>
+                <p>notARealEmail@forSure.com</p>
               </div>
             </div>
           </div><!-- End Info Item -->
@@ -744,7 +586,7 @@
               <i class="icon bi bi-clock flex-shrink-0"></i>
               <div>
                 <h3>Opening Hours<br></h3>
-                <p><strong>Mon-Sat:</strong> 11AM - 23PM; <strong>Sunday:</strong> Closed</p>
+                <p><strong>Every Day:</strong> 5:00 AM - 12:00 AM</p>
               </div>
             </div>
           </div><!-- End Info Item -->
