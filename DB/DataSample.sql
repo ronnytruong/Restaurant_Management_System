@@ -104,13 +104,13 @@ SELECT @table_4 = table_id FROM [table] WHERE table_number = 'A04';
 ------------------------------------------------------------
 -- 6) ingredient
 ------------------------------------------------------------
-INSERT INTO ingredient (ingredient_name, type_id, price, status) VALUES
-(N'Bò tươi', @type_meat, 180000.00, N'Active'),
-(N'Tôm sú', @type_sea, 160000.00, N'Active'),
-(N'Xà lách', @type_veg, 15000.00, N'Active'),
-(N'Nước mắm', @type_spice, 30000.00, N'Active'),
-(N'Đường', @type_spice, 10000.00, N'Active'),
-(N'Sữa tươi', @type_veg, 25000.00, N'Active');
+INSERT INTO ingredient (ingredient_name, type_id, unit, status) VALUES
+(N'Bò tươi', @type_meat, 'kg',  N'Active'),
+(N'Tôm sú', @type_sea, 'kg', N'Active'),
+(N'Xà lách', @type_veg, 'kg', N'Active'),
+(N'Nước mắm', @type_spice, 'kg', N'Active'),
+(N'Đường', @type_spice, 'kg', N'Active'),
+(N'Sữa tươi', @type_veg, 'kg', N'Active');
 
 SELECT @ing_beef = ingredient_id FROM ingredient WHERE ingredient_name = N'Bò tươi';
 SELECT @ing_shrimp = ingredient_id FROM ingredient WHERE ingredient_name = N'Tôm sú';
