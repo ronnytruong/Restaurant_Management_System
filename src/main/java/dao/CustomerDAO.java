@@ -152,7 +152,6 @@ public class CustomerDAO extends DBContext {
         return null;
     }
 
-    // add full (kèm gender)
     public int add(String customerAccount, String password, String customerName, String gender, String phoneNumber,
             String email, String address, Date dob) {
         try {
@@ -170,7 +169,6 @@ public class CustomerDAO extends DBContext {
         return -1;
     }
 
-    // add rút gọn (không gender)
     public int add(String customerAccount, String password, String customerName) {
         try {
             String query = "INSERT INTO customer "
@@ -187,7 +185,6 @@ public class CustomerDAO extends DBContext {
         return -1;
     }
 
-    // edit full (kèm gender)
     public int edit(int customerId, String customerAccount, String password, String customerName,
             String gender, String phoneNumber, String email, String address, Date dob) {
         try {
@@ -206,7 +203,6 @@ public class CustomerDAO extends DBContext {
         return -1;
     }
 
-    // edit không password (kèm gender)
     public int edit(int customerId, String customerAccount, String customerName, String gender, String phoneNumber,
             String email, String address, Date dob) {
         try {
@@ -283,7 +279,6 @@ public class CustomerDAO extends DBContext {
         return -1;
     }
 
-
     public boolean checkAccountExist(String customerAccount) {
         try {
             String query = "SELECT c.customer_id FROM customer AS c "
@@ -297,12 +292,39 @@ public class CustomerDAO extends DBContext {
         return false;
     }
 
+    public boolean checkEmailExist(String email) {
+        try {
+
+            String query = "SELECT c.customer_id FROM customer AS c "
+                    + "WHERE LOWER(c.status) <> 'deleted' AND c.email = ?";
+
+            ResultSet rs = this.executeSelectionQuery(query, new Object[]{email});
+
+            return rs.next();
+        } catch (SQLException ex) {
+            Logger.getLogger(CustomerDAO.class.getName()).log(Level.SEVERE, "Error checking email existence", ex);
+        }
+        return false;
+    }
+
+    public boolean checkPhoneExist(String phoneNumber) {
+        try {
+            String query = "SELECT c.customer_id FROM customer AS c "
+                    + "WHERE LOWER(c.status) <> 'deleted' AND c.phone_number = ?";
+            ResultSet rs = this.executeSelectionQuery(query, new Object[]{phoneNumber});
+            return rs.next();
+        } catch (SQLException ex) {
+            Logger.getLogger(CustomerDAO.class.getName()).log(Level.SEVERE, "Error checking phone number existence", ex);
+        }
+        return false;
+    }
+
     public Customer authenticate(String customerAccount, String hashedPassword) {
         try {
             String query = "SELECT c.customer_id, c.customer_account, c.password, c.customer_name, "
                     + "c.gender, c.phone_number, c.email, c.address, c.dob, c.status "
                     + "FROM customer AS c "
-                    + "WHERE c.customer_account = ? AND c.password = ? AND LOWER(c.status) = 'active'";
+                    + "WHERE c.customer_account = ? AND c.password = ? AND LOWER(c.status) <> 'deleted'";
 
             ResultSet rs = this.executeSelectionQuery(query, new Object[]{customerAccount, hashedPassword});
 
@@ -319,7 +341,7 @@ public class CustomerDAO extends DBContext {
                 String status = rs.getString(10);
 
                 return new Customer(customerId, account, password, customerName, gender, phoneNumber, email, address, dob, status);
-}
+            }
         } catch (SQLException ex) {
             Logger.getLogger(CustomerDAO.class.getName()).log(Level.SEVERE, null, ex);
         }

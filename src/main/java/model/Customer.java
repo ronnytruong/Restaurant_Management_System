@@ -35,7 +35,18 @@ public class Customer {
         this.dob = dob;
         this.status = status;
     }
-
+ public Customer(int customerId, String customerAccount, String password, String customerName, String gender, String phoneNumber, String email, String address, Date dob) {
+        this.customerId = customerId;
+        this.customerAccount = customerAccount;
+        this.password = password;
+        this.customerName = customerName;
+        this.gender = gender;
+        this.phoneNumber = phoneNumber;
+        this.email = email;
+        this.address = address;
+        this.dob = dob;
+          }
+ 
     public int getCustomerId() {
         return customerId;
     }

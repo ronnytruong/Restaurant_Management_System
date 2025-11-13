@@ -1,197 +1,225 @@
 package controller;
-import static constant.Constants.MAX_ELEMENTS_PER_PAGE;
-import dao.CategoryDAO;
-import dao.MenuItemDAO;
-import dao.RecipeDAO;
-import java.io.IOException;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.HttpServlet;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import java.util.List;
-import model.Category;
-import model.MenuItem;
-import model.Recipe;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
-// File upload dependencies
-import jakarta.servlet.annotation.MultipartConfig;
-import jakarta.servlet.http.Part;
+import dao.*;
+import model.*;
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Paths;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.MultipartConfig;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.*;
 
-// Added MultipartConfig for file upload 
-@WebServlet(name="MenuItemServlet", urlPatterns={"/menuitem"})
+/**
+ *
+ * @author Huynh Thai Duy Phuong - CE190603
+ */
+@WebServlet(name = "MenuItemServlet", urlPatterns = {"/menuitem"})
 @MultipartConfig(
-    fileSizeThreshold = 1024 * 1024 * 2,
-    maxFileSize = 1024 * 1024 * 10,      
-    maxRequestSize = 1024 * 1024 * 50   
+        fileSizeThreshold = 1024 * 1024 * 2,
+        maxFileSize = 1024 * 1024 * 10,
+        maxRequestSize = 1024 * 1024 * 50
 )
 public class MenuItemServlet extends HttpServlet {
-    
+
+    private final int MAX_ELEMENTS_PER_PAGE = 5;
     private final MenuItemDAO menuItemDAO = new MenuItemDAO();
     private final CategoryDAO categoryDAO = new CategoryDAO();
     private final RecipeDAO recipeDAO = new RecipeDAO();
-    
-  
+
     private static final String UPLOAD_DIRECTORY = "assets" + File.separator + "img" + File.separator + "menu";
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        
+
         String view = request.getParameter("view");
-        
-             if ("add".equals(view) || "edit".equals(view)) {
-            request.setAttribute("categories", categoryDAO.getAll());
-            request.setAttribute("recipes", recipeDAO.getAll());
-        }
+        String namepage = "";
 
-       
-        if ("add".equals(view)) {
-            request.getRequestDispatcher("/WEB-INF/menu/add.jsp").forward(request, response);
-            
-        } else if ("edit".equals(view)) {
-            String idStr = request.getParameter("id");
+        if (view == null || view.isBlank() || view.equalsIgnoreCase("list")) {
+            namepage = "emp-list";
+        } else if (view.equalsIgnoreCase("add")) {
+            namepage = "add";
+            loadFormData(request);
+        } else if (view.equalsIgnoreCase("edit")) {
+            namepage = "edit";
+
+            int id;
             try {
-                int id = Integer.parseInt(idStr);
-                MenuItem item = menuItemDAO.getElementByID(id);
-                
-                if (item != null) {
-                    request.setAttribute("menuItem", item);
-                    request.getRequestDispatcher("/WEB-INF/menu/edit.jsp").forward(request, response);
-                } else {
-                    response.sendRedirect("menuitem?view=list");
-                }
-            } catch (NumberFormatException | NullPointerException e) {
-                response.sendRedirect("menuitem?view=list");
+                id = Integer.parseInt(request.getParameter("id"));
+            } catch (NumberFormatException e) {
+                id = -1;
             }
-            
-        } else {
-            String pageStr = request.getParameter("page");
-            String keyword = request.getParameter("keyword");
-            
-            int page = (pageStr != null && pageStr.matches("\\d+")) ? Integer.parseInt(pageStr) : 1;
-            
-            int totalItems = menuItemDAO.countItem(keyword);
-            int totalPages = (int) Math.ceil((double) totalItems / MAX_ELEMENTS_PER_PAGE);
-
-            List<MenuItem> menuItemsList = menuItemDAO.searchAll(keyword, page, MAX_ELEMENTS_PER_PAGE);
-            
-            request.setAttribute("menuItemsList", menuItemsList);
-            request.setAttribute("totalPages", totalPages);
-            request.setAttribute("currentPage", page);
-            request.setAttribute("keyword", keyword);
-            
-            request.getRequestDispatcher("/WEB-INF/menu/emp-list.jsp").forward(request, response);
+            request.setAttribute("menuItem", menuItemDAO.getElementByID(id));
+            loadFormData(request);
         }
+
+        int page;
+        try {
+            page = Integer.parseInt(request.getParameter("page"));
+        } catch (NumberFormatException e) {
+            page = 1;
+        }
+
+        int totalPages = getTotalPages(menuItemDAO.countItem());
+        request.setAttribute("menuItemsList", menuItemDAO.getAll(page, MAX_ELEMENTS_PER_PAGE));
+        request.setAttribute("totalPages", totalPages);
+        request.setAttribute("currentPage", page);
+
+        request.getRequestDispatcher("/WEB-INF/menu/" + namepage + ".jsp").forward(request, response);
+        removePopup(request);
     }
 
-   @Override
+    @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        
-        request.setCharacterEncoding("UTF-8");
-        
 
         String action = request.getParameter("action");
-        String idStr = request.getParameter("id");
-        int id = -1;
-        
-        try {
-            if (idStr != null) id = Integer.parseInt(idStr);
-        } catch (NumberFormatException ignored) {}
-        
-        int result = -1;
-        String message = "";
-        
-        //Handle POST Actions 
-        switch (action) {
-            case "delete":
-                if (id > 0) {
-                    result = menuItemDAO.delete(id); 
-                    message = (result > 0) ? "Menu item deleted successfully." : "Menu item deletion failed.";
-                }
-                break;
-                
-            case "add":
-            case "update":
+        boolean popupStatus = true;
+        String popupMessage = "";
+        if (action != null && !action.isEmpty()) {
+            if (action.equalsIgnoreCase("add") || action.equalsIgnoreCase("edit")) {
+                int id;
                 try {
-                    
-                    String itemName = request.getParameter("itemName");
-                    int price = Integer.parseInt(request.getParameter("price"));
-                    int categoryId = Integer.parseInt(request.getParameter("categoryId"));
-                    int recipeId = Integer.parseInt(request.getParameter("recipeId"));
-                    String description = request.getParameter("description");
-                    String status = request.getParameter("status"); 
-                    String existingImageUrl = request.getParameter("existingImageUrl"); 
-                    
-                    
-                    Part filePart = request.getPart("imageFile"); 
-                    String fileName = Paths.get(filePart.getSubmittedFileName()).getFileName().toString(); 
-                    String newImageUrl = existingImageUrl; 
-
-                    if (fileName != null && !fileName.isEmpty()) {
-                        String applicationPath = request.getServletContext().getRealPath("");
-                        String uploadPath = applicationPath + File.separator + UPLOAD_DIRECTORY;
-                        File uploadDir = new File(uploadPath);
-                        if (!uploadDir.exists()) uploadDir.mkdirs();
-
-                        // --- START MODIFICATION ---
-                        // Replaced the unique file naming with the original file name
-                        String finalFileName = fileName;
-                        filePart.write(uploadPath + File.separator + finalFileName);
-                        
-                        // Set the new image URL using the final file name
-                        newImageUrl = UPLOAD_DIRECTORY.replace(File.separator, "/") + "/" + finalFileName;
-                        // --- END MODIFICATION ---
-                    } 
-                    
-                    
-                    
-                    Category category = categoryDAO.getElementByID(categoryId);
-                    Recipe recipe = recipeDAO.getElementByID(recipeId);
-
-                    if (category != null && recipe != null && newImageUrl != null) {
-                        String finalStatus = (id > 0 && status != null) ? status : "Active";
-                        
-                        MenuItem item = new MenuItem(
-                            id, category, recipe, itemName, newImageUrl, price, description, finalStatus
-                        );
-                        
-                        if ("add".equals(action)) {
-                            result = menuItemDAO.add(item);
-                            message = (result > 0) ? "Menu item added successfully." : "Menu item addition failed. (DB Error: " + result + ")";
-                        } else { 
-                            if (id > 0) {
-                                result = menuItemDAO.edit(item);
-                                message = (result > 0) ? "Menu item updated successfully." : "Menu item update failed. (DB Error: " + result + ")";
-                            } else {
-                                message = "Update failed: Invalid ID.";
-                            }
-                        }
-                    } else {
-                         message = "Operation failed: Category, Recipe, or Image URL invalid.";
-                    }
+                    id = Integer.parseInt(request.getParameter("id"));
                 } catch (NumberFormatException e) {
-                    message = "Operation failed: Invalid number format (e.g., price).";
-                    Logger.getLogger(MenuItemServlet.class.getName()).log(Level.WARNING, "Invalid number input", e);
-                } catch (Exception e) {
-                    message = "Operation failed: Unexpected error during file processing or database operation.";
-                    Logger.getLogger(MenuItemServlet.class.getName()).log(Level.SEVERE, "Unexpected error in POST", e);
+                    id = -1;
                 }
-                break;
-                
-            default:
-                message = "Unknown action specified.";
-                break;
+
+                String itemName = request.getParameter("itemName");
+                String priceStr = request.getParameter("price");
+                String description = request.getParameter("description");
+                String status = request.getParameter("status");
+                String existingImageUrl = request.getParameter("existingImageUrl");
+
+                int categoryId = parseIntOrDefault(request.getParameter("categoryId"), -1);
+                int recipeId = parseIntOrDefault(request.getParameter("recipeId"), -1);
+
+                if (itemName == null || itemName.isBlank() || itemName.matches(".*\\d.*")) {
+                    popupStatus = false;
+                    popupMessage = "Invalid item name.";
+                } else if (menuItemDAO.checkItemNameExist(itemName, id)) {
+                    popupStatus = false;
+                    popupMessage = "Item name already exists. Choose another.";
+                } else if (priceStr == null || !priceStr.matches("\\d+")) {
+                    popupStatus = false;
+                    popupMessage = "Price must be a valid number.";
+                } else {
+                    int price;
+                    try {
+                        price = Integer.parseInt(priceStr);
+                    } catch (NumberFormatException e) {
+                        popupStatus = false;
+                        popupMessage = "Price must be between 5.000 and 5.000.000 VND.";
+                        setPopup(request, popupStatus, popupMessage);
+
+                        response.sendRedirect(request.getContextPath() + "/menuitem");
+                        return;
+
+                    }
+                    if (price < 5000 || price > 5000000) {
+                        popupStatus = false;
+                        popupMessage = "Price must be between 5.000 and 5.000.000 VND.";
+                    } else {
+
+                        String newImageUrl = existingImageUrl;
+                        Part filePart = request.getPart("imageFile");
+                        String fileName = (filePart != null && filePart.getSubmittedFileName() != null)
+                                ? Paths.get(filePart.getSubmittedFileName()).getFileName().toString()
+                                : "";
+
+                        if (!fileName.isEmpty()) {
+                            String appPath = request.getServletContext().getRealPath("");
+                            String uploadPath = appPath + File.separator + UPLOAD_DIRECTORY;
+                            File uploadDir = new File(uploadPath);
+                            if (!uploadDir.exists()) {
+                                uploadDir.mkdirs();
+                            }
+
+                            String uniqueFileName = System.currentTimeMillis() + "_" + fileName;
+                            filePart.write(uploadPath + File.separator + uniqueFileName);
+                            newImageUrl = UPLOAD_DIRECTORY.replace(File.separator, "/") + "/" + uniqueFileName;
+                        }
+
+                        Category category = categoryDAO.getElementByID(categoryId);
+                        Recipe recipe = recipeDAO.getElementByID(recipeId);
+
+                        if (category == null || recipe == null) {
+                            popupStatus = false;
+                            popupMessage = "Invalid category or recipe.";
+                        } else {
+                            if (status == null || status.isBlank()) {
+                                status = "Active";
+                            }
+                            MenuItem item = new MenuItem(id, category, recipe, itemName, newImageUrl, price, description, status);
+
+                            int result;
+
+                            if (action.equalsIgnoreCase("add")) {
+                                result = menuItemDAO.add(item);
+                                popupMessage = (result >= 1) ? "Item added successfully." : "Add failed.";
+                            } else if (action.equalsIgnoreCase("edit")) {
+                                result = menuItemDAO.edit(item);
+                                popupMessage = (result >= 1) ? "Item updated successfully." : "Edit failed.";
+                            } else {
+                                result = -1;
+                                popupMessage = "Invalid action.";
+                            }
+                            popupStatus = result >= 1;
+                        }
+                    }
+                }
+            } else if (action.equalsIgnoreCase("delete")) {
+                int id = parseIntOrDefault(request.getParameter("id"), -1);
+                if (id <= 0) {
+                    popupStatus = false;
+                    popupMessage = "Invalid item ID.";
+                } else {
+                    int check = menuItemDAO.delete(id);
+                    popupStatus = check >= 1;
+                    popupMessage = popupStatus ? "Item deleted successfully." : "Delete failed.";
+                }
+            }
         }
-        
-        request.getSession().setAttribute("alertMessage", message);
-        response.sendRedirect("menuitem?view=list");
+
+        setPopup(request, popupStatus, popupMessage);
+        response.sendRedirect(request.getContextPath() + "/menuitem");
+    }
+
+    // Utility Methods
+    private void loadFormData(HttpServletRequest request) {
+        request.setAttribute("categories", categoryDAO.getAll());
+        request.setAttribute("recipes", recipeDAO.getAll());
+    }
+
+    private int parseIntOrDefault(String s, int def) {
+        try {
+            return Integer.parseInt(s);
+        } catch (NumberFormatException e) {
+            return def;
+        }
+    }
+
+    private int getTotalPages(int countItems) {
+        return (int) Math.ceil((double) countItems / MAX_ELEMENTS_PER_PAGE);
+    }
+
+    private void setPopup(HttpServletRequest request, boolean status, String message) {
+        HttpSession session = request.getSession(false);
+        session.setAttribute("popupStatus", status);
+        session.setAttribute("popupMessage", message);
+    }
+
+    private void removePopup(HttpServletRequest request) {
+        HttpSession session = request.getSession(false);
+        if (session != null) {
+            session.removeAttribute("popupStatus");
+            session.removeAttribute("popupMessage");
+        }
+    }
+
+    @Override
+    public String getServletInfo() {
+        return "MenuItem servlet with popup and CRUD management";
     }
 }
-
-
