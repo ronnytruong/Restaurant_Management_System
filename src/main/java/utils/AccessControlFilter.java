@@ -35,7 +35,7 @@ public class AccessControlFilter implements Filter {
 
         boolean isRestricted = false;
         for (String restrictedPath : RESTRICTED_PATHS) {
-            if (path.startsWith(restrictedPath)) {
+            if (path.equalsIgnoreCase(restrictedPath)) {
                 isRestricted = true;
                 break;
             }
@@ -56,7 +56,7 @@ public class AccessControlFilter implements Filter {
             }
         }
         chain.doFilter(request, response);
-    }
+    } 
 
     @Override
     public void destroy() {
