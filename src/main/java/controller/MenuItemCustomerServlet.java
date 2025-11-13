@@ -21,7 +21,7 @@ import model.MenuItem;
  * @author Huynh Thai Duy Phuong - CE190603 
  */
 @WebServlet(name="CustomerMenuItemServlet", urlPatterns={"/menu"})
-public class CustomerMenuItemServlet extends HttpServlet {
+public class MenuItemCustomerServlet extends HttpServlet {
    
     /** 
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.

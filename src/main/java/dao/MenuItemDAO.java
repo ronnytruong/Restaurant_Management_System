@@ -1,37 +1,24 @@
 package dao;
 
 import static constant.CommonFunction.checkErrorSQL;
-
 import static constant.Constants.MAX_ELEMENTS_PER_PAGE;
-
 import db.DBContext;
-
 import java.sql.ResultSet;
-
 import java.sql.SQLException;
-
 import java.util.ArrayList;
-
 import java.util.List;
-
 import java.util.logging.Level;
-
 import java.util.logging.Logger;
-
 import model.Category;
-
 import model.MenuItem;
-
 import model.Recipe;
 
 public class MenuItemDAO extends DBContext {
 
     private final CategoryDAO categoryDAO = new CategoryDAO();
-
     private final RecipeDAO recipeDAO = new RecipeDAO();
 
     public static void main(String[] args) {
-
     }
 
     /**
@@ -47,8 +34,8 @@ public class MenuItemDAO extends DBContext {
         try {
             String query = "SELECT menu_item_id, category_id, recipe_id, item_name, image_url, price, description, status\n"
                     + "FROM     menu_item\n"
-                    + "WHERE  (LOWER(status) <> LOWER('Deleted'))";
-
+                    + "WHERE  (LOWER(status) <> LOWER('Deleted'))\n"
+                    + "ORDER BY menu_item_id DESC\n";
             ResultSet rs = this.executeSelectionQuery(query, new Object[]{});
 
             while (rs.next()) {
@@ -60,7 +47,43 @@ public class MenuItemDAO extends DBContext {
                 int price = rs.getInt(6);
                 String description = rs.getString(7);
                 String status = rs.getString(8);
-                
+
+                //Chua check tinh kha dung cua recipe
+                MenuItem menuItem = new MenuItem(menuItemId,
+                        categoryDAO.getElementByID(categoryId), recipeDAO.getElementByID(recipeId),
+                        itemName, imageUrl, price, description, status);
+
+                list.add(menuItem);
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(CategoryDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        return list;
+    }
+
+    public List<MenuItem> getAll(int page, int maxElement) {
+        List<MenuItem> list = new ArrayList<>();
+
+        try {
+            String query = "SELECT menu_item_id, category_id, recipe_id, item_name, image_url, price, description, status\n"
+                    + "FROM  menu_item\n"
+                    + "WHERE  (LOWER(status) <> LOWER('Deleted'))\n"
+                    + "ORDER BY menu_item_id DESC\n"
+                    + "OFFSET ? ROWS \n"
+                    + "FETCH NEXT ? ROWS ONLY;";
+            ResultSet rs = this.executeSelectionQuery(query, new Object[]{(page - 1) * maxElement, maxElement});
+
+            while (rs.next()) {
+                int menuItemId = rs.getInt(1);
+                int categoryId = rs.getInt(2);
+                int recipeId = rs.getInt(3);
+                String itemName = rs.getString(4);
+                String imageUrl = rs.getString(5);
+                int price = rs.getInt(6);
+                String description = rs.getString(7);
+                String status = rs.getString(8);
+
                 //Chua check tinh kha dung cua recipe
                 MenuItem menuItem = new MenuItem(menuItemId,
                         categoryDAO.getElementByID(categoryId), recipeDAO.getElementByID(recipeId),
@@ -81,7 +104,7 @@ public class MenuItemDAO extends DBContext {
 
         try {
 
-            String query = "SELECT category_name FROM category WHERE LOWER(status) = 'active' ORDER BY category_id";
+            String query = "SELECT category_name FROM category WHERE LOWER(status) <> LOWER('Deleted')  ORDER BY category_id";
 
             ResultSet rs = this.executeSelectionQuery(query, null);
 
@@ -107,7 +130,7 @@ public class MenuItemDAO extends DBContext {
 
         try {
 
-            String query = "SELECT TOP 4 category_name FROM category WHERE LOWER(status) = 'active' ORDER BY category_id";
+            String query = "SELECT TOP 4 category_name FROM category WHERE LOWER(status) <> LOWER('Deleted') ORDER BY category_id";
 
             ResultSet rs = this.executeSelectionQuery(query, null);
 
@@ -130,7 +153,7 @@ public class MenuItemDAO extends DBContext {
     /**
      *
      * @param categoryName
-     * @return 
+     * @return
      */
     public List<MenuItem> getTopMenuItemsByCategoryName(String categoryName) {
 
@@ -144,7 +167,7 @@ public class MenuItemDAO extends DBContext {
                     + "FROM menu_item mi \n"
                     + "JOIN category c ON mi.category_id = c.category_id \n"
                     + "WHERE LOWER(c.category_name) = LOWER(?) \n"
-                    + " AND LOWER(mi.status) = 'active'\n"
+                    + " AND LOWER(mi.status) <> LOWER('Deleted')\n"
                     + "ORDER BY mi.menu_item_id";
 
             ResultSet rs = this.executeSelectionQuery(query, new Object[]{categoryName});
@@ -360,25 +383,20 @@ public class MenuItemDAO extends DBContext {
     }
 
     /**
-     * Counts the total number of menu items matching a keyword.
      *
-     * @param keyword The keyword to filter by (can be null/empty).
-     * @return The total count of matching menu items.
+     * @return
      */
-    public int countItem(String keyword) {
-        String searchKeyword = (keyword == null || keyword.trim().isEmpty()) ? "%%" : "%" + keyword.trim() + "%";
-
-        String query = "SELECT COUNT(menu_item_id) AS numrow "
-                + "FROM [menu_item] "
-                + "WHERE LOWER(status) <> LOWER('Deleted') "
-                + "AND (LOWER(item_name) LIKE LOWER(?) OR LOWER(description) LIKE LOWER(?))";
-
-        try ( ResultSet rs = this.executeSelectionQuery(query, new Object[]{searchKeyword, searchKeyword})) {
+    public int countItem() {
+        try {
+            String query = "SELECT COUNT(mi.menu_item_id) AS numrow "
+                    + "FROM menu_item AS mi "
+                    + "WHERE LOWER(mi.status) <> 'deleted'";
+            ResultSet rs = this.executeSelectionQuery(query, null);
             if (rs.next()) {
                 return rs.getInt(1);
             }
         } catch (SQLException ex) {
-            System.out.println("Error counting menu items: " + ex.getMessage());
+            System.out.println("Error");
         }
         return 0;
     }
@@ -390,7 +408,7 @@ public class MenuItemDAO extends DBContext {
      * @return The number of rows affected (1 on success, -1 on failure).
      */
     public int add(MenuItem item) {
-        String query = "INSERT INTO [menu_item] (category_id, recipe_id, item_name, image_url, price, description, status) "
+        String query = "INSERT INTO [menu_item] (category_id, recipe_id, item_name, image_url, price, description,status) "
                 + "VALUES (?, ?, ?, ?, ?, ?, ?)";
 
         try {
@@ -401,7 +419,7 @@ public class MenuItemDAO extends DBContext {
                 item.getImageUrl(),
                 item.getPrice(),
                 item.getDescription(),
-                item.getStatus()
+                "Active"
             });
         } catch (SQLException ex) {
             System.out.println("Can't add menu item: " + ex.getMessage());
@@ -433,15 +451,15 @@ public class MenuItemDAO extends DBContext {
             });
         } catch (SQLException ex) {
             System.out.println("Can't edit menu item: " + ex.getMessage());
+            ex.printStackTrace();
         }
         return -1;
     }
 
     /**
-     * Performs a soft delete on a menu item by setting its status to 'Deleted'.
      *
-     * @param id The ID of the menu item to delete.
-     * @return The number of rows affected (1 on success, -1 on failure).
+     * @param id
+     * @return
      */
     public int delete(int id) {
         String query = "UPDATE [menu_item] "
@@ -454,6 +472,18 @@ public class MenuItemDAO extends DBContext {
             System.out.println("Can't delete menu item: " + ex.getMessage());
         }
         return -1;
+    }
+
+    public boolean checkItemNameExist(String itemName, int excludeId) {
+        try {
+            String query = "SELECT mi.menu_item_id FROM menu_item AS mi "
+                    + "WHERE LOWER(mi.status) <> 'deleted' AND mi.item_name = ? AND mi.menu_item_id <> ?";
+            ResultSet rs = this.executeSelectionQuery(query, new Object[]{itemName, excludeId});
+            return rs.next();
+        } catch (SQLException ex) {
+            Logger.getLogger(MenuItemDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return false;
     }
 
 }
