@@ -4,7 +4,11 @@
  */
 package controller;
 
+import dao.CustomerDAO;
+import dao.EmployeeDAO;
 import dao.MenuItemDAO;
+import dao.OrderDAO;
+import dao.ReservationDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -61,6 +65,12 @@ public class HomepageServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         MenuItemDAO menuItemDAO = new MenuItemDAO();
+        
+        CustomerDAO customerDAO = new CustomerDAO();
+        EmployeeDAO employeeDAO = new EmployeeDAO();
+        ReservationDAO reservationDAO = new ReservationDAO();
+        OrderDAO orderDAO = new OrderDAO();
+        
         try {
 
             List<String> categoryNames = menuItemDAO.getTopCategoryNames();
@@ -75,6 +85,11 @@ public class HomepageServlet extends HttpServlet {
 
                 request.setAttribute(attributeName, menuItems);
             }
+            
+            request.setAttribute("numberOfCustomer", customerDAO.countItem());
+            request.setAttribute("numberOfEmployee", employeeDAO.countItem());
+            request.setAttribute("numberOfReservation", reservationDAO.countItem(""));
+            request.setAttribute("numberOfOrder", orderDAO.countItem());
 
             request.getRequestDispatcher("/WEB-INF/homepage/homepage.jsp").forward(request, response);
 
