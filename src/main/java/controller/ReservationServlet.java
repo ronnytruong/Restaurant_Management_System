@@ -110,7 +110,6 @@ public class ReservationServlet extends HttpServlet {
             request.getRequestDispatcher("/WEB-INF/reservation/mylist.jsp").forward(request, response);
 
         } else if (view.equalsIgnoreCase("edit")) {
-            // load form edit
             int id;
             try {
                 id = Integer.parseInt(request.getParameter("id"));
@@ -121,7 +120,6 @@ public class ReservationServlet extends HttpServlet {
             request.getRequestDispatcher("/WEB-INF/reservation/edit.jsp").forward(request, response);
 
         } else if (view.equalsIgnoreCase("add")) {
-            // mở form add (admin tạo đặt chỗ mới)
             request.getRequestDispatcher("/WEB-INF/reservation/add.jsp").forward(request, response);
 
         } else {
@@ -152,14 +150,14 @@ public class ReservationServlet extends HttpServlet {
         }
 
         if (action.equalsIgnoreCase("add")) {
-            // Add Reservation (customer self-create)
-            int customerId, tableId, partySize;
+            // Add Reservation
+            int customerId, tableId;
             Date date;
             Time time;
+
             try {
                 customerId = Integer.parseInt(request.getParameter("customerId"));
                 tableId = Integer.parseInt(request.getParameter("tableId"));
-                partySize = Integer.parseInt(request.getParameter("partySize"));
                 date = Date.valueOf(request.getParameter("reservationDate"));
                 time = Time.valueOf(request.getParameter("reservationTime") + ":00");
             } catch (Exception e) {
@@ -170,7 +168,6 @@ public class ReservationServlet extends HttpServlet {
                 return;
             }
 
-            // ✅ Kiểm tra trạng thái bàn trước khi thêm
             model.Table selectedTable = tableDAO.getElementByID(tableId);
             if (selectedTable == null) {
                 popupStatus = false;
@@ -178,14 +175,14 @@ public class ReservationServlet extends HttpServlet {
             } else if (selectedTable.getStatus().equalsIgnoreCase("Reserved")
                     || selectedTable.getStatus().equalsIgnoreCase("Occupied")) {
                 popupStatus = false;
-                popupMessage = "This table is currently not available for booking.";
+                popupMessage = "This table is currently not available.";
             } else {
-                int check = reservationDAO.add(customerId, tableId, date, time, partySize);
+                int check = reservationDAO.add(customerId, tableId, date, time);
                 if (check < 1) {
                     popupStatus = false;
                     popupMessage = "Add failed. SQL error: " + getSqlErrorCode(check);
                 } else {
-                    popupMessage = "Reservation created successfully. Status = Pending.";
+                    popupMessage = "Reservation created successfully (Pending).";
                 }
             }
 
@@ -193,36 +190,54 @@ public class ReservationServlet extends HttpServlet {
             response.sendRedirect(request.getContextPath()
                     + "/reservation?view=mylist&customerId=" + request.getParameter("customerId"));
             return;
+
         } else if (action.equalsIgnoreCase("edit")) {
-            int id, tableId, party;
+            int id, tableId;
             Date date;
             Time time;
+
+            String dateStr = request.getParameter("reservationDate");
+            String timeStr = request.getParameter("reservationTime");
 
             try {
                 id = Integer.parseInt(request.getParameter("reservationId"));
                 tableId = Integer.parseInt(request.getParameter("tableId"));
-                party = Integer.parseInt(request.getParameter("partySize"));
-                date = Date.valueOf(request.getParameter("reservationDate"));
-                time = Time.valueOf(request.getParameter("reservationTime") + ":00");
+                // Parse date an toàn
+                date = (dateStr != null && !dateStr.isEmpty()) ? Date.valueOf(dateStr) : null;
+
+                // Parse time an toàn cho cả HH:mm và HH:mm:ss
+                if (timeStr != null && !timeStr.isEmpty()) {
+                    timeStr = timeStr.trim();
+                    if (timeStr.length() == 5) {           // "HH:mm"
+                        timeStr = timeStr + ":00";
+                    } else if (timeStr.length() == 8) {    // "HH:mm:ss" -> giữ nguyên
+                        // do nothing
+                    } else if (timeStr.contains("T")) {    // trường hợp "YYYY-MM-DDTHH:mm"
+                        String[] parts = timeStr.split("T");
+                        String hhmm = parts[1];
+                        timeStr = (hhmm.length() == 5) ? hhmm + ":00" : hhmm;
+                    }
+                    time = Time.valueOf(timeStr);          // sẽ ném lỗi nếu format sai
+                } else {
+                    time = null;
+                }
             } catch (Exception e) {
                 id = -1;
                 tableId = -1;
-                party = -1;
                 date = null;
                 time = null;
             }
 
-            if (!validateInteger(id, false, false, true) || tableId <= 0 || party <= 0
-                    || date == null || time == null) {
+            if (!validateInteger(id, false, false, true) || tableId <= 0 || date == null || time == null) {
                 popupStatus = false;
-                popupMessage = "The edit action failed. Invalid input data.";
+                popupMessage = "Edit failed. Invalid input.";
             } else {
-                int check = reservationDAO.edit(id, tableId, date, time, party);
+                int check = reservationDAO.edit(id, tableId, date, time);
                 if (check < 1) {
                     popupStatus = false;
                     popupMessage = "Edit failed. SQL error: " + getSqlErrorCode(check);
                 } else {
-                    popupMessage = "Reservation (ID: " + id + ") updated successfully!";
+                    popupMessage = "Reservation (ID: " + id + ") updated successfully.";
                 }
             }
 
@@ -236,6 +251,7 @@ public class ReservationServlet extends HttpServlet {
                 response.sendRedirect(request.getContextPath() + "/reservation");
             }
             return;
+
         } else if (action.equalsIgnoreCase("approve") || action.equalsIgnoreCase("reject")) {
             int id;
             try {
@@ -252,39 +268,35 @@ public class ReservationServlet extends HttpServlet {
                 if (current == null) {
                     popupStatus = false;
                     popupMessage = "Reservation not found.";
-                } else if (current.getStatus().equalsIgnoreCase("Approved") && action.equalsIgnoreCase("reject")) {
-                    popupStatus = false;
-                    popupMessage = "Already approved. Cannot reject.";
-                } else if (current.getStatus().equalsIgnoreCase("Rejected") && action.equalsIgnoreCase("approve")) {
-                    popupStatus = false;
-                    popupMessage = "Already rejected. Cannot approve.";
                 } else {
-                    String status = action.equalsIgnoreCase("approve") ? "Approved" : "Rejected";
-                    int check = reservationDAO.updateStatus(id, status);
-                    if (check < 1) {
+                    String currentStatus = current.getStatus();
+                    String actionType = action.equalsIgnoreCase("approve") ? "Approved" : "Rejected";
+
+                    // ⚠️ Kiểm tra nếu trạng thái hiện tại không được phép chuyển đổi
+                    if (currentStatus.equalsIgnoreCase("Approved") && action.equalsIgnoreCase("reject")) {
                         popupStatus = false;
-                        popupMessage = "Update status failed. SQL error: " + getSqlErrorCode(check);
+                        popupMessage = "Cannot reject a reservation that has already been approved.";
+                    } else if (currentStatus.equalsIgnoreCase("Rejected") && action.equalsIgnoreCase("approve")) {
+                        popupStatus = false;
+                        popupMessage = "Cannot approve a reservation that has already been rejected.";
+                    } else if (currentStatus.equalsIgnoreCase("Cancelled")) {
+                        popupStatus = false;
+                        popupMessage = "Cannot change status of a cancelled reservation.";
                     } else {
-                        popupMessage = "Reservation (ID: " + id + ") -> " + status;
-
-                        int tableId = current.getTable().getId();
-                        if (status.equalsIgnoreCase("Approved")) {
-
-                        } else if (status.equalsIgnoreCase("Rejected")) {
-                            // Chỉ set lại Available nếu KHÔNG có reservation nào khác đang Approved/Seated cho cùng bàn
-                            boolean hasActive = reservationDAO.hasActiveReservationForTable(tableId);
-                            if (!hasActive) {
-                                tableDAO.updateStatus(tableId, "Available");
-                            }
+                        int check = reservationDAO.updateStatus(id, actionType);
+                        if (check < 1) {
+                            popupStatus = false;
+                            popupMessage = "Update failed. SQL error: " + getSqlErrorCode(check);
+                        } else {
+                            popupMessage = "Reservation (ID: " + id + ") updated -> " + actionType;
                         }
-
                     }
-
                 }
-                setPopup(request, popupStatus, popupMessage);
-                response.sendRedirect(request.getContextPath() + "/reservation");
-                return;
             }
+
+            setPopup(request, popupStatus, popupMessage);
+            response.sendRedirect(request.getContextPath() + "/reservation");
+            return;
         } else if (action.equalsIgnoreCase("cancel")) {
             int id, customerId;
             try {
@@ -294,6 +306,7 @@ public class ReservationServlet extends HttpServlet {
                 id = -1;
                 customerId = -1;
             }
+
             if (!validateInteger(id, false, false, true) || !validateInteger(customerId, false, false, true)) {
                 popupStatus = false;
                 popupMessage = "Invalid cancel request.";

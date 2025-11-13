@@ -296,7 +296,32 @@ public class CustomerDAO extends DBContext {
         }
         return false;
     }
+public boolean checkEmailExist(String email) {
+    try {
+        String query = "SELECT c.customer_id FROM customer AS c "
+                + "WHERE LOWER(c.status) <> 'deleted' AND c.email = ?";
+       
+        ResultSet rs = this.executeSelectionQuery(query, new Object[]{email});
 
+        return rs.next();
+    } catch (SQLException ex) {
+        Logger.getLogger(CustomerDAO.class.getName()).log(Level.SEVERE, null, ex);
+    }
+    return false;
+}
+public boolean checkPhoneExist(String phoneNumber) {
+    try {
+        String query = "SELECT c.customer_id FROM customer AS c "
+                + "WHERE LOWER(c.status) <> 'deleted' AND c.phone_number = ?";
+        
+        ResultSet rs = this.executeSelectionQuery(query, new Object[]{phoneNumber});
+
+        return rs.next();
+    } catch (SQLException ex) {
+        Logger.getLogger(CustomerDAO.class.getName()).log(Level.SEVERE, null, ex);
+    }
+    return false;
+}
     public Customer authenticate(String customerAccount, String hashedPassword) {
         try {
             String query = "SELECT c.customer_id, c.customer_account, c.password, c.customer_name, "

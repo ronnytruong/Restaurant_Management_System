@@ -57,7 +57,15 @@
 
                     <div class="form-group">
                         <label for="password">Password (*)</label>
-                        <input type="password" id="password" name="password" placeholder="Enter password" required>
+                        <input
+                              type="password"
+                              id="password"
+                              name="password"
+                              placeholder="Enter password"
+                              required
+                              pattern="^(?=.*[A-Z])(?=.*[0-9])(?=.*[^a-zA-Z0-9]).{8,}$"
+                              title="Password must be at least 8 characters long and include at least one uppercase letter, one number, and one special character."
+                            >
                     </div>
 
 
@@ -68,8 +76,10 @@
 
                     <div class="form-group">
                         <label for="name">Full Name (*)</label>
-                        <input type="text" id="name" name="name" 
-                               value="${requestScope.name}" required>
+                        <input type="text" id="name" name="name"
+                               value="${requestScope.name}" required
+                               pattern="^[A-Za-zÀ-ỹ\s]+$"
+                               title="Full name must not contain numbers or special characters.">
                     </div>
 
 
@@ -82,8 +92,10 @@
 
                     <div class="form-group">
                         <label for="phone">Phone number (*)</label>
-                        <input type="tel" id="phone" name="phone" 
-                               value="${requestScope.phone}" required>
+                        <input type="tel" id="phone" name="phone"
+                               value="${requestScope.phone}" required
+                               pattern="^0\d{9}$"
+                               title="Phone number must start with 0 and contain exactly 10 digits.">
                     </div>
 
 

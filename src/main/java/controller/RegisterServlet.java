@@ -146,6 +146,15 @@ String gender = null;
           
             registerSuccess = false;
             errorMessage = "Username already exists. Try another.";
+       } else if (customerDAO.checkEmailExist(email)) {
+          
+            registerSuccess = false;
+            errorMessage = "Email address already registered. Please use a different email.";
+            
+        } else if (customerDAO.checkPhoneExist(phoneNumber)) {
+         
+            registerSuccess = false;
+            errorMessage = "Phone number already registered. Please use a different phone number.";
         }
 
         if (registerSuccess) {

@@ -55,12 +55,6 @@
                 <input type="hidden" name="tableId" id="tableId" value="<%= (selected != null) ? selected.getId() : ""%>">
 
                 <div class="mb-3">
-                    <label class="form-label">Party Size</label>
-                    <input type="number" name="partySize" id="partySize" class="form-control" min="1" required>
-                    <small class="text-muted">Number of guests</small>
-                </div>
-
-                <div class="mb-3">
                     <label class="form-label">Date</label>
                     <input type="date" name="reservationDate" id="reservationDate" class="form-control" required>
                 </div>
@@ -68,7 +62,7 @@
                 <div class="mb-4">
                     <label class="form-label">Time</label>
                     <input type="time" name="reservationTime" id="reservationTime" class="form-control" required>
-<!--                    <p class="text-muted mb-1">Choose a time between 05:00 and 22:00</p>-->
+                    <p class="text-muted mb-1">Cannot book table a time between 05:00 and 22:00</p>
                 </div>
 
                 <c:if test="${not empty reservedRanges}">
@@ -162,7 +156,11 @@
 
                     const hour = parseInt(time.split(':')[0]);
                     if (hour < 5 || hour >= 22) {
+<<<<<<< HEAD
                         showMessage('Không thể đặt trong khoảng 22:00 - 05:00.', 'danger');
+=======
+                        showMessage('Cannot book table between 22:00 - 05:00.', 'danger');
+>>>>>>> af7c8b96cd10dd752ae76bbff8f0ddaebc76b87e
                         btnSubmit.disabled = true;
                         return;
                     }

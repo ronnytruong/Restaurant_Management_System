@@ -95,7 +95,6 @@ public class BookTableServlet extends HttpServlet {
                 if (list == null) {
                     list = java.util.Collections.emptyList();
                 }
-                System.out.println("existingReservations size = " + list.size());
                 request.setAttribute("existingReservations", list);
             } catch (Exception e) {
                 request.setAttribute("selectedTable", null);
@@ -103,31 +102,10 @@ public class BookTableServlet extends HttpServlet {
             }
         } else if (view.equalsIgnoreCase("edit")) {
             namepage = "edit";
-
-            int id;
-
-            try {
-                id = Integer.parseInt(request.getParameter("id"));
-            } catch (NumberFormatException e) {
-                id = -1;
-            }
-
-//            request.setAttribute("currentSupplier", supplierDAO.getElementByID(id));
         } else if (view.equalsIgnoreCase("delete")) {
             namepage = "delete";
         }
 
-        int page;
-//        int totalPages = getTotalPages(supplierDAO.countItem());
-
-        try {
-            page = Integer.parseInt(request.getParameter("page"));
-        } catch (NumberFormatException e) {
-            page = 1;
-        }
-
-//        request.setAttribute("totalPages", totalPages);
-//        request.setAttribute("suppliersList", supplierDAO.getAll());
         request.getRequestDispatcher("/WEB-INF/reservation/" + namepage + ".jsp").forward(request, response);
     }
 
@@ -161,7 +139,6 @@ public class BookTableServlet extends HttpServlet {
 
         try {
             int tableId = Integer.parseInt(request.getParameter("tableId"));
-            int partySize = Integer.parseInt(request.getParameter("partySize"));
             Date date = Date.valueOf(request.getParameter("reservationDate"));
             String timeStr = request.getParameter("reservationTime");
 
@@ -173,12 +150,12 @@ public class BookTableServlet extends HttpServlet {
                 time = Time.valueOf(timeStr + ":00");
             }
 
-            int check = reservationDAO.add(customer.getCustomerId(), tableId, date, time, partySize);
+            int check = reservationDAO.add(customer.getCustomerId(), tableId, date, time);
             if (check < 1) {
                 popupStatus = false;
                 popupMessage = "Booking failed. SQL error: " + getSqlErrorCode(check);
             } else {
-                popupMessage = "Reservation created successfully! Status = Pending. Please wait for approval.";
+                popupMessage = "Reservation created successfully! Status = Pending.";
             }
         } catch (Exception e) {
             popupStatus = false;
