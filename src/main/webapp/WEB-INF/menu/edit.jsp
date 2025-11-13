@@ -19,20 +19,20 @@
         <div class="container">
             <c:choose>
                 <c:when test="${not empty menuItem}">
-                
+
                     <%-- IMPORTANT: Added enctype="multipart/form-data" --%>
                     <form method="post" action="<c:url value="menuitem"/>" enctype="multipart/form-data">
                         <input type="hidden" name="action" value="update"/>
                         <input type="hidden" name="id" value="${menuItem.menuItemId}"/>
                         <input type="hidden" name="existingImageUrl" value="${menuItem.imageUrl}"/>
-                        
+
                         <table class="table">
-                            
+
                             <tr>
                                 <th><label class="form-label">Item ID</label></th>
                                 <td><label class="form-control"><c:out value="${menuItem.menuItemId}"/></label></td>
                             </tr>
-                            
+
                             <tr>
                                 <th><label class="form-label">Current Image</label></th>
                                 <td>
@@ -48,19 +48,26 @@
                                     <small class="form-text text-muted">Leave blank to keep the current image.</small>
                                 </td>
                             </tr>
-                            
+
                             <tr>
                                 <th><label for="itemName" class="form-label">Item Name</label></th>
-                                <td><input type="text" id="itemName" name="itemName" class="form-control" value="<c:out value="${menuItem.itemName}"/>" required></td>
+                                <td><input  type="text"
+                                            id="itemName"
+                                            name="itemName"
+                                            class="form-control"
+                                            value="<c:out value='${menuItem.itemName}'/>"
+                                            required
+                                            pattern="^[A-Za-z\s]+$"
+                                            title="Item name must contain only letters and spaces. No numbers or special characters."></td>
                             </tr>
-                            
+
                             <tr>
                                 <th><label for="categoryId" class="form-label">Category</label></th>
                                 <td>
                                     <select name="categoryId" id="categoryId" class="form-select" required>
                                         <c:forEach var="category" items="${categories}">
                                             <option value="${category.categoryId}" class="form-options" 
-                                                ${(menuItem.category.categoryId eq category.categoryId) ? 'selected' : ''}>
+                                                    ${(menuItem.category.categoryId eq category.categoryId) ? 'selected' : ''}>
                                                 <c:out value="${category.categoryName}"/>
                                             </option>
                                         </c:forEach>
@@ -74,7 +81,7 @@
                                     <select name="recipeId" id="recipeId" class="form-select" required>
                                         <c:forEach var="recipe" items="${recipes}">
                                             <option value="${recipe.recipeId}" class="form-options" 
-                                                ${(menuItem.recipe.recipeId eq recipe.recipeId) ? 'selected' : ''}>
+                                                    ${(menuItem.recipe.recipeId eq recipe.recipeId) ? 'selected' : ''}>
                                                 <c:out value="${recipe.recipeName}"/>
                                             </option>
                                         </c:forEach>
@@ -84,14 +91,23 @@
 
                             <tr>
                                 <th><label for="price" class="form-label">Price(VND)</label></th>
-                                <td><input type="number" id="price" name="price" class="form-control" step="1" min="1" value="<c:out value="${menuItem.price}"/>" required></td>
+                                <td><input type="number"
+                                           id="price"
+                                           name="price"
+                                           class="form-control"
+                                           step="1"
+                                           min="25000"
+                                           max="5000000"
+                                           value="<c:out value='${menuItem.price}'/>"
+                                           required
+                                           title="Price must be between 25,000 and 5,000,000 VND."></td>
                             </tr>
-                            
+
                             <tr>
                                 <th><label for="description" class="form-label">Description</label></th>
                                 <td><textarea id="description" name="description" class="form-control"><c:out value="${menuItem.description}"/></textarea></td>
                             </tr>
-                            
+
                             <tr>
                                 <th><label for="status" class="form-label">Status</label></th>
                                 <td>
@@ -101,7 +117,7 @@
                                     </select>
                                 </td>
                             </tr>
-                            
+
                             <tr>
                                 <td></td>
                                 <td>

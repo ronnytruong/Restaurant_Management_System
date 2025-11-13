@@ -200,7 +200,9 @@
 
                     <div class="form-group">
                         <label>Enter new Password *</label>
-                        <input type="password" name="newPassword" required/>
+                        <input type="password" name="newPassword" required   
+                               pattern="^(?=.*[A-Z])(?=.*[0-9])(?=.*[^a-zA-Z0-9]).{8,}$"
+                                 title="Password must be at least 8 characters long and include at least one uppercase letter, one number, and one special character."/>
                     </div>
 
                     <div class="form-group">

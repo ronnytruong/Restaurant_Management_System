@@ -54,13 +54,7 @@
                 font-size: 14px;
             }
 
-            .message.success {
-                background-color: #e8f5e9;
-                color: #2e7d32;
-                border-left: 4px solid #4caf50;
-            }
-
-            .message.error {
+                     .message.error {
                 background-color: #ffebee;
                 color: #c62828;
                 border-left: 4px solid #f44336;
@@ -193,10 +187,7 @@
                 <h2>Edit My Profile</h2>
                 <p class="subtitle">Update your account information below</p>
 
-                <c:if test="${not empty successMessage}">
-                    <div class="message success">${successMessage}</div>
-                </c:if>
-
+              
                 <c:if test="${not empty errorMessage}">
                     <div class="message error">${errorMessage}</div>
                 </c:if>
@@ -214,7 +205,8 @@
                     <div class="info-row">
                         <div class="info-label">Full Name</div>
                         <div class="info-value">
-                            <input type="text" name="customer_name" value="${customer.customerName}" required/>
+                            <input type="text" name="customer_name" value="${customer.customerName}"      pattern="^[A-Za-zÀ-ỹ\s]+$"
+                                   title="Full name must not contain numbers or special characters."/>
                         </div>
                     </div>
 
@@ -231,7 +223,8 @@
                         <div class="info-row">
                             <div class="info-label">Phone Number</div>
                             <div class="info-value">
-                                <input type="text" name="phone_number" value="${customer.phoneNumber}"/>
+                                <input type="text" name="phone_number" value="${customer.phoneNumber}" required pattern="^0\d{9}$"   title="Phone number must start with 0 and contain exactly 10 digits."
+                                   "/>
                         </div>
                     </div>
 

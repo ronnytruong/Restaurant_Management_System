@@ -138,7 +138,7 @@ public class MenuItemDAO extends DBContext {
 
         try {
 
-            String query = "SELECT TOP 4\n"
+            String query = "SELECT TOP 6\n"
                     + " mi.menu_item_id, mi.category_id, mi.recipe_id, mi.item_name, \n"
                     + " mi.image_url, mi.price, mi.description, mi.status \n"
                     + "FROM menu_item mi \n"
