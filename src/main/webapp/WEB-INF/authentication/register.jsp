@@ -33,7 +33,7 @@
         <div class="container">
             <div class="login-box">
                 <div class="brand-section">
-                    <h1 class="brand-name">Yummy.</h1>
+                    <h1 class="brand-name"><a href="homepage">Yummy.</a></h1>
                     <p class="tagline">Join us and discover a world of flavors!</p>
                 </div>
 
