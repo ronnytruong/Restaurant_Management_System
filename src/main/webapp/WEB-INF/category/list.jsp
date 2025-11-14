@@ -36,10 +36,10 @@
             <table class="table align-middle admin-table">
                 <thead>
                     <tr>
-                        <th>ID</th>
-                        <th>Name</th>
-                        <th>Description</th>
-                        
+                        <th width="10%" scope="col">ID</th>
+                        <th width="15%" scope="col">Category Name</th>
+                        <th width="15%" scope="col">Description</th>
+                        <th width="15%" scope="col" class="text-end">Action</th>
                     </tr>
                 </thead>
                 <tbody>
