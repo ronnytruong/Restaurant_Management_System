@@ -95,9 +95,7 @@
                                 <div class="col-md-4 form-input-col">
                                     <input name="unit" type="text" class="form-control" />
                                 </div>
-                                <div class="col-md-4">
-                                    <!-- giữ khoảng trắng / có thể thêm field khác nếu cần -->
-                                </div>
+                                
                             </div>
                         </div>
                     </div>
@@ -116,7 +114,10 @@
                         <div class="col-md-3"></div>
                         <div class="col-md-9">
                             <button class="btn btn-success me-2" type="submit">Save</button>
-                            <a href="${pageContext.request.contextPath}/recipe?view=view&id=${currentRecipe.recipeId}" class="btn btn-outline-secondary">Cancel</a>
+                            <a href="<c:url value="recipe">
+                                   <c:param name="view" value="view"/>
+                                   <c:param name="id" value="${currentRecipe.recipeId}"/>
+                               </c:url>"class="btn btn-outline-secondary">Cancel</a>
                         </div>
                     </div>
 

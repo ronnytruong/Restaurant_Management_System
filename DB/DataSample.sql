@@ -104,7 +104,7 @@ SELECT @table_4 = table_id FROM [table] WHERE table_number = 'A04';
 ------------------------------------------------------------
 -- 6) ingredient
 ------------------------------------------------------------
-INSERT INTO ingredient (ingredient_name, type_id, price, status) VALUES
+INSERT INTO ingredient (ingredient_name, type_id, unit, status) VALUES
 (N'Bò tươi', @type_meat, 180000.00, N'Active'),
 (N'Tôm sú', @type_sea, 160000.00, N'Active'),
 (N'Xà lách', @type_veg, 15000.00, N'Active'),
@@ -148,6 +148,7 @@ SELECT @emp_cashier= emp_id FROM employee WHERE emp_account = N'cashier1';
 ------------------------------------------------------------
 -- 9) recipe
 ------------------------------------------------------------
+
 INSERT INTO recipe (recipe_name, status) VALUES
 (N'Grilled Chicken Recipe', N'Active'),
 (N'Beef Stew Recipe', N'Active'),
@@ -221,11 +222,11 @@ VALUES
 SELECT @import1 = import_id FROM [import] WHERE supplier_id = @sup_1 AND emp_id = @emp_chef AND status = N'Completed';
 SELECT @import2 = import_id FROM [import] WHERE supplier_id = @sup_2 AND emp_id = @emp_chef AND status = N'Pending';
 
-INSERT INTO import_detail (import_id, ingredient_id, quantity, unit_price)
+INSERT INTO import_detail (import_id, ingredient_id, quantity, unit_price, total_price)
 VALUES
-(@import1, @ing_beef, 20, 175000.00),
-(@import1, @ing_lettuce, 50, 12000.00),
-(@import2, @ing_shrimp, 10, 155000.00);
+(@import1, @ing_beef, 20, 175000.00, 3250000.00),
+(@import1, @ing_lettuce, 50, 12000.00, 600000.00),
+(@import2, @ing_shrimp, 10, 155000.00, 1550000.00);
 
 ------------------------------------------------------------
 -- 17) order

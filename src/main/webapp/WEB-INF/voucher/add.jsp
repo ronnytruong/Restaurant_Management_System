@@ -65,7 +65,7 @@
                         <td><input type="date" name="end_date" id="endDate" class="form-control" required></td>
                     </tr>
 
-                    <tr>
+<!--                    <tr>
                         <th><label for="status">Status</label></th>
                         <td>
                             <select name="status" id="status" class="form-control" required>
@@ -73,7 +73,7 @@
                                 <option value="Inactive">Inactive</option>
                             </select>
                         </td>
-                    </tr>
+                    </tr>-->
 
                     <tr>
                         <td></td>

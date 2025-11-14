@@ -84,10 +84,7 @@
                         </a>
                     </div>
                 </div>
-                <!-- popup message -->
-                <c:if test="${not empty popupMessage}">
-                    <div class="${popupStatus ? 'alert alert-success' : 'alert alert-danger'}">${popupMessage}</div>
-                </c:if>
+                
 
                 <!-- Items table -->
                 <div class="table-responsive mt-3">
@@ -163,6 +160,7 @@
                 <div class="modal-body text-danger">
                     <p>Are you sure to delete this item?</p>
                     <input type="hidden" id="hiddenDeleteRecipeItemId" name="recipe_item_id" value=""/>
+                    <input type="hidden" name="recipe_id" value="${currentRecipe.recipeId}">
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>

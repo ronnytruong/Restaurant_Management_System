@@ -4,7 +4,12 @@
  */
 package controller;
 
-import static constant.CommonFunction.*;
+
+import static constant.Constants.DUPLICATE_KEY;
+import static constant.Constants.FOREIGN_KEY_VIOLATION;
+import static constant.Constants.MAX_ELEMENTS_PER_PAGE;
+import static constant.Constants.NULL_INSERT_VIOLATION;
+import static constant.Constants.UNIQUE_INDEX;
 import dao.IngredientDAO;
 import dao.RecipeDAO;
 import java.io.IOException;
@@ -14,6 +19,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import model.RecipeItem;
 
 /**
@@ -71,7 +77,7 @@ public class RecipeServlet extends HttpServlet {
             keyword = "";
         }
 
-        if (!validateString(view, -1) || view.equalsIgnoreCase("list")) {
+        if (!isValidString(view, -1) || view.equalsIgnoreCase("list")) {
             namepage = "list";
         } else if (view.equalsIgnoreCase("add")) {
             namepage = "add";
@@ -146,7 +152,7 @@ public class RecipeServlet extends HttpServlet {
         if (action != null && !action.isEmpty()) {
             if (action.equalsIgnoreCase("add")) {
                 String recipeName = request.getParameter("recipe_name");
-                if (!validateString(recipeName, -1)) {
+                if (!isValidString(recipeName, -1)) {
                     popupStatus = false;
                     popupMessage = "Add recipe failed. Invalid input.";
                 } else {
@@ -169,7 +175,7 @@ public class RecipeServlet extends HttpServlet {
                 }
                 recipeName = request.getParameter("recipe_name");
                 status = request.getParameter("status");
-                if (!validateInteger(id, false, false, true) || !validateString(recipeName, -1) || !validateString(status, -1)) {
+                if (!isValidInteger(id, false, false, true) || !isValidString(recipeName, -1) || !isValidString(status, -1)) {
                     popupStatus = false;
                     popupMessage = "Edit recipe failed. Invalid input.";
                 } else {
@@ -188,7 +194,7 @@ public class RecipeServlet extends HttpServlet {
                 } catch (NumberFormatException e) {
                     id = -1;
                 }
-                if (!validateInteger(id, false, false, true)) {
+                if (!isValidInteger(id, false, false, true)) {
                     popupStatus = false;
                     popupMessage = "Delete recipe failed.";
                 } else {
@@ -225,7 +231,7 @@ public class RecipeServlet extends HttpServlet {
                     quantity = 0;
                 }
 
-                if (!validateInteger(recipeId, false, false, true) || !validateInteger(ingredientId, false, false, true)) {
+                if (!isValidInteger(recipeId, false, false, true) || !isValidInteger(ingredientId, false, false, true)) {
                     popupStatus = false;
                     popupMessage = "Add item failed. Input invalid.";
                 } else {
@@ -234,7 +240,7 @@ public class RecipeServlet extends HttpServlet {
                         popupMessage = "Item added to recipe " + recipeId + " successfully.";
                     } else {
                         popupStatus = false;
-                        popupMessage = "The add action is NOT successfull. The object has " + getSqlErrorCode(checkError) + " error.";
+                        popupMessage = "The add item action is NOT successfull. The object has " + getSqlErrorCode(checkError) + " error.";
                     }
                 }
             } else if (action.equalsIgnoreCase("edit_item")) {
@@ -261,14 +267,14 @@ public class RecipeServlet extends HttpServlet {
                 } catch (NumberFormatException e) {
                     quantity = 0;
                 }
-                
+
                 status = "Active";
                 RecipeItem existing = recipeDAO.getRecipeItemById(recipeItemId);
                 if (existing != null && existing.getStatus() != null) {
                     status = existing.getStatus();
                 }
 
-                if (!validateInteger(recipeItemId, false, false, true) || !validateInteger(ingredientId, false, false, true)) {
+                if (!isValidInteger(recipeItemId, false, false, true) || !isValidInteger(ingredientId, false, false, true)) {
                     popupStatus = false;
                     popupMessage = "Edit item failed. Input invalid.";
                 } else {
@@ -277,7 +283,7 @@ public class RecipeServlet extends HttpServlet {
                         popupMessage = "Item edited successfully.";
                     } else {
                         popupStatus = false;
-                        popupMessage = "The edit action is NOT successfull. The object has " + getSqlErrorCode(checkError) + " error.";
+                        popupMessage = "The edit item action is NOT successfull. The object has " + getSqlErrorCode(checkError) + " error.";
                     }
                 }
             } else if (action.equalsIgnoreCase("delete_item")) {
@@ -287,7 +293,7 @@ public class RecipeServlet extends HttpServlet {
                 } catch (NumberFormatException e) {
                     recipeItemId = -1;
                 }
-                if (!validateInteger(recipeItemId, false, false, true)) {
+                if (!isValidInteger(recipeItemId, false, false, true)) {
                     popupStatus = false;
                     popupMessage = "Delete item failed.";
                 } else {
@@ -296,14 +302,89 @@ public class RecipeServlet extends HttpServlet {
                         popupMessage = "Item deleted successfully.";
                     } else {
                         popupStatus = false;
-                        popupMessage = "The delete action is NOT successfull. The object has " + getSqlErrorCode(checkError) + " error.";
+                        popupMessage = "The delete item action is NOT successfull. The object has " + getSqlErrorCode(checkError) + " error.";
                     }
                 }
             }
         }
 
         setPopup(request, popupStatus, popupMessage);
-        response.sendRedirect(request.getContextPath() + "/recipe");
+        if ("add_item".equalsIgnoreCase(action)
+                || "edit_item".equalsIgnoreCase(action)
+                || "delete_item".equalsIgnoreCase(action)) {
+            
+            int recipeId;
+            try {
+                recipeId = Integer.parseInt(request.getParameter("recipe_id"));
+            } catch (NumberFormatException e) {
+                recipeId = -1;
+            }
+            
+            if (recipeId > 0) {
+                response.sendRedirect(request.getContextPath() + "/recipe?view=view&id=" + recipeId);
+            } else {
+                response.sendRedirect(request.getContextPath() + "/recipe");
+            }
+        } else {
+            
+            response.sendRedirect(request.getContextPath() + "/recipe");
+        }
+    }
+
+    private boolean isValidString(String str, int limitLength) {
+        if (limitLength < 0) {
+            limitLength = Integer.MAX_VALUE;
+        }
+
+        return !(str == null || str.isEmpty()) && str.length() <= limitLength;
+    }
+
+    private boolean isValidInteger(int value, boolean allowZero, boolean allowNegative, boolean allowPositive) {
+        if (!allowNegative && value < 0) {
+            return false;
+        }
+        if (!allowZero && value == 0) {
+            return false;
+        }
+
+        if (!allowPositive && value > 0) {
+            return false;
+        }
+        return true;
+    }
+
+    private int getTotalPages(int countItems) {
+        return (int) Math.ceil((double) countItems / MAX_ELEMENTS_PER_PAGE);
+    }
+
+    private String getSqlErrorCode(int temp_code) {
+        if (temp_code + DUPLICATE_KEY == 0) {                //check trung code/key
+            return "DUPLICATE_KEY";
+        } else if (temp_code + FOREIGN_KEY_VIOLATION == 0) {
+            return "FOREIGN_KEY_VIOLATION";
+        } else if (temp_code + NULL_INSERT_VIOLATION == 0) {
+            return "NULL_INSERT_VIOLATION";
+        } else if (temp_code + UNIQUE_INDEX == 0) {
+            return "DUPLICATE_UNIQUE";
+        }
+
+        return "Unknow Error Code:" + temp_code;
+    }
+
+    private void setPopup(HttpServletRequest request, boolean status, String message) {
+        HttpSession session = request.getSession(false);
+        if (session != null) {
+            session.setAttribute("popupStatus", status);
+            session.setAttribute("popupMessage", message);
+        }
+    }
+
+    private void removePopup(HttpServletRequest request) {
+        HttpSession session = request.getSession(false);
+        if (session != null) {
+            session.removeAttribute("popupStatus");
+            session.removeAttribute("popupMessage");
+        }
     }
 
     /**

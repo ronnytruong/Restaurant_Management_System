@@ -128,7 +128,7 @@ public class VoucherServlet extends HttpServlet {
                 String name = request.getParameter("voucher_name");
                 String discountType = request.getParameter("discount_type");
                 String rawDiscount = request.getParameter("discount_value");
-                String status = request.getParameter("status");
+                String status = "Active";
 
                 int quantity;
                 Date startDate, endDate;
@@ -157,6 +157,7 @@ public class VoucherServlet extends HttpServlet {
                     popupStatus = false;
                     popupMessage = "The add action is NOT successful. Please check your input (invalid or start date after end date).";
                 } else {
+                    status = "Active";
                     int result = dao.add(code, name, discountType, discountValue, quantity, startDate, endDate, status);
                     if (result >= 1) {
                         popupMessage = "Voucher \"" + name + "\" added successfully.";
@@ -172,7 +173,7 @@ public class VoucherServlet extends HttpServlet {
                 String name = request.getParameter("voucher_name");
                 String discountType = request.getParameter("discount_type");
                 String rawDiscount = request.getParameter("discount_value");
-                String status = request.getParameter("status");
+                String status = "Active";
 
                 Date startDate, endDate;
                 int discountValue;
@@ -200,6 +201,7 @@ public class VoucherServlet extends HttpServlet {
                     popupStatus = false;
                     popupMessage = "The edit action is NOT successful. Invalid input or start date after end date.";
                 } else {
+                    
                     int result = dao.edit(id, code, name, discountType, discountValue, quantity, startDate, endDate, status);
                     if (result >= 1) {
                         popupMessage = "Voucher ID=" + id + " edited successfully.";
