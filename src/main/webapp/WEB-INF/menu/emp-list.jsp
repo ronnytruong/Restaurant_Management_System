@@ -3,7 +3,7 @@
     Created on : 2 Nov 2025, 9:05:59 AM
     Author     : Dai Minh Nhu - CE190213
 --%>
-
+ <title>My Profile - Yummy</title>
 <%@include file="/WEB-INF/include/headerDashboard.jsp" %>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
