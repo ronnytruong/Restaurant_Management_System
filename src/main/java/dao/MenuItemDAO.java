@@ -400,7 +400,24 @@ public class MenuItemDAO extends DBContext {
         }
         return 0;
     }
-
+public int countItem(String keyword) {
+    String searchKeyword = (keyword == null || keyword.trim().isEmpty()) ? "%%" : "%" + keyword.trim() + "%";
+    try {
+        String query = "SELECT COUNT(mi.menu_item_id) AS numrow "
+                + "FROM menu_item AS mi "
+                + "WHERE LOWER(mi.status) <> 'deleted' "
+                + "AND (LOWER(mi.item_name) LIKE LOWER(?) OR LOWER(mi.description) LIKE LOWER(?))";
+        
+        // Pass the keyword twice, for both item_name and description
+        ResultSet rs = this.executeSelectionQuery(query, new Object[]{searchKeyword, searchKeyword});
+        if (rs.next()) {
+            return rs.getInt(1);
+        }
+    } catch (SQLException ex) {
+        System.out.println("Error counting search items: " + ex.getMessage());
+    }
+    return 0;
+}
     /**
      * Adds a new menu item to the database.
      *
