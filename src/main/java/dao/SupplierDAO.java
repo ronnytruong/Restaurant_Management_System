@@ -183,8 +183,6 @@ public class SupplierDAO extends DBContext {
             if (sqlError != 0) {
                 return sqlError;
             }
-
-            Logger.getLogger(SupplierDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
         return -1;
     }
@@ -205,7 +203,9 @@ public class SupplierDAO extends DBContext {
 
     public int countItem() {
         try {
-            String query = "select count(supplier_id) as numrow from supplier ";
+            String query = "SELECT COUNT(supplier_id) AS numrow\n"
+                    + "FROM supplier\n"
+                    + "WHERE LOWER(status) <> LOWER(N'Deleted')";
             ResultSet rs = this.executeSelectionQuery(query, null);
             if (rs.next()) {
                 return rs.getInt(1);

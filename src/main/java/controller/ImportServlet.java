@@ -14,14 +14,15 @@ import dao.EmployeeDAO;
 import dao.ImportDAO;
 import dao.IngredientDAO;
 import dao.SupplierDAO;
-import dao.TypeDAO;
 import java.io.IOException;
 import java.sql.Date;
+import java.util.List;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import model.Import;
 
 @WebServlet(name = "ImportServlet", urlPatterns = {"/import"})
 public class ImportServlet extends HttpServlet {
@@ -30,7 +31,6 @@ public class ImportServlet extends HttpServlet {
     private final SupplierDAO supplierDAO = new SupplierDAO();
     private final EmployeeDAO employeeDAO = new EmployeeDAO();
     private final IngredientDAO ingredientDAO = new IngredientDAO();
-    private final TypeDAO typeDAO = new TypeDAO();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -40,11 +40,15 @@ public class ImportServlet extends HttpServlet {
         if (keyword == null) {
             keyword = "";
         }
+        keyword = keyword.trim();
 
         int page;
         try {
             page = Integer.parseInt(request.getParameter("page"));
         } catch (NumberFormatException e) {
+            page = 1;
+        }
+        if (page <= 0) {
             page = 1;
         }
 
@@ -83,20 +87,9 @@ public class ImportServlet extends HttpServlet {
 
             if (id > 0) {
                 request.setAttribute("currentImport", importDAO.getElementByID(id));
-                request.setAttribute("importDetails", importDAO.getImportDetails(id, page, keyword));
-            }
-        } else if ("addDetail".equalsIgnoreCase(view)) {
-            namepage = "addDetail";
 
-            int id;
-            try {
-                id = Integer.parseInt(request.getParameter("id"));
-            } catch (NumberFormatException e) {
-                id = -1;
-            }
-
-            if (id > 0) {
-                request.setAttribute("currentImport", importDAO.getElementByID(id));
+                List<Import> detailItems = importDAO.getImportDetails(id);
+                request.setAttribute("importDetails", detailItems);
                 request.setAttribute("ingredientList", ingredientDAO.getAll());
             }
         } else {
@@ -155,7 +148,6 @@ public class ImportServlet extends HttpServlet {
                 int unitPrice;
                 int totalPrice;
 
-
                 try {
                     importId = Integer.parseInt(request.getParameter("importId"));
                 } catch (NumberFormatException e) {
@@ -168,42 +160,92 @@ public class ImportServlet extends HttpServlet {
                     redirectUrl = request.getContextPath() + "/import";
                 }
 
-                try {
-                    ingredientId = Integer.parseInt(request.getParameter("ingredientId"));
-                } catch (NumberFormatException e) {
-                    ingredientId = -1;
-                }
-
-                try {
-                    quantity = Integer.parseInt(request.getParameter("quantity"));
-                } catch (NumberFormatException e) {
-                    quantity = -1;
-                }
-
-                try {
-                    unitPrice = Integer.parseInt(request.getParameter("unitPrice"));
-                } catch (NumberFormatException e) {
-                    unitPrice = -1;
-                }
-
-                totalPrice = unitPrice * quantity;
-
-                if (!validateInteger(importId, false, false, true)
-                        || !validateInteger(ingredientId, false, false, true)
-                        || !validateInteger(quantity, false, false, true)
-                        || !validateInteger(unitPrice, false, true, true)) {
+                Import currentImport = importDAO.getElementByID(importId);
+                if (currentImport == null) {
                     popupStatus = false;
-                    popupMessage = "The add detail action is NOT successfull. The input has some error.";
+                    popupMessage = "The import record no longer exists.";
+                } else if (currentImport.getStatus() != null
+                        && (currentImport.getStatus().equalsIgnoreCase("Completed")
+                        || currentImport.getStatus().equalsIgnoreCase("Active"))) {
+                    popupStatus = false;
+                    popupMessage = "This import is already completed and cannot receive additional line items.";
                 } else {
-                    int checkError = importDAO.addDetail(importId, ingredientId, quantity, unitPrice, totalPrice);
-                    if (checkError >= 1) {
-                        popupMessage = "The import detail added successfully.";
-                    } else {
+
+                    try {
+                        ingredientId = Integer.parseInt(request.getParameter("ingredientId"));
+                    } catch (NumberFormatException e) {
+                        ingredientId = -1;
+                    }
+
+                    try {
+                        quantity = Integer.parseInt(request.getParameter("quantity"));
+                    } catch (NumberFormatException e) {
+                        quantity = -1;
+                    }
+
+                    try {
+                        unitPrice = Integer.parseInt(request.getParameter("unitPrice"));
+                    } catch (NumberFormatException e) {
+                        unitPrice = -1;
+                    }
+
+                    totalPrice = unitPrice * quantity;
+
+                    if (!validateInteger(importId, false, false, true)
+                            || !validateInteger(ingredientId, false, false, true)
+                            || !validateInteger(quantity, false, false, true)
+                            || !validateInteger(unitPrice, false, false, true)) {
                         popupStatus = false;
-                        popupMessage = "The add detail action is NOT successfull. The object has " + getSqlErrorCode(checkError) + " error.";
+                        popupMessage = "The add detail action is NOT successfull. The input has some error.";
+                    } else {
+                        int checkError = importDAO.addDetail(importId, ingredientId, quantity, unitPrice, totalPrice);
+                        if (checkError >= 1) {
+                            popupMessage = "The import detail added successfully.";
+                        } else {
+                            popupStatus = false;
+                            popupMessage = "The add detail action is NOT successfull. The object has " + getSqlErrorCode(checkError) + " error.";
+                        }
                     }
                 }
 
+            } else if ("confirm".equalsIgnoreCase(action)) {
+                int importId;
+                try {
+                    importId = Integer.parseInt(request.getParameter("importId"));
+                } catch (NumberFormatException e) {
+                    importId = -1;
+                }
+
+                if (importId > 0) {
+                    redirectUrl = request.getContextPath() + "/import?view=detail&id=" + importId;
+                }
+
+                if (!validateInteger(importId, false, false, true)) {
+                    popupStatus = false;
+                    popupMessage = "Unable to confirm import because of invalid identifier.";
+                } else {
+                    Import currentImport = importDAO.getElementByID(importId);
+                    if (currentImport == null) {
+                        popupStatus = false;
+                        popupMessage = "The import record no longer exists.";
+                    } else if (currentImport.getStatus() != null
+                            && (currentImport.getStatus().equalsIgnoreCase("Completed")
+                            || currentImport.getStatus().equalsIgnoreCase("Active"))) {
+                        popupStatus = false;
+                        popupMessage = "This import was already confirmed.";
+                    } else if (importDAO.getImportDetails(importId).isEmpty()) {
+                        popupStatus = false;
+                        popupMessage = "Please add at least one line item before confirming the import.";
+                    } else {
+                        int check = importDAO.markAsCompleted(importId);
+                        if (check >= 1) {
+                            popupMessage = "Ingredient updated successfully.";
+                        } else {
+                            popupStatus = false;
+                            popupMessage = "Unable to confirm the import at this time.";
+                        }
+                    }
+                }
             } else if ("edit".equalsIgnoreCase(action)) {
                 int importId;
                 int supplierId;
@@ -241,8 +283,11 @@ public class ImportServlet extends HttpServlet {
                         || importDate == null) {
                     popupStatus = false;
                     popupMessage = "The edit action is NOT successfull. The input has some error.";
+                } else if (importDAO.getElementByID(importId) == null) {
+                    popupStatus = false;
+                    popupMessage = "The edit action is NOT successfull. Import not found.";
                 } else {
-                    int checkError = importDAO.edit(importId, supplierId, empId);
+                    int checkError = importDAO.edit(importId, supplierId, empId, importDate);
                     if (checkError >= 1) {
                         popupMessage = "The import with id=" + importId + " edited successfully.";
                     } else {

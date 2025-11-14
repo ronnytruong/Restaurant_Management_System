@@ -27,22 +27,47 @@ public class ImportDAO extends DBContext {
     public List<Import> getAll(int page, String keyword) {
         List<Import> list = new ArrayList<>();
 
+        if (page <= 0) {
+            page = 1;
+        }
+
+        if (keyword == null) {
+            keyword = "";
+        }
+        keyword = keyword.trim();
+
         try {
-            String query = "SELECT i.import_id, e.emp_name, s.contact_person, s.supplier_name, i.import_date "
+            String query = "SELECT i.import_id, i.emp_id, e.emp_name, i.supplier_id, s.contact_person, s.supplier_name, i.import_date, i.status "
                     + "FROM import i "
                     + "JOIN employee e ON e.emp_id = i.emp_id "
-                    + "JOIN supplier s ON s.supplier_id = i.supplier_id	";
+                    + "JOIN supplier s ON s.supplier_id = i.supplier_id "
+                    + "WHERE (i.status IS NULL OR LOWER(i.status) <> LOWER(N'Deleted')) "
+                    + "AND (LOWER(e.emp_name) LIKE LOWER(?) OR LOWER(s.supplier_name) LIKE LOWER(?)) "
+                    + "ORDER BY i.import_id DESC "
+                    + "OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
 
-            ResultSet rs = this.executeSelectionQuery(query, null);
+            String searchKeyword = "%" + keyword + "%";
+
+            Object[] params = new Object[]{
+                searchKeyword,
+                searchKeyword,
+                (page - 1) * MAX_ELEMENTS_PER_PAGE,
+                MAX_ELEMENTS_PER_PAGE
+            };
+
+            ResultSet rs = this.executeSelectionQuery(query, params);
 
             while (rs.next()) {
-                int importId = rs.getInt(1);
-                String empName = rs.getString(2);
-                String contactPerson = rs.getString(3);
-                String supplierName = rs.getString(4);
-                Date importDate = rs.getDate(5);
-
-                Import imp = new Import(importId, empName, contactPerson, supplierName, importDate);
+                Import imp = new Import(
+                        rs.getInt("import_id"),
+                        rs.getInt("emp_id"),
+                        rs.getString("emp_name"),
+                        rs.getInt("supplier_id"),
+                        rs.getString("supplier_name"),
+                        rs.getString("contact_person"),
+                        rs.getDate("import_date"),
+                        rs.getString("status")
+                );
 
                 list.add(imp);
             }
@@ -93,25 +118,63 @@ public class ImportDAO extends DBContext {
         return list;
     }
 
+    public List<Import> getImportDetails(int importId) {
+        List<Import> list = new ArrayList<>();
+
+        try {
+            String query = "SELECT \n"
+                    + "    igd.ingredient_name, \n"
+                    + "    id.quantity, \n"
+                    + "    igd.unit, \n"
+                    + "    id.unit_price, \n"
+                    + "    id.total_price\n"
+                    + "FROM import_detail id \n"
+                    + "JOIN ingredient igd ON id.ingredient_id = igd.ingredient_id\n"
+                    + "WHERE id.import_id = ?\n"
+                    + "ORDER BY id.import_detail_id";
+
+            ResultSet rs = this.executeSelectionQuery(query, new Object[]{importId});
+
+            while (rs.next()) {
+                Import imp = new Import(
+                        rs.getString("ingredient_name"),
+                        rs.getInt("quantity"),
+                        rs.getString("unit"),
+                        rs.getInt("unit_price"),
+                        rs.getInt("total_price")
+                );
+
+                list.add(imp);
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(ImportDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        return list;
+    }
+
     public Import getElementByID(int id) {
 
         try {
-            String query = "SELECT i.import_id, e.emp_name, s.contact_person, s.supplier_name, i.import_date "
+            String query = "SELECT i.import_id, i.emp_id, e.emp_name, i.supplier_id, s.supplier_name, s.contact_person, i.import_date, i.status "
                     + "FROM import i "
                     + "JOIN employee e ON e.emp_id = i.emp_id "
                     + "JOIN supplier s ON s.supplier_id = i.supplier_id  "
-                    + "WHERE i.import_id = ?";
+                    + "WHERE i.import_id = ? AND (i.status IS NULL OR LOWER(i.status) <> LOWER(N'Deleted'))";
 
             ResultSet rs = this.executeSelectionQuery(query, new Object[]{id});
 
             if (rs.next()) {
-                int importId = rs.getInt(1);
-                String empName = rs.getString(2);
-                String contactPerson = rs.getString(3);
-                String supplierName = rs.getString(4);
-                Date importDate = rs.getDate(5);
-
-                return new Import(importId, empName, contactPerson, supplierName, importDate);
+                return new Import(
+                        rs.getInt("import_id"),
+                        rs.getInt("emp_id"),
+                        rs.getString("emp_name"),
+                        rs.getInt("supplier_id"),
+                        rs.getString("supplier_name"),
+                        rs.getString("contact_person"),
+                        rs.getDate("import_date"),
+                        rs.getString("status")
+                );
             }
         } catch (SQLException ex) {
             Logger.getLogger(ImportDAO.class.getName()).log(Level.SEVERE, null, ex);
@@ -122,13 +185,13 @@ public class ImportDAO extends DBContext {
 
     public int add(int supplierId, int empId) {
         try {
-            String query = "INSERT INTO import (supplier_id, emp_id, import_date, status) VALUES (?, ?, ?, ?)";
+        String query = "INSERT INTO import (supplier_id, emp_id, import_date, status) VALUES (?, ?, ?, ?)";
 
             Timestamp now = Timestamp.valueOf(LocalDateTime.now());
 
             return this.executeQuery(
                     query,
-                    new Object[]{supplierId, empId, now, "Active"}
+            new Object[]{supplierId, empId, now, "Pending"}
             );
 
         } catch (SQLException ex) {
@@ -157,31 +220,11 @@ public class ImportDAO extends DBContext {
         return -1;
     }
 
-    public int edit(int categoryId, int supplierId, int employeeId) {
+    public int edit(int importId, int supplierId, int employeeId, Date importDate) {
         try {
+            String query = "UPDATE import SET supplier_id = ?, emp_id = ?, import_date = ? WHERE import_id = ?";
 
-            String query = "UPDATE import SET supplier_id = ?, emp_id = ? WHERE import_id = ?";
-
-            return this.executeQuery(query, new Object[]{categoryId, supplierId, employeeId});
-
-        } catch (SQLException ex) {
-
-            int sqlError = checkErrorSQL(ex);
-            if (sqlError != 0) {
-                return sqlError;
-            }
-
-            Logger.getLogger(ImportDAO.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return -1;
-    }
-
-    public int editDetail(int categoryId, int supplierId, int employeeId) {
-        try {
-
-            String query = "UPDATE import SET supplier_id = ?, emp_id = ? WHERE import_id = ?";
-
-            return this.executeQuery(query, new Object[]{categoryId, supplierId, employeeId});
+            return this.executeQuery(query, new Object[]{supplierId, employeeId, importDate, importId});
 
         } catch (SQLException ex) {
 
@@ -197,9 +240,9 @@ public class ImportDAO extends DBContext {
 
     public int delete(int id) {
         try {
-            String query = "UPDATE category\n"
+            String query = "UPDATE import\n"
                     + "SET status = 'Deleted'\n"
-                    + "WHERE  (category_id = ?)";
+                    + "WHERE (import_id = ?)";
 
             return this.executeQuery(query, new Object[]{id});
 
@@ -211,7 +254,7 @@ public class ImportDAO extends DBContext {
 
     public int countItem() {
         try {
-            String query = "select count(import_id) as numrow from [dbo].[import]";
+            String query = "SELECT COUNT(import_id) AS numrow FROM import WHERE (status IS NULL OR LOWER(status) <> LOWER(N'Deleted'))";
             ResultSet rs = this.executeSelectionQuery(query, null);
             if (rs.next()) {
                 return rs.getInt(1);
@@ -221,5 +264,15 @@ public class ImportDAO extends DBContext {
         }
 
         return 0;
+    }
+
+    public int markAsCompleted(int importId) {
+        try {
+            String query = "UPDATE import SET status = 'Completed', import_date = GETDATE() WHERE import_id = ?";
+            return this.executeQuery(query, new Object[]{importId});
+        } catch (SQLException ex) {
+            System.out.println("Unable to mark import as completed");
+        }
+        return -1;
     }
 }
