@@ -23,6 +23,7 @@ public class Import {
     private String contactPerson;
     private String supplierName;
     private Date importDate;
+    private String status;
 
     public Import(String ingredientName, int quantity, String unit, int unitPrice, int totalPrice) {
         this.ingredientName = ingredientName;
@@ -35,13 +36,18 @@ public class Import {
     
 
     public Import(int importId, String empName, String contactPerson, String supplierName, Date importDate) {
+        this(importId, 0, empName, 0, supplierName, contactPerson, importDate, null);
+    }
+
+    public Import(int importId, int empId, String empName, int supplierId, String supplierName, String contactPerson, Date importDate, String status) {
         this.importId = importId;
-
+        this.empId = empId;
         this.empName = empName;
-
-        this.contactPerson = contactPerson;
+        this.supplierId = supplierId;
         this.supplierName = supplierName;
+        this.contactPerson = contactPerson;
         this.importDate = importDate;
+        this.status = status;
     }
 
     public int getImportId() {
@@ -138,6 +144,14 @@ public class Import {
 
     public void setImportDate(Date importDate) {
         this.importDate = importDate;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
     
     

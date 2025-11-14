@@ -15,7 +15,7 @@ public class Ingredient {
     private String typeName;
     private String unit;
     private double price;
-    private int totalQuantity;
+    private double totalQuantity;
     private String status;
 
     public Ingredient() {
@@ -30,7 +30,7 @@ public class Ingredient {
         this.status = status;
     }
 
-    public Ingredient(int ingredientId, String ingredientName, String typeName, String unit, int totalQuantity, String status) {
+    public Ingredient(int ingredientId, String ingredientName, String typeName, String unit, double totalQuantity, String status) {
         this.ingredientId = ingredientId;
         this.ingredientName = ingredientName;
         this.typeName = typeName;
@@ -55,11 +55,11 @@ public class Ingredient {
         this.unit = unit;
     }
 
-    public int getTotalQuantity() {
+    public double getTotalQuantity() {
         return totalQuantity;
     }
 
-    public void setTotalQuantity(int totalQuantity) {
+    public void setTotalQuantity(double totalQuantity) {
         this.totalQuantity = totalQuantity;
     }
 
