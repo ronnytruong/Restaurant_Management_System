@@ -51,7 +51,7 @@
                 Book Table <%= (selected != null) ? selected.getNumber() : ""%>
             </h4>
 
-            <form id="bookingForm" action="<c:url value='/reservation'/>" method="post">
+            <form id="bookingForm" action="<c:url value='/my-reservation'/>" method="post">
                 <input type="hidden" name="action" value="edit">
                 <input type="hidden" name="reservationId" value="${currentReservation.reservationId}">
                 <input type="hidden" name="customerId" value="${sessionScope.customerSession.customerId}">
@@ -95,7 +95,7 @@
                 <div class="d-flex justify-content-between">
                     <button type="submit" id="btnSubmit" class="btn btn-confirm">Confirm</button>
                     <li>
-                        <a class="btn btn-outline-secondary" href="<c:url value='/reservation'>
+                        <a class="btn btn-outline-secondary" href="<c:url value='/my-reservation'>
                                <c:param name='view' value='mylist'/>
                                <c:param name='customerId' value='${sessionScope.customerSession.customerId}'/>
                            </c:url>">

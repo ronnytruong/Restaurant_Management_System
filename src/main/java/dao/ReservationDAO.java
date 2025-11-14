@@ -45,7 +45,7 @@ public class ReservationDAO extends DBContext {
         try {
             String sql = "SELECT reservation_id, customer_id, table_id, reservation_date, reservation_time, status "
                     + "FROM reservation WHERE LOWER(status) = LOWER('Seated') "
-                    + "ORDER BY reservation_id";
+                    + "ORDER BY reservation_id DESC";
             ResultSet rs = this.executeSelectionQuery(sql, new Object[]{});
             while (rs.next()) {
                 list.add(extract(rs));
@@ -72,7 +72,7 @@ public class ReservationDAO extends DBContext {
                     + "CAST(r.customer_id AS VARCHAR) LIKE ? OR "
                     + "CAST(r.table_id AS VARCHAR) LIKE ? OR "
                     + "LOWER(r.status) LIKE LOWER(?)) "
-                    + "ORDER BY r.reservation_id "
+                    + "ORDER BY r.reservation_id DESC "
                     + "OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
             ResultSet rs = this.executeSelectionQuery(sql,
                     new Object[]{kw, kw, kw, kw, (page - 1) * MAX_ELEMENTS_PER_PAGE, MAX_ELEMENTS_PER_PAGE});
@@ -119,7 +119,7 @@ public class ReservationDAO extends DBContext {
                     + "FROM reservation AS r "
                     + "WHERE r.customer_id = ? "
                     + "AND (CAST(r.table_id AS VARCHAR) LIKE ? OR LOWER(r.status) LIKE LOWER(?)) "
-                    + "ORDER BY r.reservation_id "
+                    + "ORDER BY r.reservation_id DESC "
                     + "OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
             ResultSet rs = this.executeSelectionQuery(sql,
                     new Object[]{customerId, kw, kw, (page - 1) * MAX_ELEMENTS_PER_PAGE, MAX_ELEMENTS_PER_PAGE});
@@ -263,7 +263,7 @@ public class ReservationDAO extends DBContext {
         List<Reservation> list = new ArrayList<>();
         try {
             String sql = "SELECT reservation_date, reservation_time FROM reservation "
-                    + "WHERE table_id = ? AND status IN ('Pending','Approved')";
+                    + "WHERE table_id = ? AND status IN ('Approved')";
             ResultSet rs = this.executeSelectionQuery(sql, new Object[]{tableId});
             while (rs.next()) {
                 list.add(new Reservation(0, null, null, rs.getDate("reservation_date"), rs.getTime("reservation_time"), 0, null));
@@ -282,7 +282,7 @@ public class ReservationDAO extends DBContext {
                     + "DATEADD(HOUR, 3, reservation_time) AS end_time "
                     + "FROM reservation "
                     + "WHERE table_id = ? AND reservation_date = ? "
-                    + "AND LOWER(status) IN ('pending','approved') "
+                    + "AND LOWER(status) IN ('approved') "
                     + "ORDER BY reservation_time";
             ResultSet rs = this.executeSelectionQuery(sql, new Object[]{tableId, date});
             while (rs.next()) {
