@@ -56,7 +56,7 @@
                     if (tables != null) {
                         for (Table t : tables) {
                             String status = t.getStatus().toLowerCase();
-                            boolean clickable = status.equals("available");
+                            boolean clickable = true;
                 %>
 
                 <div class="col-6 col-md-4 col-lg-3">

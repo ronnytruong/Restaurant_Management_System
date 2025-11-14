@@ -86,40 +86,27 @@ public class ReservationServlet extends HttpServlet {
             page = 1;
         }
 
+        // ADMIN LIST
         if (!validateString(view, -1) || view.equalsIgnoreCase("list")) {
-            // ADMIN list
             int totalPages = getTotalPages(reservationDAO.countItem(keyword));
             request.setAttribute("totalPages", totalPages);
             request.setAttribute("reservationList", reservationDAO.getAll(page, keyword));
             request.getRequestDispatcher("/WEB-INF/reservation/list.jsp").forward(request, response);
 
-        } else if (view.equalsIgnoreCase("mylist")) {
-            // CUSTOMER list
-            int customerId;
-            try {
-                customerId = Integer.parseInt(request.getParameter("customerId"));
-            } catch (NumberFormatException e) {
-                customerId = -1;
-            }
-
-            int totalPages = getTotalPages(reservationDAO.countByCustomer(customerId, keyword));
-            request.setAttribute("totalPages", totalPages);
-            request.setAttribute("customerId", customerId);
-            request.setAttribute("reservationList", reservationDAO.getByCustomer(customerId, page, keyword));
-            request.setAttribute("availableTables", tableDAO.getAll());
-            request.getRequestDispatcher("/WEB-INF/reservation/mylist.jsp").forward(request, response);
-
-        } else if (view.equalsIgnoreCase("edit")) {
-            int id;
-            try {
-                id = Integer.parseInt(request.getParameter("id"));
-            } catch (NumberFormatException e) {
-                id = -1;
-            }
-            request.setAttribute("currentReservation", reservationDAO.getElementByID(id));
-            request.getRequestDispatcher("/WEB-INF/reservation/edit.jsp").forward(request, response);
-
-        } else if (view.equalsIgnoreCase("add")) {
+            // EDIT (form dùng chung admin / customer)
+        } //        else if (view.equalsIgnoreCase("edit")) {
+        //            int id;
+        //            try {
+        //                id = Integer.parseInt(request.getParameter("id"));
+        //            } catch (NumberFormatException e) {
+        //                id = -1;
+        //            }
+        //            request.setAttribute("currentReservation", reservationDAO.getElementByID(id));
+        //            request.getRequestDispatcher("/WEB-INF/reservation/edit.jsp").forward(request, response);
+        //
+        //            // ADD (nếu có form add riêng cho admin)
+        //        } 
+        else if (view.equalsIgnoreCase("add")) {
             request.getRequestDispatcher("/WEB-INF/reservation/add.jsp").forward(request, response);
 
         } else {
@@ -147,112 +134,81 @@ public class ReservationServlet extends HttpServlet {
         if (!validateString(action, -1)) {
             response.sendRedirect(request.getContextPath() + "/reservation");
             return;
-        }
-
-        if (action.equalsIgnoreCase("add")) {
-            // Add Reservation
-            int customerId, tableId;
-            Date date;
-            Time time;
-
-            try {
-                customerId = Integer.parseInt(request.getParameter("customerId"));
-                tableId = Integer.parseInt(request.getParameter("tableId"));
-                date = Date.valueOf(request.getParameter("reservationDate"));
-                time = Time.valueOf(request.getParameter("reservationTime") + ":00");
-            } catch (Exception e) {
-                popupStatus = false;
-                popupMessage = "Invalid input for Add Reservation.";
-                setPopup(request, popupStatus, popupMessage);
-                response.sendRedirect(request.getContextPath() + "/reservation?view=mylist");
-                return;
-            }
-
-            model.Table selectedTable = tableDAO.getElementByID(tableId);
-            if (selectedTable == null) {
-                popupStatus = false;
-                popupMessage = "Table not found.";
-            } else if (selectedTable.getStatus().equalsIgnoreCase("Reserved")
-                    || selectedTable.getStatus().equalsIgnoreCase("Occupied")) {
-                popupStatus = false;
-                popupMessage = "This table is currently not available.";
-            } else {
-                int check = reservationDAO.add(customerId, tableId, date, time);
-                if (check < 1) {
-                    popupStatus = false;
-                    popupMessage = "Add failed. SQL error: " + getSqlErrorCode(check);
-                } else {
-                    popupMessage = "Reservation created successfully (Pending).";
-                }
-            }
-
-            setPopup(request, popupStatus, popupMessage);
-            response.sendRedirect(request.getContextPath()
-                    + "/reservation?view=mylist&customerId=" + request.getParameter("customerId"));
-            return;
-
-        } else if (action.equalsIgnoreCase("edit")) {
-            int id, tableId;
-            Date date;
-            Time time;
-
-            String dateStr = request.getParameter("reservationDate");
-            String timeStr = request.getParameter("reservationTime");
-
-            try {
-                id = Integer.parseInt(request.getParameter("reservationId"));
-                tableId = Integer.parseInt(request.getParameter("tableId"));
-                // Parse date an toàn
-                date = (dateStr != null && !dateStr.isEmpty()) ? Date.valueOf(dateStr) : null;
-
-                // Parse time an toàn cho cả HH:mm và HH:mm:ss
-                if (timeStr != null && !timeStr.isEmpty()) {
-                    timeStr = timeStr.trim();
-                    if (timeStr.length() == 5) {           // "HH:mm"
-                        timeStr = timeStr + ":00";
-                    } else if (timeStr.length() == 8) {    // "HH:mm:ss" -> giữ nguyên
-                        // do nothing
-                    } else if (timeStr.contains("T")) {    // trường hợp "YYYY-MM-DDTHH:mm"
-                        String[] parts = timeStr.split("T");
-                        String hhmm = parts[1];
-                        timeStr = (hhmm.length() == 5) ? hhmm + ":00" : hhmm;
-                    }
-                    time = Time.valueOf(timeStr);          // sẽ ném lỗi nếu format sai
-                } else {
-                    time = null;
-                }
-            } catch (Exception e) {
-                id = -1;
-                tableId = -1;
-                date = null;
-                time = null;
-            }
-
-            if (!validateInteger(id, false, false, true) || tableId <= 0 || date == null || time == null) {
-                popupStatus = false;
-                popupMessage = "Edit failed. Invalid input.";
-            } else {
-                int check = reservationDAO.edit(id, tableId, date, time);
-                if (check < 1) {
-                    popupStatus = false;
-                    popupMessage = "Edit failed. SQL error: " + getSqlErrorCode(check);
-                } else {
-                    popupMessage = "Reservation (ID: " + id + ") updated successfully.";
-                }
-            }
-
-            setPopup(request, popupStatus, popupMessage);
-            String from = request.getParameter("from");
-            String customerIdStr = request.getParameter("customerId");
-            if ("mylist".equalsIgnoreCase(from) && customerIdStr != null) {
-                response.sendRedirect(request.getContextPath()
-                        + "/reservation?view=mylist&customerId=" + customerIdStr);
-            } else {
-                response.sendRedirect(request.getContextPath() + "/reservation");
-            }
-            return;
-
-        } else if (action.equalsIgnoreCase("approve") || action.equalsIgnoreCase("reject")) {
+        } //        // ==== EDIT (dùng chung, nhưng redirect khác nhau tùy 'from') ====
+        //        if (action.equalsIgnoreCase("edit")) {
+        //            int id, tableId;
+        //            Date date;
+        //            Time time;
+        //
+        //            String dateStr = request.getParameter("reservationDate");
+        //            String timeStr = request.getParameter("reservationTime");
+        //
+        //            try {
+        //                id = Integer.parseInt(request.getParameter("reservationId"));
+        //                tableId = Integer.parseInt(request.getParameter("tableId"));
+        //                // Parse date an toàn
+        //                date = (dateStr != null && !dateStr.isEmpty()) ? Date.valueOf(dateStr) : null;
+        //
+        //                // Parse time an toàn cho cả HH:mm và HH:mm:ss
+        //                if (timeStr != null && !timeStr.isEmpty()) {
+        //                    timeStr = timeStr.trim();
+        //                    if (timeStr.length() == 5) {           // "HH:mm"
+        //                        timeStr = timeStr + ":00";
+        //                    } else if (timeStr.length() == 8) {    // "HH:mm:ss"
+        //                        // giữ nguyên
+        //                    } else if (timeStr.contains("T")) {    // "YYYY-MM-DDTHH:mm"
+        //                        String[] parts = timeStr.split("T");
+        //                        String hhmm = parts[1];
+        //                        timeStr = (hhmm.length() == 5) ? hhmm + ":00" : hhmm;
+        //                    }
+        //                    time = Time.valueOf(timeStr);          // ném lỗi nếu format sai
+        //                } else {
+        //                    time = null;
+        //                }
+        //            } catch (Exception e) {
+        //                id = -1;
+        //                tableId = -1;
+        //                date = null;
+        //                time = null;
+        //            }
+        //
+        //            if (!validateInteger(id, false, false, true) || tableId <= 0 || date == null || time == null) {
+        //                popupStatus = false;
+        //                popupMessage = "Edit failed. Invalid input.";
+        //            } else {
+        //                int check = reservationDAO.edit(id, tableId, date, time);
+        //                if (check < 1) {
+        //                    popupStatus = false;
+        //                    popupMessage = "Edit failed. SQL error: " + getSqlErrorCode(check);
+        //                } else {
+        //                    popupMessage = "Reservation (ID: " + id + ") updated successfully.";
+        //                }
+        //            }
+        //
+        //            setPopup(request, popupStatus, popupMessage);
+        //
+        //            // Điều hướng theo nguồn gọi
+        //            String from = request.getParameter("from");
+        //            String customerIdStr = request.getParameter("customerId");
+        //
+        //            if ("mylist".equalsIgnoreCase(from) && customerIdStr != null && !customerIdStr.isEmpty()) {
+        //                // popup cho customer
+        //                request.getSession().setAttribute("popupMessage", popupMessage);
+        //                request.getSession().setAttribute("popupStatus", popupStatus);
+        //                request.getSession().setAttribute("popupPage", "my-reservation");
+        //
+        //                response.sendRedirect(request.getContextPath()
+        //                        + "/my-reservation?customerId=" + customerIdStr);
+        //            } else {
+        //                // popup cho admin (giữ nguyên cách cũ nếu muốn)
+        //                setPopup(request, popupStatus, popupMessage);
+        //                response.sendRedirect(request.getContextPath() + "/reservation");
+        //            }
+        //
+        //            return;
+        //       } 
+        // ==== APPROVE / REJECT (ADMIN) ====
+        else if (action.equalsIgnoreCase("approve") || action.equalsIgnoreCase("reject")) {
             int id;
             try {
                 id = Integer.parseInt(request.getParameter("id"));
@@ -272,7 +228,6 @@ public class ReservationServlet extends HttpServlet {
                     String currentStatus = current.getStatus();
                     String actionType = action.equalsIgnoreCase("approve") ? "Approved" : "Rejected";
 
-                    // ⚠️ Kiểm tra nếu trạng thái hiện tại không được phép chuyển đổi
                     if (currentStatus.equalsIgnoreCase("Approved") && action.equalsIgnoreCase("reject")) {
                         popupStatus = false;
                         popupMessage = "Cannot reject a reservation that has already been approved.";
@@ -297,32 +252,10 @@ public class ReservationServlet extends HttpServlet {
             setPopup(request, popupStatus, popupMessage);
             response.sendRedirect(request.getContextPath() + "/reservation");
             return;
-        } else if (action.equalsIgnoreCase("cancel")) {
-            int id, customerId;
-            try {
-                id = Integer.parseInt(request.getParameter("id"));
-                customerId = Integer.parseInt(request.getParameter("customerId"));
-            } catch (NumberFormatException e) {
-                id = -1;
-                customerId = -1;
-            }
-
-            if (!validateInteger(id, false, false, true) || !validateInteger(customerId, false, false, true)) {
-                popupStatus = false;
-                popupMessage = "Invalid cancel request.";
-            } else {
-                int check = reservationDAO.cancelByCustomer(id, customerId);
-                if (check < 1) {
-                    popupStatus = false;
-                    popupMessage = "Cancel failed. SQL error: " + getSqlErrorCode(check);
-                } else {
-                    popupMessage = "Reservation cancelled.";
-                }
-            }
-            setPopup(request, popupStatus, popupMessage);
-            response.sendRedirect(request.getContextPath()
-                    + "/reservation?view=mylist&customerId=" + request.getParameter("customerId"));
         }
+
+        // Các action khác (add/cancel của customer) đã chuyển sang MyReservationServlet
+        response.sendRedirect(request.getContextPath() + "/reservation");
     }
 
     /**
