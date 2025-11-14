@@ -130,20 +130,18 @@ public class SupplierServlet extends HttpServlet {
                 String address = request.getParameter("address");
                 String contactPerson = request.getParameter("contactPerson");
 
-//validate
                 if (!validateString(name, -1)) {
                     popupStatus = false;
                     popupMessage = "The add action is NOT successfull. The input has some error.";
                 } else {
                     popupMessage = "The object with name=" + name + " added successfull.";
                 }
-//end
                 if (popupStatus == true) {
                     int checkError = supplierDAO.add(name, phoneNumber, email, address, contactPerson);
                     if (checkError >= 1) {
                     } else {
                         popupStatus = false;
-                        popupMessage = "The add action is NOT successfull. The object has " + getSqlErrorCode(checkError) + " error.";
+                        popupMessage = "The add action is NOT successfull. The object has some error.";
                     }
                 }
 
@@ -162,7 +160,6 @@ public class SupplierServlet extends HttpServlet {
                     id = -1;
                 }
 
-//validate
                 if (!validateString(name, -1)
                         || !validateString(status, -1)
                         || !validateInteger(id, false, false, true)) {
@@ -171,7 +168,6 @@ public class SupplierServlet extends HttpServlet {
                 } else {
                     popupMessage = "The object with id=" + id + " edited successfull.";
                 }
-//end
                 if (popupStatus == true) {
                     int checkError = supplierDAO.edit(id, name, phoneNumber, email, address, contactPerson, status);
 
@@ -179,7 +175,7 @@ public class SupplierServlet extends HttpServlet {
 
                     } else {
                         popupStatus = false;
-                        popupMessage = "The edit action is NOT successfull. The object has " + getSqlErrorCode(checkError) + " error.";
+                        popupMessage = "The edit action is NOT successfull. The object has some error.";
                     }
                 }
             } else if (action.equalsIgnoreCase("delete")) {
@@ -192,14 +188,12 @@ public class SupplierServlet extends HttpServlet {
                     id = -1;
                 }
 
-//validate
                 if (!validateInteger(id, false, false, true)) {
                     popupStatus = false;
                     popupMessage = "The delete action is NOT successfull.";
                 } else {
                     popupMessage = "The object with id=" + id + " deleted successfull.";
                 }
-//end
                 if (popupStatus == true) {
                     int checkError = supplierDAO.delete(id);
 
@@ -207,7 +201,7 @@ public class SupplierServlet extends HttpServlet {
 
                     } else {
                         popupStatus = false;
-                        popupMessage = "The delete action is NOT successfull. The object has " + getSqlErrorCode(checkError) + " error.";
+                        popupMessage = "The delete action is NOT successfull. The object has some error.";
                     }
                 }
             }
@@ -227,5 +221,6 @@ public class SupplierServlet extends HttpServlet {
     public String getServletInfo() {
         return "Short description";
     }// </editor-fold>
+
 
 }

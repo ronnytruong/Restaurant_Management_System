@@ -24,27 +24,35 @@ public class IngredientDAO extends DBContext {
         List<Ingredient> list = new ArrayList<>();
 
         try {
-            String query = "SELECT\n"
-                    + "    i.ingredient_id,\n"
-                    + "    i.ingredient_name,\n"
-                    + "    t.type_name,\n"
-                    + "	i.unit,\n"
-                    + "    COALESCE(SUM(im.quantity), 0) AS TotalQuantity,\n"
-                    + "	i.status\n"
-                    + "FROM ingredient i\n"
-                    + "JOIN type t \n"
-                    + "    ON i.type_id = t.type_id\n"
-                    + "LEFT JOIN import_detail im \n"
-                    + "    ON im.ingredient_id = i.ingredient_id\n"
-                    + "WHERE LOWER(i.status) != LOWER(N'Deleted')\n"
-                    + "GROUP BY\n"
-                    + "    i.ingredient_id,\n"
-                    + "    i.ingredient_name,\n"
-                    + "    t.type_name,\n"
-                    + "	i.unit,\n"
-                    + "    i.status\n"
-                    + "ORDER BY \n"
-                    + "    i.ingredient_id\n";
+    String query = "SELECT\n"
+        + "    i.ingredient_id,\n"
+        + "    i.ingredient_name,\n"
+        + "    t.type_name,\n"
+        + "\ti.unit,\n"
+        + "    COALESCE(SUM(CASE WHEN imp.status IS NULL OR LOWER(imp.status) IN (LOWER(N'Completed'), LOWER(N'Active')) THEN im.quantity ELSE 0 END), 0)\n"
+        + "    - COALESCE(usage_data.total_used, 0) AS TotalQuantity,\n"
+        + "    i.status\n"
+        + "FROM ingredient i\n"
+        + "JOIN type t \n"
+        + "    ON i.type_id = t.type_id\n"
+        + "LEFT JOIN (\n"
+        + "    SELECT ingredient_id, SUM(quantity_used) AS total_used\n"
+        + "    FROM ingredient_usage\n"
+        + "    GROUP BY ingredient_id\n"
+        + ") AS usage_data ON usage_data.ingredient_id = i.ingredient_id\n"
+        + "LEFT JOIN import_detail im \n"
+        + "    ON im.ingredient_id = i.ingredient_id\n"
+        + "LEFT JOIN import imp ON imp.import_id = im.import_id\n"
+        + "WHERE LOWER(i.status) != LOWER(N'Deleted')\n"
+        + "GROUP BY\n"
+        + "    i.ingredient_id,\n"
+        + "    i.ingredient_name,\n"
+        + "    t.type_name,\n"
+        + "\ti.unit,\n"
+        + "    usage_data.total_used,\n"
+        + "    i.status\n"
+        + "ORDER BY \n"
+        + "    i.ingredient_id\n";
 
             ResultSet rs = this.executeSelectionQuery(query, null);
 
@@ -54,7 +62,7 @@ public class IngredientDAO extends DBContext {
                         rs.getString("ingredient_name"),
                         rs.getString("type_name"),
                         rs.getString("unit"),
-                        rs.getInt("TotalQuantity"),
+                        rs.getDouble("TotalQuantity"),
                         rs.getString("status")
                 );
 
@@ -71,17 +79,24 @@ public class IngredientDAO extends DBContext {
         List<Ingredient> list = new ArrayList<>();
 
         try {
-            String query
-                    = "SELECT i.ingredient_id, i.ingredient_name, t.type_name, "
-                    + "i.unit, COALESCE(SUM(im.quantity), 0) AS TotalQuantity, i.status "
-                    + "FROM ingredient i "
-                    + "JOIN type t ON i.type_id = t.type_id "
-                    + "LEFT JOIN import_detail im ON im.ingredient_id = i.ingredient_id "
-                    + "WHERE LOWER(i.status) != LOWER('Deleted') "
-                    + "  AND LOWER(i.ingredient_name) LIKE LOWER(?) "
-                    + "GROUP BY i.ingredient_id, i.ingredient_name, t.type_name, i.unit, i.status "
-                    + "ORDER BY i.ingredient_id "
-                    + "OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
+    String query
+        = "SELECT i.ingredient_id, i.ingredient_name, t.type_name, "
+            + "i.unit, COALESCE(SUM(CASE WHEN imp.status IS NULL OR LOWER(imp.status) IN (LOWER(N'Completed'), LOWER(N'Active')) THEN im.quantity ELSE 0 END), 0)"
+            + " - COALESCE(usage_data.total_used, 0) AS TotalQuantity, i.status "
+        + "FROM ingredient i "
+        + "JOIN type t ON i.type_id = t.type_id "
+        + "LEFT JOIN ("
+        + "    SELECT ingredient_id, SUM(quantity_used) AS total_used"
+        + "    FROM ingredient_usage"
+        + "    GROUP BY ingredient_id"
+        + ") AS usage_data ON usage_data.ingredient_id = i.ingredient_id "
+        + "LEFT JOIN import_detail im ON im.ingredient_id = i.ingredient_id "
+        + "LEFT JOIN import imp ON imp.import_id = im.import_id "
+        + "WHERE LOWER(i.status) != LOWER('Deleted') "
+            + "  AND LOWER(i.ingredient_name) LIKE LOWER(?) "
+            + "GROUP BY i.ingredient_id, i.ingredient_name, t.type_name, i.unit, usage_data.total_used, i.status "
+            + "ORDER BY i.ingredient_id "
+            + "OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
 
             keyword = "%" + keyword + "%";
 
@@ -93,7 +108,7 @@ public class IngredientDAO extends DBContext {
                         rs.getString("ingredient_name"),
                         rs.getString("type_name"),
                         rs.getString("unit"),
-                        rs.getInt("TotalQuantity"),
+                        rs.getDouble("TotalQuantity"),
                         rs.getString("status")
                 );
 

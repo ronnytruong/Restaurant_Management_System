@@ -233,7 +233,7 @@ CREATE TABLE import (
 CREATE TABLE import_detail (
     import_detail_id INT IDENTITY(1,1) PRIMARY KEY,
     import_id INT NOT NULL,
-    ingredient_id INT NOT NULL UNIQUE,
+    ingredient_id INT NOT NULL,
     quantity INT NOT NULL,
     unit_price DECIMAL(10,2) NOT NULL,
     total_price DECIMAL(10,2) NOT NULL,
@@ -241,4 +241,19 @@ CREATE TABLE import_detail (
         REFERENCES Import(import_id),
     CONSTRAINT FK_ImportDetail_Ingredient FOREIGN KEY (ingredient_id)
         REFERENCES Ingredient(ingredient_id)
+);
+
+CREATE TABLE ingredient_usage (
+    usage_id INT IDENTITY(1,1) PRIMARY KEY,
+    usage_date DATE NOT NULL,
+    ingredient_id INT NOT NULL,
+    quantity_used DECIMAL(18,2) NOT NULL,
+    stock_before DECIMAL(18,2) NOT NULL,
+    stock_after DECIMAL(18,2) NOT NULL,
+    created_by INT NULL,
+    created_at DATETIME NOT NULL DEFAULT GETDATE(),
+    CONSTRAINT FK_IngredientUsage_Ingredient FOREIGN KEY (ingredient_id)
+        REFERENCES ingredient(ingredient_id),
+    CONSTRAINT FK_IngredientUsage_Employee FOREIGN KEY (created_by)
+        REFERENCES employee(emp_id)
 );
