@@ -37,7 +37,6 @@
                         <th scope="col">Type</th>
                         <th scope="col">Unit</th>
                         <th scope="col">Quantity</th>
-                        <th scope="col">Status</th>
                         <th scope="col" class="text-end">Actions</th>
                     </tr>
                 </thead>
@@ -65,7 +64,6 @@
                                     <td><c:out value="${ing.typeName}"/></td>
                                     <td><c:out value='${ing.unit}'/></td>
                                     <td><c:out value='${ing.totalQuantity}'/></td>
-                                    <td><c:out value='${ing.status}'/></td>
                                     <td class="text-end">
                                         <div class="action-button-group d-flex justify-content-end gap-2">
                                             <c:url var="edit" value="ingredient">

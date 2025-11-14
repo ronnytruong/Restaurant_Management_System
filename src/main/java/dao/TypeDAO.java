@@ -209,7 +209,9 @@ public class TypeDAO extends DBContext {
 
     public int countItem() {
         try {
-            String query = "select count(type_id) as numrow from [dbo].[type]";
+            String query = "SELECT COUNT(type_id) AS numrow\n"
+                    + "FROM type\n"
+                    + "WHERE LOWER(status) <> LOWER(N'Deleted')";
             ResultSet rs = this.executeSelectionQuery(query, null);
             if (rs.next()) {
                 return rs.getInt(1);

@@ -12,7 +12,7 @@
 <section class="col-12 col-lg-9 col-xxl-10 table-section" aria-label="Ingredient Add Form">
     <div class="content-card shadow-sm">
         <div class="card-header border-0 px-4 py-3 d-flex justify-content-between align-items-center">
-            <h1 class="section-title mb-0">Add New Ingredient</h1>
+            <h1 class="section-title mb-0">Add Ingredient</h1>
         </div>
 
         <div class="container px-4 py-3">
@@ -43,7 +43,7 @@
                             </select>
                         </td>
                     </tr>
-                    
+
                     <tr>
                         <th>
                             <label for="unit">Unit</label>
@@ -52,17 +52,21 @@
                             <div style="display: flex; gap: 10px; align-items: center;">
                                 <select id="unit" name="unit" onchange="toggleBoxInput()" class="form-select">
                                     <option value="">-- Select Unit --</option>
-                                    <option value="Bottle">Bottle</option>
+                                    <option value="Kilogram">Kilogram</option>
                                     <option value="Gram">Gram</option>
                                     <option value="Liter">Liter</option>
+                                    <option value="Milliliter">Milliliter</option>
+                                    <option value="Bottle">Bottle</option>
+                                    <option value="Can">Can</option>
+                                    <option value="Box">Box</option>
                                     <option value="Piece">Piece</option>
-                                    <option value="Crate">Crate</option>
                                 </select>
+
                             </div>
                         </td>
                     </tr>
-                    
-                    
+
+
 
 
                     <%-- Action Buttons --%>

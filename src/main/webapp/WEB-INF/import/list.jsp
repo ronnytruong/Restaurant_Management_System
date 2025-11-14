@@ -10,17 +10,17 @@
             </div>
             <div class="actions d-flex w-100 w-md-auto align-items-center justify-content-md-end ms-md-auto gap-2">
                 <div class="filters d-flex flex-wrap gap-2 justify-content-end">
-                    <form action="<c:url value="import">
-                              <c:param name="page" value="1"/>
-                          </c:url>" method="get" class="search-box input-group">
+                    <form action="<c:url value='import'><c:param name='page' value='1'/></c:url>" method="get" class="search-box input-group">
                         <div class="search-box input-group">
                             <span class="input-group-text"><i class="bi bi-search"></i></span>
-                            <input type="search" name="keyword" class="form-control" placeholder="Search by name or description">
+                            <input type="search" name="keyword" class="form-control"
+                                   placeholder="Search by manager or supplier"
+                                   value="${param.keyword != null ? param.keyword : (requestScope.keyword != null ? requestScope.keyword : '')}">
                         </div>
                     </form>
-                    <a class="btn btn-primary add-btn" href="<c:url value="import">
-                           <c:param name="view" value="add"/>
-                       </c:url>"><i class="bi bi-plus-circle"></i>Add</a>
+                    <a class="btn btn-primary add-btn" href="<c:url value='import'>
+                           <c:param name='view' value='add'/>
+                       </c:url>"><i class="bi bi-plus-circle"></i> Add</a>
 
                 </div>  
             </div>
@@ -30,7 +30,7 @@
                 <table class="table align-middle admin-table">
                     <thead>
                         <tr>
-                            <th scope="col">No.</th>
+                            <th scope="col">ID</th>
                             <th scope="col">Manager</th>
                             <th scope="col">Contact Person</th>
                             <th scope="col">Supplier</th>
@@ -48,7 +48,7 @@
                             <c:otherwise>
                                 <c:forEach var="imp" items="${importList}" varStatus="loop">
                                     <tr>
-                                        <td><c:out value="${loop.index + 1}"/></td>
+                                        <td><c:out value="${imp.importId}"/></td>
                                         <td><c:out value="${imp.empName}"/></td>
                                         <td><c:out value="${imp.contactPerson}"/></td>
                                         <td><c:out value="${imp.supplierName}"/></td>
@@ -84,31 +84,31 @@
 
             <nav aria-label="Page navigation example">
                 <ul class="pagination">
-                    <li class="page-item ${((empty param.page) || param.page <= 1) ? 'disabled' : ''}">
-                        <a class="page-link" href="<c:url value='/import'>
-                               <c:param name='view' value='list'/>
-                               <c:param name='page' value='${(empty param.page) ? 1 : param.page - 1}'/>
-                               <c:if test='${not empty param.keyword || not empty requestScope.keyword}'><c:param name='keyword' value='${param.keyword != null ? param.keyword : requestScope.keyword }'/></c:if>
+                    <li class="page-item ${((empty param.page) || param.page <= 1)?"disabled":""}">
+                        <a class="page-link" href="<c:url value="/import">
+                               <c:param name="view" value="list"/>
+                               <c:param name="page" value="${param.page - 1}"/>
+                               <c:param name="keyword" value="${requestScope.keyword}"/>
                            </c:url>" aria-label="Previous">
                             <span aria-hidden="true">&laquo;</span>
                         </a>
                     </li>
 
                     <c:forEach begin="1" end="${requestScope.totalPages}" var="i">
-                        <li class="page-item ${((empty param.page && i == 1) || param.page == i) ? 'active' : ''}">
-                            <a class="page-link" href="<c:url value='/import'>
-                                   <c:param name='view' value='list'/>
-                                   <c:param name='page' value='${i}'/>
-                                   <c:if test='${not empty param.keyword || not empty requestScope.keyword}'><c:param name='keyword' value='${param.keyword != null ? param.keyword : requestScope.keyword }'/></c:if>
+                        <li class="page-item ${((empty param.page && i == 1) || param.page == i)?"active":""}">
+                            <a class="page-link" href="<c:url value="/import">
+                                   <c:param name="view" value="list"/>
+                                   <c:param name="page" value="${i}"/>
+                                   <c:param name="keyword" value="${requestScope.keyword}"/>
                                </c:url>">${i}</a>
                         </li>
                     </c:forEach>
 
-                    <li class="page-item ${(requestScope.totalPages <= (empty param.page ? 1 : param.page)) ? 'disabled' : ''}">
-                        <a class="page-link" href="<c:url value='/import'>
-                               <c:param name='view' value='list'/>
-                               <c:param name='page' value='${(empty param.page) ? 2 : param.page + 1}'/>
-                               <c:if test='${not empty param.keyword || not empty requestScope.keyword}'><c:param name='keyword' value='${param.keyword != null ? param.keyword : requestScope.keyword }'/></c:if>
+                    <li class="page-item ${(requestScope.totalPages <= param.page || requestScope.totalPages eq 1)?"disabled":""}">
+                        <a class="page-link" href="<c:url value="/import">
+                               <c:param name="view" value="list"/>
+                               <c:param name="page" value="${(empty param.page)?2:param.page + 1}"/>
+                               <c:param name="keyword" value="${requestScope.keyword}"/>
                            </c:url>" aria-label="Next">
                             <span aria-hidden="true">&raquo;</span>
                         </a>

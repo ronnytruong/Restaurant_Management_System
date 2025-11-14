@@ -103,6 +103,7 @@
                                 <li><a href="ingredient"><i class="bi bi-basket"></i> Ingredient List</a></li>
                                 <li><a href="recipe"><i class="bi bi-book"></i> Recipe List</a></li>
                                 <li><a href="import"><i class="bi bi-download"></i> Import List</a></li>
+                                <li><a href="inventory-report"><i class="bi bi-clipboard-data"></i> Inventory Report</a></li>
                                 <li><a href="supplier"><i class="bi bi-truck"></i> Supplier List</a></li>
                                 <li><a href="employee"><i class="bi bi-person-badge"></i> Employee List</a></li>
                                 <li><a href="customer"><i class="bi bi-person-badge"></i> Customer List</a></li>
