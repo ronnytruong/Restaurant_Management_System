@@ -154,7 +154,16 @@ body {
 
 
 
-
+.brand-name a {
+   text-decoration: none;
+    color: #1a1a1a;
+ 
+}
+.brand-name a:hover {
+    color: #c92a2a;
+    transition: 1s ease;
+ 
+}
 
 .signup-link {
     text-align: center;
