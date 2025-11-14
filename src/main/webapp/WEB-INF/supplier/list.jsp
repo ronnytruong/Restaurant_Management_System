@@ -92,21 +92,24 @@
                     <a class="page-link" href="<c:url value="/supplier">
                        <c:param name="view" value="list"/>
                         <c:param name="page" value="${param.page - 1}"/>
+                        <c:param name="keyword" value="${requestScope.keyword}"/>
                         </c:url>" aria-label="Previous">
                         <span aria-hidden="true">&laquo;</span>
                     </a>
                 </li>
                 <c:forEach begin="1" end="${requestScope.totalPages}" var="i">
                     <li class="page-item ${((empty param.page && i == 1) || param.page == i)?"active":""}">
-                        <a class="page-link" href="<c:url value="/supplier">
-                           <c:param name="view" value="list"/>
-                            <c:param name="page" value="${i}"/>
-                            </c:url>">${i}</a></li>
+                                <a class="page-link" href="<c:url value="/supplier">
+                                    <c:param name="view" value="list"/>
+                                     <c:param name="page" value="${i}"/>
+                                     <c:param name="keyword" value="${requestScope.keyword}"/>
+                                     </c:url>">${i}</a></li>
                 </c:forEach>
                 <li class="page-item ${(requestScope.totalPages <= param.page || requestScope.totalPages eq 1 )?"disabled":""}">
                     <a class="page-link" href="<c:url value="/supplier">
                        <c:param name="view" value="list"/>
                         <c:param name="page" value="${(empty param.page)?2:param.page + 1}"/>
+                        <c:param name="keyword" value="${requestScope.keyword}"/>
                         </c:url>" aria-label="Next">
                         <span aria-hidden="true">&raquo;</span>
                     </a>

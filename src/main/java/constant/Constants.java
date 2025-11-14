@@ -9,7 +9,7 @@ package constant;
  * @author Dai Minh Nhu - CE190213
  */
 public class Constants {
-    public static final int MAX_ELEMENTS_PER_PAGE = 5;
+    public static final int MAX_ELEMENTS_PER_PAGE = 10;
     
     public static final int INFINITY = Integer.MAX_VALUE;
     

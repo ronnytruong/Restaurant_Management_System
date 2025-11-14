@@ -82,12 +82,15 @@ public class OrderItemServlet extends HttpServlet {
 
         if (view == null || view.isBlank() || view.equalsIgnoreCase("list")) {
             namepage = "list";
-        } else if (view.equalsIgnoreCase("add")) {
-            namepage = "add";
-
-            request.setAttribute("menuItemsList", menuItemDAO.getAll());
-        } else if (view.equalsIgnoreCase("edit")) {
-            namepage = "edit";
+        } 
+//        else if (view.equalsIgnoreCase("add")) {
+//            namepage = "add";
+//
+//            
+//        } 
+        else if (view.equalsIgnoreCase("edit")) {
+//            namepage = "edit";
+            namepage = "list";
 
             int id;
 
@@ -97,7 +100,7 @@ public class OrderItemServlet extends HttpServlet {
                 id = -1;
             }
 
-            request.setAttribute("menuItemsList", menuItemDAO.getAll());
+//            request.setAttribute("menuItemsList", menuItemDAO.getAll());
             request.setAttribute("currentOrderItem", orderItemDAO.getElementByID(id));
         } else if (view.equalsIgnoreCase("delete")) {
             namepage = "delete";
@@ -112,6 +115,7 @@ public class OrderItemServlet extends HttpServlet {
             page = 1;
         }
 
+        request.setAttribute("menuItemsList", menuItemDAO.getAll());
         request.setAttribute("totalPages", totalPages);
         request.setAttribute("currentOrder", orderDAO.getElementByID(orderId));
         request.setAttribute("totalPrice", orderDAO.getTotalPricebyOrderIdFormatVND(orderId));

@@ -17,16 +17,16 @@
         </div>
 
         <div class="container">
-           <%-- IMPORTANT: Added enctype="multipart/form-data" --%>
+
             <form method="post" action="<c:url value="menuitem"/>" enctype="multipart/form-data">
                 <input type="hidden" name="action" value="add"/>
                 <table class="table table align-middle admin-table">
-                    
+
                     <tr>
                         <th><label for="itemName" class="form-label">Item Name</label></th>
                         <td><input type="text" id="itemName" name="itemName" class="form-control" required></td>
                     </tr>
-                    
+
                     <tr>
                         <th><label for="categoryId" class="form-label">Category</label></th>
                         <td>
@@ -53,15 +53,15 @@
                         <th><label for="price" class="form-label">Price(VND)</label></th>
                         <td><input type="number" id="price" name="price" class="form-control" step="1" min="1" required></td>
                     </tr>
-                    
+
                     <tr>
                         <th><label for="imageFile" class="form-label">Image File (Upload)</label></th>
                         <td>
-                            <%-- Changed to type="file" --%>
+
                             <input type="file" id="imageFile" name="imageFile" class="form-control" accept="image/*" required>
                         </td>
                     </tr>
-                    
+
                     <tr>
                         <th><label for="description" class="form-label">Description</label></th>
                         <td><textarea id="description" name="description" class="form-control"></textarea></td>

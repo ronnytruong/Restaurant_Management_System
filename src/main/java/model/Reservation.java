@@ -18,7 +18,6 @@ public class Reservation {
     private Table table;
     private Date reservationDate;
     private Time reservationTime;
-    private int partySize;
     private String Status;
 
     public Reservation(int reservationId, Customer customer, Table table, Date reservationDate, Time reservationTime, int partySize, String Status) {
@@ -27,7 +26,6 @@ public class Reservation {
         this.table = table;
         this.reservationDate = reservationDate;
         this.reservationTime = reservationTime;
-        this.partySize = partySize;
         this.Status = Status;
     }
 
@@ -69,14 +67,6 @@ public class Reservation {
 
     public void setReservationTime(Time reservationTime) {
         this.reservationTime = reservationTime;
-    }
-
-    public int getPartySize() {
-        return partySize;
-    }
-
-    public void setPartySize(int partySize) {
-        this.partySize = partySize;
     }
 
     public String getStatus() {

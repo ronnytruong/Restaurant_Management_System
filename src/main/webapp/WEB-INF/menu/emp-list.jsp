@@ -15,7 +15,7 @@
             </div>
             <div class="actions d-flex flex-column flex-md-row gap-2 align-items-md-center justify-content-md-end">
                 <div class="filters d-flex flex-wrap gap-2 justify-content-end">
-                   
+
                     <form action="<c:url value="menuitem">
                               <c:param name="page" value="1"/>
                           </c:url>" method="get" class="search-box input-group">
@@ -25,7 +25,7 @@
                             <input type="search" name="keyword" class="form-control" placeholder="Search by name">
                         </div>
                     </form>
-                  
+
                     <a class="btn btn-primary add-btn" href="<c:url value="menuitem">
                            <c:param name="view" value="add"/>
                        </c:url>"><i class="bi bi-plus-circle"></i>Add</a>
@@ -45,7 +45,6 @@
                         <th width="15%" scope="col">Recipe</th>
                         <th width="10%" scope="col">Price(VND)</th>
                         <th width="20%" scope="col">Description</th>
-                        <th width="10%" scope="col">Status</th>
                         <th width="20%" scope="col" class="text-end">Actions</th>
                     </tr>
                 </thead>
@@ -61,21 +60,21 @@
                                 <tr>
                                     <td><c:out value="${item.menuItemId}"/></td>
                                     <td><img 
-        src="<c:out value="${pageContext.request.contextPath}/${item.imageUrl}"/>" 
-        alt="${item.itemName}" 
-        style="width: 100px; height: 100px; object-fit: cover; border-radius: 5px;"
-        onerror="this.onerror=null; this.src='${pageContext.request.contextPath}/assets/img/menu/NIA.png';"
-    /></td>
+                                            src="<c:out value="${pageContext.request.contextPath}/${item.imageUrl}"/>" 
+                                            alt="${item.itemName}" 
+                                            style="width: 100px; height: 100px; object-fit: cover; border-radius: 5px;"
+                                            onerror="this.onerror=null; this.src='${pageContext.request.contextPath}/assets/img/menu/NIA.png';"
+                                            /></td>
                                     <td><c:out value="${item.itemName}"/></td>
                                     <td><c:out value="${item.category.categoryName}"/></td>
                                     <td><c:out value="${item.recipe.recipeName}"/></td>
-                                    <td><c:out value="${item.price}"/></td>
+                                    <td><c:out value="${item.priceVND}"/></td>
                                     <td><c:out value="${item.description}"/></td>
-                                    <td><c:out value="${item.status}"/></td>
+
 
                                     <td class="text-end">
                                         <div class="action-button-group d-flex justify-content-end gap-2">
-                                           
+
                                             <a class="btn btn-outline-secondary btn-icon btn-edit"
                                                title="Edit" aria-label="Edit"
                                                href="<c:url value="menuitem">
@@ -84,10 +83,10 @@
                                                </c:url>">
                                                 <i class="bi bi-pencil"></i>
                                             </a>
-                                           
+
                                             <button type="button" class="btn btn-outline-secondary btn-icon btn-delete"
                                                     title="Delete" aria-label="Delete" onclick="showDeletePopup('${item.menuItemId}', '${item.itemName}')">
- <i class="bi bi-x-circle"></i>
+                                                <i class="bi bi-x-circle"></i>
                                             </button>
                                         </div>
                                     </td>
@@ -97,7 +96,7 @@
                     </c:choose>
                 </tbody>
             </table>
-           
+
             <nav aria-label="Page navigation example">
                 <ul class="pagination">
                     <li class="page-item ${((empty param.page) || param.page <= 1)?"disabled":""}">

@@ -29,14 +29,13 @@
             <table class="table align-middle admin-table">
                 <thead>
                     <tr>
-                        <th width="6%">ID</th>
-                        <th width="9%">Customer</th>
-                        <th width="9%">Table</th>
-                        <th width="14%">Date</th>
+                        <th width="8%">ID</th>
+                        <th width="12%">Customer</th>
+                        <th width="10%">Table</th>
+                        <th width="15%">Date</th>
                         <th width="12%">Time</th>
-                        <th width="10%">Party</th>
-                        <th width="12%">Status</th>
-                        <th width="16%">Action</th>
+                        <th width="15%">Status</th>
+                        <th width="18%" class="text-end">Action</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -52,9 +51,8 @@
                                     <td><c:out value="${r.table.number}"/></td>
                                     <td><c:out value="${r.reservationDate}"/></td>
                                     <td><c:out value="${r.reservationTime}"/></td>
-                                    <td><c:out value="${r.partySize}"/></td>
                                     <td>
-                                        <span class="badge 
+                                        <span class="badge
                                               ${r.status == 'Approved' ? 'bg-success' : 
                                                 (r.status == 'Rejected' ? 'bg-danger' : 
                                                 (r.status == 'Cancelled' ? 'bg-secondary' : 'bg-warning text-dark'))}">

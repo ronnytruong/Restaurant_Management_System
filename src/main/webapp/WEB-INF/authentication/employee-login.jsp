@@ -38,7 +38,7 @@
         <div class="container">
             <div class="login-box">
                 <div class="brand-section">
-                    <h1 class="brand-name">Login for Employee</h1>
+                    <h1 class="brand-name"><a href="homepage">Login for Employee.</a></h1>
                     <p class="tagline">Welcome back to workspace.</p>
                 </div>
 

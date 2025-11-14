@@ -33,7 +33,7 @@
         <div class="container">
             <div class="login-box">
                 <div class="brand-section">
-                    <h1 class="brand-name">Yummy.</h1>
+                    <h1 class="brand-name"><a href="homepage">Yummy.</a></h1>
                     <p class="tagline">Join us and discover a world of flavors!</p>
                 </div>
 
@@ -57,7 +57,13 @@
 
                     <div class="form-group">
                         <label for="password">Password (*)</label>
-                        <input type="password" id="password" name="password" placeholder="Enter password" required>
+                        <input
+                              type="password"
+                              id="password"
+                              name="password"
+                              placeholder="Enter password"
+                              required
+                                                      >
                     </div>
 
 
@@ -68,8 +74,9 @@
 
                     <div class="form-group">
                         <label for="name">Full Name (*)</label>
-                        <input type="text" id="name" name="name" 
-                               value="${requestScope.name}" required>
+                        <input type="text" id="name" name="name"
+                               value="${requestScope.name}" required
+                              >
                     </div>
 
 
@@ -82,8 +89,9 @@
 
                     <div class="form-group">
                         <label for="phone">Phone number (*)</label>
-                        <input type="tel" id="phone" name="phone" 
-                               value="${requestScope.phone}" required>
+                        <input type="tel" id="phone" name="phone"
+                               value="${requestScope.phone}" required
+                              >
                     </div>
 
 
