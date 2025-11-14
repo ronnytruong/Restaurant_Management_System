@@ -151,7 +151,7 @@ public class VoucherServlet extends HttpServlet {
                         || !isValidString(name, -1)
                         || !isValidString(discountType, -1)
                         || !isValidString(status, -1)
-                        || !isValidInteger(quantity, false, true, true)
+                        || !isValidInteger(quantity, true, false, true)
                         || startDate == null || endDate == null
                         || startDate.after(endDate)) {
                     popupStatus = false;
@@ -196,10 +196,11 @@ public class VoucherServlet extends HttpServlet {
                         || !isValidString(code, -1)
                         || !isValidString(name, -1)
                         || !isValidString(status, -1)
+                        || !isValidInteger(quantity, true, false, true)
                         || startDate == null || endDate == null
                         || startDate.after(endDate)) {
                     popupStatus = false;
-                    popupMessage = "The edit action is NOT successful. Invalid input or start date after end date.";
+                    popupMessage = "The edit action is NOT successful. Please check your input (invalid or start date after end date).";
                 } else {
                     
                     int result = dao.edit(id, code, name, discountType, discountValue, quantity, startDate, endDate, status);

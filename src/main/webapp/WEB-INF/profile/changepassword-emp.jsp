@@ -1,3 +1,16 @@
+<%-- 
+    Document   : changepassword-emp
+    Created on : Oct 28, 2025, 9:41:39 PM
+    Author     : PHAT
+--%>
+
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+
+<c:set var="title" value="Change Password - Yummy Dashboard"/>
+
+<%@ include file="/WEB-INF/include/headerDashboard.jsp" %>
+
 <section class="col-12 col-lg-9 col-xxl-10" aria-label="Change Password section">
     <div class="content-card shadow-sm p-4 p-md-5 mt-3">
 
@@ -52,3 +65,5 @@
 
     </div>
 </section>
+
+<%@ include file="/WEB-INF/include/footerDashboard.jsp" %>

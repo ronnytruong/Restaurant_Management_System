@@ -194,10 +194,10 @@ SELECT @voucher2 = voucher_id FROM voucher WHERE voucher_code = N'FLAT50';
 ------------------------------------------------------------
 -- 12) reservation
 ------------------------------------------------------------
-INSERT INTO reservation (customer_id, table_id, reservation_date, reservation_time, party_size, status)
+INSERT INTO reservation (customer_id, table_id, reservation_date, reservation_time, status)
 VALUES
-(@cust_1, @table_3, '2025-10-30', '19:00', 5, N'Pending'),
-(@cust_2, @table_2, '2025-10-25', '12:30', 2, N'Confirmed');
+(@cust_1, @table_3, '2025-10-30', '19:00', N'Pending'),
+(@cust_2, @table_2, '2025-10-25', '12:30', N'Confirmed');
 
 SELECT @res1 = reservation_id FROM reservation WHERE customer_id = @cust_1 AND table_id = @table_3;
 SELECT @res2 = reservation_id FROM reservation WHERE customer_id = @cust_2 AND table_id = @table_2;

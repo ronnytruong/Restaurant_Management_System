@@ -5,11 +5,7 @@
 package controller;
 
 
-import static constant.Constants.DUPLICATE_KEY;
-import static constant.Constants.FOREIGN_KEY_VIOLATION;
-import static constant.Constants.MAX_ELEMENTS_PER_PAGE;
-import static constant.Constants.NULL_INSERT_VIOLATION;
-import static constant.Constants.UNIQUE_INDEX;
+import static constant.Constants.*;
 import dao.IngredientDAO;
 import dao.RecipeDAO;
 import java.io.IOException;
@@ -101,25 +97,26 @@ public class RecipeServlet extends HttpServlet {
                 id = -1;
             }
             request.setAttribute("currentRecipe", recipeDAO.getElementByID(id));
-        } else if (view.equalsIgnoreCase("add-item")) {
-            namepage = "add-item";
-            int id;
-            try {
-                id = Integer.parseInt(request.getParameter("id"));
-            } catch (NumberFormatException e) {
-                id = -1;
-            }
-            request.setAttribute("currentRecipe", recipeDAO.getElementByID(id));
-        } else if (view.equalsIgnoreCase("edit-item")) {
-            namepage = "edit-item";
-            int recipeItemId;
-            try {
-                recipeItemId = Integer.parseInt(request.getParameter("recipe_item_id"));
-            } catch (NumberFormatException e) {
-                recipeItemId = -1;
-            }
-            request.setAttribute("currentItem", recipeDAO.getRecipeItemById(recipeItemId));
-        }
+        } 
+//        else if (view.equalsIgnoreCase("add-item")) {
+//            namepage = "add-item";
+//            int id;
+//            try {
+//                id = Integer.parseInt(request.getParameter("id"));
+//            } catch (NumberFormatException e) {
+//                id = -1;
+//            }
+//            request.setAttribute("currentRecipe", recipeDAO.getElementByID(id));
+//        } else if (view.equalsIgnoreCase("edit-item")) {
+//            namepage = "edit-item";
+//            int recipeItemId;
+//            try {
+//                recipeItemId = Integer.parseInt(request.getParameter("recipe_item_id"));
+//            } catch (NumberFormatException e) {
+//                recipeItemId = -1;
+//            }
+//            request.setAttribute("currentItem", recipeDAO.getRecipeItemById(recipeItemId));
+//        }
         int page;
         int totalPages = getTotalPages(recipeDAO.countItem());
         try {
@@ -222,16 +219,10 @@ public class RecipeServlet extends HttpServlet {
                 } catch (NumberFormatException e) {
                     ingredientId = -1;
                 }
-                try {
-                    String q = request.getParameter("quantity");
-                    if (q != null && !q.isEmpty()) {
-                        quantity = Double.parseDouble(q);
-                    }
-                } catch (NumberFormatException e) {
-                    quantity = 0;
-                }
 
-                if (!isValidInteger(recipeId, false, false, true) || !isValidInteger(ingredientId, false, false, true)) {
+                if (!isValidInteger(recipeId, false, false, true) 
+                        || !isValidInteger(ingredientId, false, false, true)
+                        || quantity < 0) {
                     popupStatus = false;
                     popupMessage = "Add item failed. Input invalid.";
                 } else {
@@ -248,7 +239,8 @@ public class RecipeServlet extends HttpServlet {
                 double quantity = 0;
                 String unit = request.getParameter("unit");
                 String note = request.getParameter("note");
-                String status = request.getParameter("status");
+                String status = "Active";
+                
                 try {
                     recipeItemId = Integer.parseInt(request.getParameter("recipe_item_id"));
                 } catch (NumberFormatException e) {
@@ -259,22 +251,16 @@ public class RecipeServlet extends HttpServlet {
                 } catch (NumberFormatException e) {
                     ingredientId = -1;
                 }
-                try {
-                    String q = request.getParameter("quantity");
-                    if (q != null && !q.isEmpty()) {
-                        quantity = Double.parseDouble(q);
-                    }
-                } catch (NumberFormatException e) {
-                    quantity = 0;
-                }
 
-                status = "Active";
+                
                 RecipeItem existing = recipeDAO.getRecipeItemById(recipeItemId);
                 if (existing != null && existing.getStatus() != null) {
                     status = existing.getStatus();
                 }
 
-                if (!isValidInteger(recipeItemId, false, false, true) || !isValidInteger(ingredientId, false, false, true)) {
+                if (!isValidInteger(recipeItemId, false, false, true) 
+                        || !isValidInteger(ingredientId, false, false, true)
+                        || quantity < 0) {
                     popupStatus = false;
                     popupMessage = "Edit item failed. Input invalid.";
                 } else {
@@ -329,6 +315,7 @@ public class RecipeServlet extends HttpServlet {
             
             response.sendRedirect(request.getContextPath() + "/recipe");
         }
+        
     }
 
     private boolean isValidString(String str, int limitLength) {
