@@ -21,7 +21,10 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import java.sql.Date;
 import java.sql.Time;
+import java.time.LocalDate;
+import java.util.List;
 import model.Customer;
+import model.Reservation;
 
 /**
  *
@@ -46,7 +49,7 @@ public class BookTableServlet extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
-        try (PrintWriter out = response.getWriter()) {
+        try ( PrintWriter out = response.getWriter()) {
             /* TODO output your page here. You may use following sample code. */
             out.println("<!DOCTYPE html>");
             out.println("<html>");
@@ -81,33 +84,28 @@ public class BookTableServlet extends HttpServlet {
 
         } else if (view.equalsIgnoreCase("add")) {
             namepage = "add";
+            try {
+                Date date = Date.valueOf(LocalDate.now());
+                int tableId = Integer.parseInt(request.getParameter("tableId"));
+                request.setAttribute("selectedTable", tableDAO.getElementByID(tableId));
+                List<Reservation> list = reservationDAO.getReservationsByTable(tableId);
+                List<Time[]> ranges = reservationDAO.getStartEndTimesByTableAndDate(tableId, date);
+                request.setAttribute("reservedRanges", ranges);
+
+                if (list == null) {
+                    list = java.util.Collections.emptyList();
+                }
+                request.setAttribute("existingReservations", list);
+            } catch (Exception e) {
+                request.setAttribute("selectedTable", null);
+                request.setAttribute("existingReservations", java.util.Collections.emptyList());
+            }
         } else if (view.equalsIgnoreCase("edit")) {
             namepage = "edit";
-
-            int id;
-
-            try {
-                id = Integer.parseInt(request.getParameter("id"));
-            } catch (NumberFormatException e) {
-                id = -1;
-            }
-
-//            request.setAttribute("currentSupplier", supplierDAO.getElementByID(id));
         } else if (view.equalsIgnoreCase("delete")) {
             namepage = "delete";
         }
 
-        int page;
-//        int totalPages = getTotalPages(supplierDAO.countItem());
-
-        try {
-            page = Integer.parseInt(request.getParameter("page"));
-        } catch (NumberFormatException e) {
-            page = 1;
-        }
-
-//        request.setAttribute("totalPages", totalPages);
-//        request.setAttribute("suppliersList", supplierDAO.getAll());
         request.getRequestDispatcher("/WEB-INF/reservation/" + namepage + ".jsp").forward(request, response);
     }
 
@@ -141,25 +139,23 @@ public class BookTableServlet extends HttpServlet {
 
         try {
             int tableId = Integer.parseInt(request.getParameter("tableId"));
-            int partySize = Integer.parseInt(request.getParameter("partySize"));
             Date date = Date.valueOf(request.getParameter("reservationDate"));
             String timeStr = request.getParameter("reservationTime");
 
             Time time;
             if (timeStr != null && timeStr.contains("T")) {
-
                 String[] parts = timeStr.split("T");
                 time = Time.valueOf(parts[1] + ":00");
             } else {
                 time = Time.valueOf(timeStr + ":00");
             }
 
-            int check = reservationDAO.add(customer.getCustomerId(), tableId, date, time, partySize);
+            int check = reservationDAO.add(customer.getCustomerId(), tableId, date, time);
             if (check < 1) {
                 popupStatus = false;
                 popupMessage = "Booking failed. SQL error: " + getSqlErrorCode(check);
             } else {
-                popupMessage = "Reservation created successfully! Status = Pending. Please wait for approval.";
+                popupMessage = "Reservation created successfully! Status = Pending.";
             }
         } catch (Exception e) {
             popupStatus = false;

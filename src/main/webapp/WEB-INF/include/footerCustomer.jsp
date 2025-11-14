@@ -13,8 +13,7 @@
                 <i class="bi bi-geo-alt icon"></i>
                 <div class="address">
                     <h4>Address</h4>
-                    <p>A108 Adam Street</p>
-                    <p>New York, NY 535022</p>
+                    <p>Nguyen Van Truong St., Can Tho City, Vietnam</p>
                     <p></p>
                 </div>
 
@@ -25,8 +24,8 @@
                 <div>
                     <h4>Contact</h4>
                     <p>
-                        <strong>Phone:</strong> <span>+1 5589 55488 55</span><br>
-                        <strong>Email:</strong> <span>info@example.com</span><br>
+                        <strong>Phone:</strong> <span>0925 XXX YYY</span><br>
+                        <strong>Email:</strong> <span>notARealEmail@forSure.com</span><br>
                     </p>
                 </div>
             </div>
@@ -36,8 +35,7 @@
                 <div>
                     <h4>Opening Hours</h4>
                     <p>
-                        <strong>Mon-Sat:</strong> <span>11AM - 23PM</span><br>
-                        <strong>Sunday</strong>: <span>Closed</span>
+                        <strong>Every Day:</strong> 5:00 AM - 12:00 AM
                     </p>
                 </div>
             </div>

@@ -140,7 +140,6 @@ CREATE TABLE reservation (
     table_id INT NOT NULL,
     reservation_date DATE NOT NULL,
     reservation_time TIME NOT NULL,
-    party_size INT NOT NULL,
     status NVARCHAR(20) NOT NULL DEFAULT 'Pending',
     CONSTRAINT PK_reservation PRIMARY KEY (reservation_id),
     CONSTRAINT FK_reservation_customer FOREIGN KEY (customer_id) REFERENCES customer(customer_id),

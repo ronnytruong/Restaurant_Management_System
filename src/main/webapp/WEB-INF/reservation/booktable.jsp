@@ -60,26 +60,23 @@
                 %>
 
                 <div class="col-6 col-md-4 col-lg-3">
-                    <div class="table-card <%= status %> h-100 text-center p-4"
-                         style="<%= clickable ? "cursor:pointer;" : "cursor:not-allowed; opacity:0.6;" %>"
+                    <div class="table-card <%= status%> h-100 text-center p-4"
+                         style="<%= clickable ? "cursor:pointer;" : "cursor:not-allowed; opacity:0.6;"%>"
                          <%= clickable
-                                 ? "data-table-id='" + t.getId()
-                                 + "' data-table-number='" + t.getNumber()
-                                 + "' data-table-capacity='" + t.getCapacity()
-                                 + "' onclick='openBookingModal(this)' data-bs-toggle=\"modal\" data-bs-target=\"#bookingModal\""
+                                 ? "onclick=\"window.location.href='booktable?view=add&tableId=" + t.getId() + "'\""
                                  : ""%>>
-                        <h4>Table <%= t.getNumber() %></h4>
-                        <p class="capacity"><%= t.getCapacity() %> Guests</p>
-                        <span class="status"><%= t.getStatus() %></span>
+                        <h4>Table <%= t.getNumber()%></h4>
+                        <p class="capacity"><%= t.getCapacity()%> Guests</p>
+                        <span class="status"><%= t.getStatus()%></span>
                     </div>
                 </div>
 
                 <%
-                        }
-                    } else {
+                    }
+                } else {
                 %>
                 <p>No tables available.</p>
-                <% } %>
+                <% }%>
 
             </div>
         </div>
@@ -121,55 +118,4 @@
     </div>
 
 </main>
-
-<!-- Script -->
-<script>
-    function openBookingModal(div) {
-        const id = div.dataset.tableId;
-        const number = div.dataset.tableNumber;
-        const capacity = parseInt(div.dataset.tableCapacity || "0", 10);
-
-        document.getElementById('tableId').value = id;
-        document.querySelector('#bookingModal .modal-title').innerText = "Book Table " + number;
-
-        const partyInput = document.getElementById('modalPartySize');
-        partyInput.value = '';
-        partyInput.setAttribute('max', capacity);
-        partyInput.setAttribute('placeholder', 'Max: ' + capacity + ' guests');
-        partyInput.dataset.capacity = capacity;
-
-        const today = new Date().toISOString().split('T')[0];
-        document.getElementById('modalReservationDate').setAttribute('min', today);
-        document.getElementById('modalReservationDate').value = '';
-        document.getElementById('modalReservationTime').value = '';
-
-        const msgBox = document.getElementById('modalMessage');
-        if (msgBox) msgBox.innerText = '';
-    }
-
-    document.addEventListener('DOMContentLoaded', function () {
-        const form = document.querySelector('#bookingModal form');
-        const partyInput = document.getElementById('modalPartySize');
-        const msgBox = document.createElement('div');
-        msgBox.id = 'modalMessage';
-        msgBox.classList.add('text-danger', 'mt-2');
-        partyInput.parentNode.appendChild(msgBox);
-
-        form.addEventListener('submit', function (e) {
-            const entered = parseInt(partyInput.value || "0", 10);
-            const max = parseInt(partyInput.dataset.capacity || "0", 10);
-
-            if (entered > max) {
-                e.preventDefault();
-                msgBox.innerText = `❌ Table only allows up to ${max} guests.`;
-            } else if (entered <= 0) {
-                e.preventDefault();
-                msgBox.innerText = "❌ Please enter a valid number of guests.";
-            } else {
-                msgBox.innerText = '';
-            }
-        });
-    });
-</script>
-
 <%@include file="/WEB-INF/include/footerBookTable.jsp" %>

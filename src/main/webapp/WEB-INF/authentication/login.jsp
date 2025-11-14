@@ -32,13 +32,14 @@
                 border: 1px solid #c3e6cb;
                 background-color: #d4edda;
             }
+           
         </style>
     </head>
     <body>
         <div class="container">
             <div class="login-box">
                 <div class="brand-section">
-                    <h1 class="brand-name">Yummy.</h1>
+                    <h1 class="brand-name"><a href="homepage">Yummy.</a></h1>
                     <p class="tagline">Welcome back to delicious!</p>
                 </div>
 

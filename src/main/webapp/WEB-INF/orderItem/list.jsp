@@ -86,7 +86,6 @@
                 </c:otherwise>
             </c:choose>
 
-            chi cho them edit, xoa khi trang thai khac completed, rejected
             <div class="card-footer actions d-flex flex-column flex-md-row gap-2 align-items-md-center justify-content-md-end">
                 <div class="filters d-flex flex-wrap gap-2 justify-content-end">
                     <c:if test="${not empty currentOrder}">
@@ -101,13 +100,13 @@
                             </button>
                         </form>
                     </c:if>
-                    <c:if test="${currentOrder.status eq 'Pending'}">
+                    <%--<c:if test="${currentOrder.status eq 'Pending'}">
                         <a class="btn btn-primary add-btn" href="<c:url value="orderItem">
                                <c:param name="view" value="add"/>
                                <c:param  name="orderId" value="${param.orderId}"/>
                            </c:url>"><i class="bi bi-plus-circle"></i>Add
                         </a>
-                    </c:if>
+                    </c:if>--%>
                 </div>
             </div>
         </div>
@@ -148,7 +147,7 @@
                                                        <c:param name="view" value="edit"/>
                                                        <c:param name="orderId" value="${param.orderId}"/>
                                                        <c:param name="id" value="${orderItem.orderItemId}"/>
-                                                   </c:url>">
+                                                   </c:url>#editForm">
                                                     <i class="bi bi-pencil"></i>
                                                 </a>
                                                 <button type="button" class="btn btn-outline-secondary btn-icon btn-delete"
@@ -194,6 +193,97 @@
                     </li>
                 </ul>
             </nav>
+        </div>
+
+        <div class="container" id="editForm">
+            <c:if test="${currentOrder.status eq 'Pending'}">
+                <h1 class="mb-1 text-start" style="font-size: 25px; margin-left: 10px">Add Order Item</h1>
+                <form method="post" action="<c:url value="orderItem">
+                          <c:param name="orderId" value="${param.orderId}"/>
+                      </c:url>">
+                    <table class="table table align-middle admin-table">
+                        <tr>
+                            <th width="50%">
+                                <label for="menuItem" class="form-label">Menu Item</label>
+                            </th>
+                            <th>
+                                <label for="quantity" class="form-label">Quantity</label>
+                            </th>
+                            <th>
+
+                            </th>
+                        </tr>
+
+                        <tr>
+                            <td>
+                                <select name="menuItemId" id="menuItem" class="form-select">                                
+                                    <c:forEach var="item" items="${menuItemsList}">
+                                        <option value="${item.menuItemId}" class="form-options">
+                                            <c:out value="${item.itemName}"/>(<c:out value="${item.priceVND}"/>)
+                                        </option>
+                                    </c:forEach>
+                                </select>
+                            </td>
+                            <td>
+                                <input type="number" name="quantity" id="quantity" class="form-control" step="1" min="1" required>
+                            </td>
+                            <td class="text-end">
+                                <button class="btn btn-outline-success" type="submit" name="action" value="add">Add</button>
+                            </td>
+                        </tr>
+                    </table>
+                </form>
+            </c:if>
+        </div>
+
+        <div class="container">
+            <c:if test="${not empty currentOrderItem and currentOrder.status eq 'Pending'}">
+                <%--<c:if test="${currentOrder.status eq 'Pending'}">--%>
+                <h1 class="mb-1 text-start" style="font-size: 25px; margin-left: 10px">Edit Order Item</h1>
+                <form method="post" action="<c:url value="orderItem">
+                          <c:param name="orderId" value="${param.orderId}"/>  
+                          <c:param name="id" value="${currentOrderItem.orderItemId}"/>  
+                      </c:url>">
+                    <table class="table">
+                        <tr>
+                            <th>
+                                <label for="orderId" class="form-label">ID</label>
+                            </th>
+                            <th width="50%">
+                                <label for="menuItem" class="form-label">Menu Item</label>
+                            </th>
+                            <th>
+                                <label for="quantity" class="form-label">Quantity</label>
+                            </th>
+                            <th>
+
+                            </th>
+                        </tr>
+
+                        <tr>
+                            <td>
+                                <label id="orderId" class="form-control"><c:out value="${currentOrderItem.orderItemId}"/></label>
+                            </td>
+                            <td>
+                                <select name="menuItemId" id="menuItem" class="form-select">                                
+                                    <c:forEach var="item" items="${menuItemsList}">
+                                        <option value="${item.menuItemId}" class="form-options" 
+                                                ${currentOrderItem.menuItem.menuItemId eq item.menuItemId ? 'Selected' : '' }>
+                                            <c:out value="${item.itemName}"/>(<c:out value="${item.priceVND}"/>)
+                                        </option>
+                                    </c:forEach>
+                                </select>
+                            </td>
+                            <td>
+                                <input type="number" name="quantity" id="quantity" class="form-control" value="${currentOrderItem.quantity}" step="1" min="1" required>
+                            </td>
+                            <td class="text-end">
+                                <button class="btn btn-outline-success" type="submit" name="action" value="edit">Save</button>
+                            </td>
+                        </tr>
+                    </table>
+                </form>
+            </c:if>
         </div>
     </div>
 </section>
