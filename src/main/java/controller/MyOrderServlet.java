@@ -75,7 +75,7 @@ public class MyOrderServlet extends HttpServlet {
             return;
         }
         // check tam
-
+        
         int page;
         int totalPages = getTotalPages(orderDAO.countItemByCustomer(customer.getCustomerId()));
 
