@@ -156,11 +156,7 @@
 
                     const hour = parseInt(time.split(':')[0]);
                     if (hour < 5 || hour >= 22) {
-<<<<<<< HEAD
                         showMessage('Không thể đặt trong khoảng 22:00 - 05:00.', 'danger');
-=======
-                        showMessage('Cannot book table between 22:00 - 05:00.', 'danger');
->>>>>>> af7c8b96cd10dd752ae76bbff8f0ddaebc76b87e
                         btnSubmit.disabled = true;
                         return;
                     }

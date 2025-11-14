@@ -128,6 +128,7 @@ public class BookTableServlet extends HttpServlet {
             customer = (Customer) session.getAttribute("customerSession");
         }
 
+        // CHƯA LOGIN -> vẫn dùng popup chung + về trang login
         if (customer == null) {
             setPopup(request, false, "Please login to make a reservation.");
             response.sendRedirect(request.getContextPath() + "/login");
@@ -162,8 +163,16 @@ public class BookTableServlet extends HttpServlet {
             popupMessage = "Invalid input. Please check your booking information.";
         }
 
-        setPopup(request, popupStatus, popupMessage);
-        response.sendRedirect(request.getContextPath() + "/booktable");
+        //KHÔNG dùng setPopup nữa, tự set vào session cho trang my-reservation
+        session.setAttribute("popupMessage", popupMessage);
+        session.setAttribute("popupStatus", popupStatus);
+        session.setAttribute("popupPage", "my-reservation");
+
+        //Sau khi đặt bàn xong -> luôn nhảy sang My Reservation
+        response.sendRedirect(
+                request.getContextPath()
+                + "/my-reservation?customerId=" + customer.getCustomerId()
+        );
     }
 
     /**

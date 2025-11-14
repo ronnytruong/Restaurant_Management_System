@@ -50,8 +50,7 @@
                         <li><a href="<c:url value="homepage"/>#gallery">Gallery</a></li>
                         <li><a href="<c:url value="homepage"/>#contact">Contact</a></li>
                         <li>
-                            <a href="<c:url value='/reservation'>
-                                   <c:param name='view' value='mylist'/>
+                            <a href="<c:url value='/my-reservation'>
                                    <c:param name='customerId' value='${sessionScope.customerSession.customerId}'/>
                                </c:url>">
                                 My Reservation
