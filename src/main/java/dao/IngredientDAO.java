@@ -124,7 +124,7 @@ public class IngredientDAO extends DBContext {
     public Ingredient getElementByID(int id) {
 
         try {
-            String query = "SELECT i.ingredient_id, i.ingredient_name, i.unit, i.type_id, t.type_name, i.price, i.status\n"
+            String query = "SELECT i.ingredient_id, i.ingredient_name, i.unit, i.type_id, t.type_name, i.status\n"
                     + "FROM ingredient AS i\n"
                     + "LEFT JOIN type AS t ON i.type_id = t.type_id\n"
                     + "WHERE (i.ingredient_id = ? and LOWER(i.status) != LOWER(N'Deleted'))\n";
