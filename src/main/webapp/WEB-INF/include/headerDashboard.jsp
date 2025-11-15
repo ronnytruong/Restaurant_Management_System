@@ -100,6 +100,7 @@
                                     <li><a href="category"><i class="bi bi-tags"></i> Category List</a></li>
                                     <li><a href="type"><i class="bi bi-diagram-2"></i> Type List</a></li>
                                     <li><a href="voucher"><i class="bi bi-ticket-perforated"></i> Voucher List</a></li>
+                                    <li><a href="inventory-report"><i class="bi bi-clipboard-data"></i> Inventory Report</a></li>
                                     </c:if>
                                     <c:if test="${sessionScope.employeeSession.role.id eq 1
                                                   or sessionScope.employeeSession.role.id eq 2}">

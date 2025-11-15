@@ -325,7 +325,7 @@ public class OrderDAO extends DBContext {
 
             if (order.getVoucher() != null) {
                 if (order.getVoucher().getDiscountType().equalsIgnoreCase("percent")) {
-                    discount = order.getVoucher().getDiscountValue() / 100 * sum;
+                    discount = (int)((float)order.getVoucher().getDiscountValue() / (float)100 * (float)sum);
                 } else {
                     discount = order.getVoucher().getDiscountValue();
                 }

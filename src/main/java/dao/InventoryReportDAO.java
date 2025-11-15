@@ -47,7 +47,6 @@ public class InventoryReportDAO extends DBContext {
                 + "JOIN ingredient AS ing ON ri.ingredient_id = ing.ingredient_id "
                 + "WHERE CAST(o.order_date AS DATE) = ? "
                 + "AND LOWER(o.status) = LOWER(N'Completed') "
-                + "AND (oi.status IS NULL OR LOWER(oi.status) <> LOWER(N'Deleted')) "
                 + "AND (r.status IS NULL OR LOWER(r.status) <> LOWER(N'Deleted')) "
                 + "AND (ri.status IS NULL OR LOWER(ri.status) <> LOWER(N'Deleted')) "
                 + "GROUP BY ri.ingredient_id, ing.ingredient_name, ing.unit "
@@ -84,7 +83,6 @@ public class InventoryReportDAO extends DBContext {
                 + "COALESCE(SUM(CASE WHEN oi.quantity IS NULL THEN 0 ELSE oi.quantity END), 0) AS item_count "
                 + "FROM [order] AS o "
                 + "LEFT JOIN order_item AS oi ON o.order_id = oi.order_id "
-                + "AND (oi.status IS NULL OR LOWER(oi.status) <> LOWER(N'Deleted')) "
                 + "WHERE CAST(o.order_date AS DATE) = ? "
                 + "AND LOWER(o.status) = LOWER(N'Completed')";
 

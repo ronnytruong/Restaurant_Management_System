@@ -5,7 +5,7 @@
 --%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <c:set var="title" value="Dashboard - Yummy"/>
-<c:set var="dashboard_cssjs" value="dashboard"/>
+<c:set var="dashboard_cssjs" value="dashboard"/>    
 
 <%@include file="/WEB-INF/include/headerDashboard.jsp" %>
 
