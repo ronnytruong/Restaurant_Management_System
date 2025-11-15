@@ -16,7 +16,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import model.RecipeItem;
+//import model.RecipeItem;
 
 /**
  *
@@ -220,9 +220,14 @@ public class RecipeServlet extends HttpServlet {
                     ingredientId = -1;
                 }
 
+                try {
+                    quantity = Double.parseDouble(request.getParameter("quantity"));
+                } catch (NumberFormatException e) {
+                    quantity = -1;
+                }
                 if (!isValidInteger(recipeId, false, false, true) 
                         || !isValidInteger(ingredientId, false, false, true)
-                        || quantity < 0) {
+                        || quantity <= 0) {
                     popupStatus = false;
                     popupMessage = "Add item failed. Input invalid.";
                 } else {
@@ -252,15 +257,20 @@ public class RecipeServlet extends HttpServlet {
                     ingredientId = -1;
                 }
 
-                
-                RecipeItem existing = recipeDAO.getRecipeItemById(recipeItemId);
-                if (existing != null && existing.getStatus() != null) {
-                    status = existing.getStatus();
+                try {
+                    quantity = Double.parseDouble(request.getParameter("quantity"));
+                } catch (NumberFormatException e) {
+                    quantity = -1;
                 }
+                
+//                RecipeItem existing = recipeDAO.getRecipeItemById(recipeItemId);
+//                if (existing != null && existing.getStatus() != null) {
+//                    status = existing.getStatus();
+//                }
 
                 if (!isValidInteger(recipeItemId, false, false, true) 
                         || !isValidInteger(ingredientId, false, false, true)
-                        || quantity < 0) {
+                        || quantity <= 0) {
                     popupStatus = false;
                     popupMessage = "Edit item failed. Input invalid.";
                 } else {

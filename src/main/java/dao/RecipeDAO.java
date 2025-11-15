@@ -11,7 +11,6 @@ import java.sql.*;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import model.Ingredient;
 import model.Recipe;
 import model.RecipeItem;
 
@@ -20,7 +19,6 @@ import model.RecipeItem;
  * @author PHAT
  */
 public class RecipeDAO extends DBContext {
-    private IngredientDAO ingredientDAO = new IngredientDAO();
 
     public List<Recipe> getAll() {
         List<Recipe> list = new ArrayList<>();
@@ -67,6 +65,9 @@ public class RecipeDAO extends DBContext {
 
     /**
      * Search by keyword (applies to recipe_id and recipe_name)
+     * @param page
+     * @param keyword
+     * @return 
      */
     public List<Recipe> getAll(int page, String keyword) {
         List<Recipe> list = new ArrayList<>();
