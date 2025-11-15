@@ -17,6 +17,7 @@
         <h3 class="mb-4 text-center">Change Password</h3>
         <p class="text-center text-secondary mb-4">Update your employee account password securely</p>
 
+        <!-- Success Message -->
         <c:if test="${not empty successMessage}">
             <div class="alert alert-success d-flex align-items-center" role="alert">
                 <i class="bi bi-check-circle-fill me-2"></i>
@@ -24,6 +25,7 @@
             </div>
         </c:if>
 
+        <!-- Error Message -->
         <c:if test="${not empty errorMessage}">
             <div class="alert alert-danger d-flex align-items-center" role="alert">
                 <i class="bi bi-exclamation-triangle-fill me-2"></i>
@@ -31,33 +33,36 @@
             </div>
         </c:if>
 
-        <form action="employee-profile" method="post" class="mx-auto" style="max-width: 500px;">
-            <input type="hidden" name="action" value="change-password"/>
+        <div class="card p-4 p-md-5 mt-4">
+            <form action="employee-profile" method="post">
+                <input type="hidden" name="action" value="change-password"/>
 
-            <div class="mb-3">
-                <label class="form-label fw-semibold">Old Password *</label>
-                <input type="password" name="oldPassword" class="form-control" required/>
-            </div>
+                <div class="mb-3">
+                    <label for="oldPassword" class="form-label fw-semibold">Enter Old Password *</label>
+                    <input type="password" id="oldPassword" name="oldPassword" class="form-control" required>
+                </div>
 
-            <div class="mb-3">
-                <label class="form-label fw-semibold">New Password *</label>
-                <input type="password" name="newPassword" class="form-control" required/>
-            </div>
+                <div class="mb-3">
+                    <label for="newPassword" class="form-label fw-semibold">Enter New Password *</label>
+                    <input type="password" id="newPassword" name="newPassword" class="form-control" required>
+                </div>
 
-            <div class="mb-4">
-                <label class="form-label fw-semibold">Confirm Password *</label>
-                <input type="password" name="confirmPassword" class="form-control" required/>
-            </div>
+                <div class="mb-3">
+                    <label for="confirmPassword" class="form-label fw-semibold">Confirm New Password *</label>
+                    <input type="password" id="confirmPassword" name="confirmPassword" class="form-control" required>
+                </div>
 
-            <div class="text-center mt-4 pt-4 border-top">
-                <button type="submit" class="btn btn-danger px-5 py-2 me-3">
-                    <i class="bi bi-key me-1"></i> Update Password
-                </button>
-                <a href="employee-profile?action=view" class="btn btn-outline-danger px-5 py-2">
-                    <i class="bi bi-x-circle me-1"></i> Cancel
-                </a>
-            </div>
-        </form>
+                <div class="text-center mt-4 pt-4 border-top">
+                    <button type="submit" class="btn btn-danger px-5 py-2 me-3">
+                        <i class="bi bi-key me-1"></i> Update Password
+                    </button>
+                    <a href="employee-profile?action=view" class="btn btn-outline-danger px-5 py-2">
+                        <i class="bi bi-x-circle me-1"></i> Cancel
+                    </a>
+                </div>
+            </form>
+        </div>
+
     </div>
 </section>
 

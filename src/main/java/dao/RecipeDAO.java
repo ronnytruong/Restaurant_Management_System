@@ -211,10 +211,7 @@ public class RecipeDAO extends DBContext {
     
     public int addItem(int recipeId, int ingredientId, double quantity, String unit, String note) {
         try {
-            Ingredient ing = ingredientDAO.getElementByID(ingredientId);
-            if (ing == null) {
-                return -2; 
-            }
+//            
             String query = "INSERT INTO recipe_item (recipe_id, ingredient_id, quantity, unit, note, status) VALUES (?, ?, ?, ?, ?, ?)";
             return this.executeQuery(query, new Object[]{recipeId, ingredientId, quantity, unit, note, "Active"});
         } catch (SQLException ex) {
@@ -230,10 +227,7 @@ public class RecipeDAO extends DBContext {
     
     public int editItem(int recipeItemId, int ingredientId, double quantity, String unit, String note, String status) {
         try {
-            Ingredient ing = ingredientDAO.getElementByID(ingredientId);
-            if (ing == null) {
-                return -2;
-            }
+            
             String query = "UPDATE recipe_item SET ingredient_id = ?, quantity = ?, unit = ?, note = ?, status = ? WHERE recipe_item_id = ?";
             return this.executeQuery(query, new Object[]{ingredientId, quantity, unit, note, status, recipeItemId});
         } catch (SQLException ex) {

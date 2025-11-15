@@ -121,35 +121,51 @@ public class IngredientDAO extends DBContext {
         return list;
     }
 
-    public Ingredient getElementByID(int id) {
+  // In IngredientDAO.java, replace the entire getElementByID method with this:
 
-        try {
-            String query = "SELECT i.ingredient_id, i.ingredient_name, i.unit, i.type_id, t.type_name, i.status\n"
-                    + "FROM ingredient AS i\n"
-                    + "LEFT JOIN type AS t ON i.type_id = t.type_id\n"
-                    + "WHERE (i.ingredient_id = ? and LOWER(i.status) != LOWER(N'Deleted'))\n";
+public Ingredient getElementByID(int id) {
 
-            ResultSet rs = this.executeSelectionQuery(query, new Object[]{id});
+    try {
+        // SQL query selects the required columns in a specific order:
+        // 1: ingredient_id, 2: ingredient_name, 3: unit, 4: type_id, 5: type_name, 6: status
+        String query = "SELECT i.ingredient_id, i.ingredient_name, i.unit, i.type_id, t.type_name, i.status\n"
+                + "FROM ingredient AS i\n"
+                + "LEFT JOIN type AS t ON i.type_id = t.type_id\n"
+                + "WHERE (i.ingredient_id = ?) AND (LOWER(i.status) <> LOWER('Deleted'))\n"; // Added explicit AND
 
-            while (rs.next()) {
+        ResultSet rs = this.executeSelectionQuery(query, new Object[]{id});
 
-                Ingredient ing = new Ingredient(
-                        rs.getInt("ingredient_id"),
-                        rs.getString("ingredient_name"),
-                        rs.getString("unit"),
-                        rs.getInt("type_id"),
-                        rs.getString("type_name"),
-                        rs.getString("status")
-                );
+        if (rs.next()) { // Use if(rs.next()) for single row retrieval
 
-                return ing;
-            }
-        } catch (SQLException ex) {
-            Logger.getLogger(IngredientDAO.class.getName()).log(Level.SEVERE, null, ex);
+            int ingredientId = rs.getInt(1); // ingredient_id
+            String ingredientName = rs.getString(2); // ingredient_name
+            String unit = rs.getString(3); // unit
+            int typeId = rs.getInt(4); // type_id
+            String typeName = rs.getString(5); // type_name
+            String status = rs.getString(6); // status
+
+            // Constructor matches: (int id, String name, String unit, int typeId, String typeName, String status)
+            Ingredient ing = new Ingredient(
+                    ingredientId,
+                    ingredientName,
+                    unit,
+                    typeId,
+                    typeName,
+                    status
+            );
+
+            return ing;
+
         }
 
-        return null;
+    } catch (SQLException ex) {
+        // Log the error for debugging purposes
+        Logger.getLogger(IngredientDAO.class.getName()).log(Level.SEVERE, "Can't load Ingredient object by ID", ex);
+        // You can use System.out.println("Can't not load object"); if you prefer the template's output
     }
+
+    return null; // Returns null if ID is not found or an error occurred
+}
 
     public int getLastId() {
 

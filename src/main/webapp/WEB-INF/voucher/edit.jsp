@@ -6,6 +6,8 @@
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<c:set var="title" value="Edit Voucher - Yummy"/>
 <%@include file="/WEB-INF/include/headerDashboard.jsp" %>
 
 <section class="col-12 col-lg-9 col-xxl-10 table-section" aria-label="Form section">
@@ -82,7 +84,7 @@
                                 <td><input type="date" name="end_date" id="endDate" value="${currentVoucher.endDate}" class="form-control" required></td>
                             </tr>
 
-                            <tr>
+<!--                            <tr>
                                 <th><label for="status">Status</label></th>
                                 <td>
                                     <select name="status" id="status" class="form-control" required>
@@ -90,7 +92,7 @@
                                         <option value="Inactive" <c:if test="${currentVoucher.status eq 'Inactive'}">selected</c:if>>Inactive</option>
                                         </select>
                                     </td>
-                                </tr>
+                                </tr>-->
 
                                 <tr>
                                     <td></td>

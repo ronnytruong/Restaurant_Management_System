@@ -1,8 +1,7 @@
 <%-- /WEB-INF/ingredient/list.jsp --%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@page import="constant.CommonFunction"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
-
+<title>My Profile - Yummy</title>
 <%@include file="/WEB-INF/include/headerDashboard.jsp" %>
 
 <section class="col-12 col-lg-9 col-xxl-10 table-section" aria-label="Listing table">
@@ -32,13 +31,12 @@
             <table class="table align-middle admin-table">
                 <thead>
                     <tr>
-                        <th scope="col">No.</th>
-                        <th scope="col">Name</th>
-                        <th scope="col">Type</th>
-                        <th scope="col">Unit</th>
-                        <th scope="col">Quantity</th>
-                        <th scope="col" class="text-end">Actions</th>
-                    </tr>
+                        <th scope="col" width="20%" >No.</th>
+                        <th scope="col" width="20%" >Name</th>
+                        <th scope="col" width="20%" >Type</th>
+                        <th scope="col" width="20%" >Unit</th>
+                   <th scope="col" width="20%">Total Quantity</th>
+                        <th scope="col" width="20%" class="text-end">Actions</th>                    </tr>
                 </thead>
                 <tbody>
                     <c:choose>

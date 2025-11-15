@@ -15,6 +15,10 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import java.sql.Date;
+import java.time.LocalDate;
+import java.time.Period;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import model.Employee;
 
 /**
@@ -25,6 +29,62 @@ import model.Employee;
 public class MyEmployeeProfileServlet extends HttpServlet {
 
     private EmployeeDAO employeeDAO = new EmployeeDAO();
+    
+    
+    private boolean isNullOrEmpty(String str) {
+        return str == null || str.trim().isEmpty();
+    }
+
+    private boolean isValidEmail(String email) {
+        String emailRegex = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,6}$";
+        return email != null && email.matches(emailRegex);
+    }
+
+    private boolean isValidPhone(String phone) {
+        String phoneRegex = "^[0-9]{10}$";
+        return phone != null && phone.matches(phoneRegex);
+    }
+
+    private boolean isValidAgeRange(Date dob, int minAge, int maxAge) {
+        if (dob == null) {
+            return true;
+        }
+        try {
+            LocalDate birthDate = dob.toLocalDate();
+            LocalDate today = LocalDate.now();
+
+            Period age = Period.between(birthDate, today);
+            int years = age.getYears();
+
+            return years >= minAge && years <= maxAge;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    private void setSuccessPopup(HttpServletRequest request, String message) {
+        HttpSession session = request.getSession(false);
+        if (session != null) {
+            session.setAttribute("popupStatus", true);
+            session.setAttribute("popupMessage", message);
+        }
+    }
+
+    private void setErrorPopup(HttpServletRequest request, String message) {
+        request.setAttribute("popupStatus", false);
+        request.setAttribute("popupMessage", message);
+    }
+
+    private void removePopup(HttpServletRequest request) {
+        HttpSession session = request.getSession(false);
+        if (session != null) {
+            session.removeAttribute("popupStatus");
+            session.removeAttribute("popupMessage");
+        }
+        request.removeAttribute("popupStatus");
+        request.removeAttribute("popupMessage");
+    }
+
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -76,10 +136,13 @@ public class MyEmployeeProfileServlet extends HttpServlet {
         if (action == null || action.equalsIgnoreCase("view")) {
             request.setAttribute("employee", employee);
             request.getRequestDispatcher("/WEB-INF/profile/view-emp.jsp").forward(request, response);
+            removePopup(request);
         } else if (action.equalsIgnoreCase("edit")) {
             request.setAttribute("employee", employee);
+            removePopup(request);
             request.getRequestDispatcher("/WEB-INF/profile/edit-emp.jsp").forward(request, response);
         } else if (action.equalsIgnoreCase("change-password")) {
+            removePopup(request);
             request.getRequestDispatcher("/WEB-INF/profile/changepassword-emp.jsp").forward(request, response);
         }
     }
@@ -123,8 +186,66 @@ public class MyEmployeeProfileServlet extends HttpServlet {
         String dobStr = request.getParameter("dob");
 
         Date dob = null;
-        if (dobStr != null && !dobStr.isEmpty()) {
-            dob = Date.valueOf(dobStr);
+        String errorMessage = null;
+
+        if (!isNullOrEmpty(dobStr)) {
+            try {
+                dob = Date.valueOf(dobStr);
+            } catch (Exception e) {
+                errorMessage = "Invalid date format for Date of Birth.";
+            }
+        }
+        
+        if (isNullOrEmpty(name)) {
+            errorMessage = "Full Name is required.";
+
+        } else if (errorMessage == null && !isValidEmail(email)) {
+            errorMessage = "Invalid email format.";
+
+        } else if (errorMessage == null && !isValidPhone(phone)) {
+            errorMessage = "Invalid phone number format. Must be 10 digits.";
+
+        } else if (errorMessage == null && dob != null && !isValidAgeRange(dob, 18, 70)) {
+            errorMessage = "Age must be between 18 and 70 years old.";
+        }
+        
+        if (errorMessage == null && !email.equalsIgnoreCase(employee.getEmail())) {
+            try {
+                if (employeeDAO.checkEmailExist(email)) {
+                    errorMessage = "This email is already in use.";
+                }
+            } catch (Exception e) {
+                Logger.getLogger(MyEmployeeProfileServlet.class.getName())
+                        .log(Level.SEVERE, "Email check failed", e);
+                errorMessage = "Error checking email.";
+            }
+        }
+        
+        if (errorMessage == null && !phone.equals(employee.getPhoneNumber())) {
+            try {
+                if (employeeDAO.checkPhoneExist(phone)) {
+                    errorMessage = "This phone number is already registered.";
+                }
+            } catch (Exception e) {
+                Logger.getLogger(MyEmployeeProfileServlet.class.getName())
+                        .log(Level.SEVERE, "Phone check failed", e);
+                errorMessage = "Error checking phone number.";
+            }
+        }
+        
+        if (errorMessage != null) {
+            setErrorPopup(request, errorMessage);
+
+            Employee temp = new Employee(
+                    employee.getEmpId(),
+                    employee.getEmpAccount(),
+                    employee.getPassword(),
+                    name, gender, dob, phone, email, address
+            );
+
+            request.setAttribute("employee", temp);
+            request.getRequestDispatcher("/WEB-INF/profile/edit-emp.jsp").forward(request, response);
+            return;
         }
 
         int result = employeeDAO.edit(
@@ -139,74 +260,63 @@ public class MyEmployeeProfileServlet extends HttpServlet {
         );
 
         if (result > 0) {
-            // Lấy dữ liệu mới từ DB
             Employee updated = employeeDAO.getElementByID(employee.getEmpId());
-
-            // Cập nhật lại session
             session.setAttribute("employeeSession", updated);
 
-            // Thông báo thành công (lưu tạm trong session)
-            session.setAttribute("successMessage", "Profile updated successfully.");
-
-            // Redirect về trang view
+            setSuccessPopup(request, "Profile updated successfully.");
             response.sendRedirect(request.getContextPath() + "/employee-profile?action=view");
-            return;
+
         } else {
-            // Nếu lỗi thì giữ nguyên form edit và hiển thị lỗi
-            request.setAttribute("errorMessage", "Failed to update profile.");
+            setErrorPopup(request, "Failed to update profile. Database error.");
             request.setAttribute("employee", employee);
-            request.getRequestDispatcher("/WEB-INF/employee/profile/edit.jsp").forward(request, response);
+            request.getRequestDispatcher("/WEB-INF/profile/edit-emp.jsp").forward(request, response);
         }
     }
 
     private void changePassword(HttpServletRequest request, HttpServletResponse response,
             HttpSession session, Employee employee)
             throws ServletException, IOException {
-
-        String oldPassword = request.getParameter("oldPassword");
-        String newPassword = request.getParameter("newPassword");
-        String confirmPassword = request.getParameter("confirmPassword");
+        String oldPass = request.getParameter("oldPassword");
+        String newPass = request.getParameter("newPassword");
+        String confirm = request.getParameter("confirmPassword");
 
         String errorMessage = null;
 
-        // --- Validation Checks ---
-        if (oldPassword == null || newPassword == null || confirmPassword == null
-                || oldPassword.isEmpty() || newPassword.isEmpty() || confirmPassword.isEmpty()) {
+        if (isNullOrEmpty(oldPass) || isNullOrEmpty(newPass) || isNullOrEmpty(confirm)) {
             errorMessage = "Please fill all fields.";
         }
 
         if (errorMessage == null) {
-            String hashedOld = HashUtil.toMD5(oldPassword);
+            String hashedOld = HashUtil.toMD5(oldPass);
             if (!hashedOld.equals(employee.getPassword())) {
                 errorMessage = "Old password is incorrect.";
             }
         }
 
-        if (errorMessage == null) {
-            if (!newPassword.equals(confirmPassword)) {
-                errorMessage = "New password and confirmation do not match.";
-            }
+        if (errorMessage == null && !newPass.equals(confirm)) {
+            errorMessage = "New password and confirmation do not match.";
         }
 
-        // --- Execution or Final Forward ---
-        if (errorMessage == null) {
-            // SUCCESS PATH: No errors found, perform the update.
-            String hashedNew = HashUtil.toMD5(newPassword);
-            int result = employeeDAO.edit(employee.getEmpId(), hashedNew);
-
-            if (result > 0) {
-                employee.setPassword(hashedNew);
-                session.setAttribute("employeeSession", employee);
-
-                response.sendRedirect(request.getContextPath() + "/employee-profile");
-                return;
-            } else {
-                errorMessage = "Failed to change password. Database error.";
-            }
+        if (errorMessage != null) {
+            setErrorPopup(request, errorMessage);
+            request.getRequestDispatcher("/WEB-INF/profile/changepassword-emp.jsp").forward(request, response);
+            return;
         }
 
-        request.setAttribute("errorMessage", errorMessage);
-        request.getRequestDispatcher("/WEB-INF/employee/profile/changepassword.jsp").forward(request, response);
+        String hashedNew = HashUtil.toMD5(newPass);
+        int result = employeeDAO.edit(employee.getEmpId(), hashedNew);
+
+        if (result > 0) {
+            employee.setPassword(hashedNew);
+            session.setAttribute("employeeSession", employee);
+
+            setSuccessPopup(request, "Password changed successfully.");
+            response.sendRedirect(request.getContextPath() + "/employee-profile?action=view");
+
+        } else {
+            setErrorPopup(request, "Failed to change password. Database error.");
+            request.getRequestDispatcher("/WEB-INF/profile/changepassword-emp.jsp").forward(request, response);
+        }
     }
 
     /**

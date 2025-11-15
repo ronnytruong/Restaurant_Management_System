@@ -5,7 +5,7 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title></title>
+        <title>Register - Yummy</title>
 
         <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/uistyle.css">
 
@@ -33,7 +33,7 @@
         <div class="container">
             <div class="login-box">
                 <div class="brand-section">
-                    <h1 class="brand-name"><a href="homepage">Yummy.</a></h1>
+                    <h1 class="brand-name">Yummy.</h1>
                     <p class="tagline">Join us and discover a world of flavors!</p>
                 </div>
 

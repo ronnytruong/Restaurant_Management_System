@@ -6,6 +6,8 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<c:set var="title" value="Table List - Yummy"/>
 <%@include file="/WEB-INF/include/headerDashboard.jsp" %>
 
 <section class="col-12 col-lg-9 col-xxl-10 table-section" aria-label="Listing table">
@@ -73,7 +75,7 @@
                                     </td>
                                     <td class="text-end">
                                         <div class="d-flex justify-content-end gap-2 align-items-center">
-                                            <a class="btn btn-outline-secondary" title="Edit"
+                                            <a class="btn btn-outline-secondary btn-icon btn-edit" title="Edit"
                                                href="<c:url value='table'>
                                                    <c:param name='view' value='edit'/>
                                                    <c:param name='id' value='${table.id}'/>
@@ -82,14 +84,15 @@
                                                 <i class="bi bi-pencil"></i>
                                             </a>
 
-                                            <button type="button" class="btn btn-outline-danger" title="Delete" onclick="showDeletePopup(${table.id})">
+                                            <button type="button" class="btn btn-outline-secondary btn-icon btn-delete" title="Delete" onclick="showDeletePopup(${table.id})">
                                                 <i class="bi bi-x-circle"></i>
                                             </button>
 
                                             <!-- Change status dropdown -->
                                             <div class="btn-group">
-                                                <button type="button" class="btn btn-outline-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-                                                    Change status
+                                                <button type="button" class="btn btn-outline-primary btn-icon dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                                                    <i class="bi bi-three-dots"></i>
+                                                    
                                                 </button>
                                                 <ul class="dropdown-menu dropdown-menu-end">
                                                     <!-- For each possible status, show form to set it. The current status can still be shown but disabled -->

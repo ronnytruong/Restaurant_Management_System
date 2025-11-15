@@ -7,6 +7,8 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<c:set var="title" value="Voucher List - Yummy"/>
 <%@include file="/WEB-INF/include/headerDashboard.jsp" %>
 
 <section class="col-12 col-lg-9 col-xxl-10 table-section" aria-label="Listing table">
@@ -40,7 +42,7 @@
                             <th>Quantity</th>
                             <th>Start Date</th>
                             <th>End Date</th>
-                            <th>Status</th>
+                            
                             <th class="text-end">Action</th>
                         </tr>
                     </thead>
@@ -72,10 +74,10 @@
                                     <td><c:out value="${voucher.quantity}"/></td>
                                     <td><c:out value="${voucher.startDate}"/></td>
                                     <td><c:out value="${voucher.endDate}"/></td>
-                                    <td><c:out value="${voucher.status}"/></td>
+                                    
                                     <td class="text-end">
-                                        <div class="d-flex justify-content-end gap-2">
-                                            <a class="btn btn-outline-secondary" title="Edit"
+                                        <div class="action-button-group d-flex justify-content-end gap-2">
+                                            <a class="btn btn-outline-secondary btn-icon btn-edit" title="Edit"
                                                href="<c:url value='voucher'>
                                                    <c:param name='view' value='edit'/>
                                                    <c:param name='id' value='${voucher.voucherId}'/>
@@ -86,7 +88,7 @@
                                                 <i class="bi bi-pencil"></i>
                                             </a>
 
-                                            <button type="button" class="btn btn-outline-danger" title="Delete" onclick="showDeletePopup(${voucher.voucherId})">
+                                            <button type="button" class="btn btn-outline-secondary btn-icon btn-delete" title="Delete" onclick="showDeletePopup(${voucher.voucherId})">
                                                 <i class="bi bi-x-circle"></i>
                                             </button>
                                         </div>

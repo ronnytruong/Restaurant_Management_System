@@ -37,6 +37,21 @@ public class Employee {
         this.role = role;
         this.status = status;
     }
+    
+
+    public Employee(int empId, String empAccount, String password, String empName, String gender, Date dob, String phoneNumber, String email, String address) {
+        this.empId = empId;
+        this.empAccount = empAccount;
+        this.password = password;
+        this.empName = empName;
+        this.gender = gender;
+        this.dob = dob;
+        this.phoneNumber = phoneNumber;
+        this.email = email;
+        this.address = address;
+    }
+    
+    
 
     public int getEmpId() {
         return empId;

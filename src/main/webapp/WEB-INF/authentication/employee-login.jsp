@@ -11,7 +11,7 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title></title>
+        <title>Login - Yummy</title>
         <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/uistyle.css">
 
         <style>
@@ -38,7 +38,7 @@
         <div class="container">
             <div class="login-box">
                 <div class="brand-section">
-                    <h1 class="brand-name"><a href="homepage">Login for Employee.</a></h1>
+                    <h1 class="brand-name">Login for Employee.</h1>
                     <p class="tagline">Welcome back to workspace.</p>
                 </div>
 
