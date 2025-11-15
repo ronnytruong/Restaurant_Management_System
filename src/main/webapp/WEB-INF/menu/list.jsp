@@ -1,3 +1,4 @@
+ <title>My Profile - Yummy</title>
 <%@include file="/WEB-INF/include/headerCustomer.jsp" %>
 
 <main class="main">

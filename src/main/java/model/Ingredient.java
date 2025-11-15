@@ -14,7 +14,6 @@ public class Ingredient {
     private int typeId;
     private String typeName;
     private String unit;
-    private double price;
     private double totalQuantity;
     private String status;
 
@@ -85,14 +84,6 @@ public class Ingredient {
 
     public void setTypeName(String typeName) {
         this.typeName = typeName;
-    }
-
-    public double getPrice() {
-        return price;
-    }
-
-    public void setPrice(double price) {
-        this.price = price;
     }
 
     public String getStatus() {

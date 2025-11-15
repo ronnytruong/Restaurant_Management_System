@@ -3,11 +3,8 @@
  */
 package controller;
 
-import static constant.CommonFunction.addEDtoEverything;
-import static constant.CommonFunction.getTotalPages;
-import static constant.CommonFunction.validateInteger;
-import static constant.CommonFunction.validateString;
-import constant.Constants;
+
+
 import dao.ImportDAO;
 import dao.IngredientDAO;
 import dao.TypeDAO;
@@ -28,9 +25,42 @@ import model.Ingredient;
 @WebServlet(name = "IngredientServlet", urlPatterns = {"/ingredient"})
 public class IngredientServlet extends HttpServlet {
 
+    private static final int MAX_ELEMENTS_PER_PAGE = 10;
+    private static final int DUPLICATE_KEY = 2627;
+    private static final int FOREIGN_KEY_VIOLATION = 547;
+    private static final int NULL_INSERT_VIOLATION = 515;
+    
     IngredientDAO ingredientDAO = new IngredientDAO();
     TypeDAO typeDAO = new TypeDAO();
     ImportDAO importDAO = new ImportDAO();
+public boolean validateString(String str, int limitLength) {
+        
+        if (limitLength < 0) limitLength = Integer.MAX_VALUE;
+        
+        return !(str == null || str.isEmpty()) && str.length() <= limitLength;
+    }
+public boolean validateInteger(int num, boolean allowNegative, boolean allowZero, boolean allowPositive) {
+        if (!allowNegative && num < 0) {
+            return false;
+        }
+        if (!allowZero && num == 0) {
+            return false;
+        }
+        if (!allowPositive && num > 0) {
+            return false;
+        }
+
+        return true;
+    }
+public int getTotalPages(int countItems) {
+     
+        return (int) Math.ceil((double) countItems / MAX_ELEMENTS_PER_PAGE);
+    }
+public String addEDtoEverything(String str) {
+        if (str == null || str.isEmpty()) return "";
+        String temp = str.substring(str.length() - 1);
+        return str + (temp.equalsIgnoreCase("t") || temp.equalsIgnoreCase("d") ? "ed" : "d");
+    }
 
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -187,11 +217,11 @@ public class IngredientServlet extends HttpServlet {
                     if (checkError >= 1) {
 
                     } else {
-                        if (checkError - Constants.DUPLICATE_KEY == 0) {
+                        if (checkError - DUPLICATE_KEY == 0) {
                             System.err.println("DUPLICATE_KEY");
-                        } else if (checkError - Constants.FOREIGN_KEY_VIOLATION == 0) {
+                        } else if (checkError - FOREIGN_KEY_VIOLATION == 0) {
                             System.err.println("FOREIGN_KEY_VIOLATION");
-                        } else if (checkError - Constants.NULL_INSERT_VIOLATION == 0) {
+                        } else if (checkError - NULL_INSERT_VIOLATION == 0) {
                             System.err.println("NULL_INSERT_VIOLATION");
                         }
 
@@ -220,11 +250,11 @@ public class IngredientServlet extends HttpServlet {
                     if (checkError >= 1) {
 
                     } else {
-                        if (checkError - Constants.DUPLICATE_KEY == 0) {
+                        if (checkError - DUPLICATE_KEY == 0) {
                             System.err.println("DUPLICATE_KEY");
-                        } else if (checkError - Constants.FOREIGN_KEY_VIOLATION == 0) {
+                        } else if (checkError - FOREIGN_KEY_VIOLATION == 0) {
                             System.err.println("FOREIGN_KEY_VIOLATION");
-                        } else if (checkError - Constants.NULL_INSERT_VIOLATION == 0) {
+                        } else if (checkError - NULL_INSERT_VIOLATION == 0) {
                             System.err.println("NULL_INSERT_VIOLATION");
                         }
 

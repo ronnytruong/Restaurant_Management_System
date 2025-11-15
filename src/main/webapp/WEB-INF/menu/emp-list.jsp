@@ -3,7 +3,7 @@
     Created on : 2 Nov 2025, 9:05:59 AM
     Author     : Dai Minh Nhu - CE190213
 --%>
-
+<title>My Profile - Yummy</title>
 <%@include file="/WEB-INF/include/headerDashboard.jsp" %>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
@@ -20,10 +20,8 @@
                               <c:param name="page" value="1"/>
                           </c:url>" method="get" class="search-box input-group">
                         <input type="hidden" name="view" value="list"/>
-                        <div class="search-box input-group">
-                            <span class="input-group-text"><i class="bi bi-search"></i></span>
-                            <input type="search" name="keyword" class="form-control" placeholder="Search by name">
-                        </div>
+                          <span class="input-group-text"><i class="bi bi-search"></i></span>
+                        <input type="search" name="keyword" class="form-control" placeholder="Search by name" value="${param.keyword}">
                     </form>
 
                     <a class="btn btn-primary add-btn" href="<c:url value="menuitem">

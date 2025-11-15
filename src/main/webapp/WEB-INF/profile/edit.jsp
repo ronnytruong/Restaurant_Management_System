@@ -1,6 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-
+ <title>My Profile - Yummy</title>
 <c:set var="title" value="Edit Profile - Yummy Restaurant"/>
 <%@include file="/WEB-INF/include/headerCustomer.jsp" %>
 

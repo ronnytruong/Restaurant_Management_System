@@ -9,6 +9,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
+import java.util.List;
 
 /**
  *
@@ -22,13 +23,14 @@ import jakarta.servlet.http.*;
 )
 public class MenuItemServlet extends HttpServlet {
 
-    private final int MAX_ELEMENTS_PER_PAGE = 5;
+    private final int MAX_ELEMENTS_PER_PAGE = 10;
     private final MenuItemDAO menuItemDAO = new MenuItemDAO();
     private final CategoryDAO categoryDAO = new CategoryDAO();
     private final RecipeDAO recipeDAO = new RecipeDAO();
 
-    private static final String UPLOAD_DIRECTORY = "assets" + File.separator + "img" + File.separator + "menu";
-
+//use absolute path
+private static final String EXTERNAL_UPLOAD_DIR_PATH = "D:\\[AAA]source code[AAA]\\Restaurant_Management_System\\upload_files\\menu";
+private static final String UPLOAD_URL_PREFIX = "images/menu/";
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -38,7 +40,7 @@ public class MenuItemServlet extends HttpServlet {
 
         if (view == null || view.isBlank() || view.equalsIgnoreCase("list")) {
             namepage = "emp-list";
-        } else if (view.equalsIgnoreCase("add")) {
+                } else if (view.equalsIgnoreCase("add")) {
             namepage = "add";
             loadFormData(request);
         } else if (view.equalsIgnoreCase("edit")) {
@@ -60,11 +62,25 @@ public class MenuItemServlet extends HttpServlet {
         } catch (NumberFormatException e) {
             page = 1;
         }
+//search
+   String keyword = request.getParameter("keyword");
+   int totalItems;
+    List<MenuItem> menuItemsList;
+    
+      if (keyword != null && !keyword.trim().isEmpty()) {
+              menuItemsList = menuItemDAO.searchAll(keyword, page, MAX_ELEMENTS_PER_PAGE);
+        totalItems = menuItemDAO.countItem(keyword);
+        request.setAttribute("keyword", keyword); 
+    } else {
+               menuItemsList = menuItemDAO.getAll(page, MAX_ELEMENTS_PER_PAGE);
+        totalItems = menuItemDAO.countItem();
+    }
 
-        int totalPages = getTotalPages(menuItemDAO.countItem());
-        request.setAttribute("menuItemsList", menuItemDAO.getAll(page, MAX_ELEMENTS_PER_PAGE));
-        request.setAttribute("totalPages", totalPages);
-        request.setAttribute("currentPage", page);
+    int totalPages = getTotalPages(totalItems);
+    
+    request.setAttribute("menuItemsList", menuItemsList);
+    request.setAttribute("totalPages", totalPages);
+    request.setAttribute("currentPage", page);
 
         request.getRequestDispatcher("/WEB-INF/menu/" + namepage + ".jsp").forward(request, response);
         removePopup(request);
@@ -121,7 +137,7 @@ public class MenuItemServlet extends HttpServlet {
                         popupStatus = false;
                         popupMessage = "Price must be between 5.000 and 5.000.000 VND.";
                     } else {
-
+String uploadPath = EXTERNAL_UPLOAD_DIR_PATH;
                         String newImageUrl = existingImageUrl;
                         Part filePart = request.getPart("imageFile");
                         String fileName = (filePart != null && filePart.getSubmittedFileName() != null)
@@ -129,16 +145,19 @@ public class MenuItemServlet extends HttpServlet {
                                 : "";
 
                         if (!fileName.isEmpty()) {
-                            String appPath = request.getServletContext().getRealPath("");
-                            String uploadPath = appPath + File.separator + UPLOAD_DIRECTORY;
-                            File uploadDir = new File(uploadPath);
+                        
+                            File uploadDir = new File(EXTERNAL_UPLOAD_DIR_PATH);
                             if (!uploadDir.exists()) {
                                 uploadDir.mkdirs();
                             }
 
-                            String uniqueFileName = System.currentTimeMillis() + "_" + fileName;
-                            filePart.write(uploadPath + File.separator + uniqueFileName);
-                            newImageUrl = UPLOAD_DIRECTORY.replace(File.separator, "/") + "/" + uniqueFileName;
+                         String uniqueFileName = System.currentTimeMillis() + "_" + fileName;
+
+  filePart.write(uploadPath + File.separator + uniqueFileName);
+    
+
+    // to serve files from EXTERNAL_UPLOAD_DIR_PATH under the UPLOAD_URL_PREFIX.
+    newImageUrl = UPLOAD_URL_PREFIX + uniqueFileName;
                         }
 
                         Category category = categoryDAO.getElementByID(categoryId);
@@ -220,6 +239,6 @@ public class MenuItemServlet extends HttpServlet {
 
     @Override
     public String getServletInfo() {
-        return "MenuItem servlet with popup and CRUD management";
+        return "";
     }
 }
