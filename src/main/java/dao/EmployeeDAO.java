@@ -10,6 +10,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import model.Employee;
 
 /**
@@ -279,6 +281,33 @@ public class EmployeeDAO extends DBContext {
             System.out.println("Error");
         }
         return 0;
+    }
+
+    public boolean checkEmailExist(String email) {
+        try {
+
+            String query = "SELECT c.customer_id FROM customer AS c "
+                    + "WHERE LOWER(c.status) <> 'deleted' AND c.email = ?";
+
+            ResultSet rs = this.executeSelectionQuery(query, new Object[]{email});
+
+            return rs.next();
+        } catch (SQLException ex) {
+            Logger.getLogger(CustomerDAO.class.getName()).log(Level.SEVERE, "Error checking email existence", ex);
+        }
+        return false;
+    }
+
+    public boolean checkPhoneExist(String phoneNumber) {
+        try {
+            String query = "SELECT c.customer_id FROM customer AS c "
+                    + "WHERE LOWER(c.status) <> 'deleted' AND c.phone_number = ?";
+            ResultSet rs = this.executeSelectionQuery(query, new Object[]{phoneNumber});
+            return rs.next();
+        } catch (SQLException ex) {
+            Logger.getLogger(CustomerDAO.class.getName()).log(Level.SEVERE, "Error checking phone number existence", ex);
+        }
+        return false;
     }
 
     public Employee authenticate(String empAccount, String hashedPassword) {

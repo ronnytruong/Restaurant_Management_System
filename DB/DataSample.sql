@@ -105,12 +105,14 @@ SELECT @table_4 = table_id FROM [table] WHERE table_number = 'A04';
 -- 6) ingredient
 ------------------------------------------------------------
 INSERT INTO ingredient (ingredient_name, type_id, unit, status) VALUES
+
 (N'Bò tươi', @type_meat, 'kg',  N'Active'),
 (N'Tôm sú', @type_sea, 'kg', N'Active'),
 (N'Xà lách', @type_veg, 'kg', N'Active'),
 (N'Nước mắm', @type_spice, 'kg', N'Active'),
 (N'Đường', @type_spice, 'kg', N'Active'),
 (N'Sữa tươi', @type_veg, 'kg', N'Active');
+
 
 SELECT @ing_beef = ingredient_id FROM ingredient WHERE ingredient_name = N'Bò tươi';
 SELECT @ing_shrimp = ingredient_id FROM ingredient WHERE ingredient_name = N'Tôm sú';
@@ -148,6 +150,7 @@ SELECT @emp_cashier= emp_id FROM employee WHERE emp_account = N'cashier1';
 ------------------------------------------------------------
 -- 9) recipe
 ------------------------------------------------------------
+
 INSERT INTO recipe (recipe_name, status) VALUES
 (N'Grilled Chicken Recipe', N'Active'),
 (N'Beef Stew Recipe', N'Active'),
@@ -191,10 +194,10 @@ SELECT @voucher2 = voucher_id FROM voucher WHERE voucher_code = N'FLAT50';
 ------------------------------------------------------------
 -- 12) reservation
 ------------------------------------------------------------
-INSERT INTO reservation (customer_id, table_id, reservation_date, reservation_time, party_size, status)
+INSERT INTO reservation (customer_id, table_id, reservation_date, reservation_time, status)
 VALUES
-(@cust_1, @table_3, '2025-10-30', '19:00', 5, N'Pending'),
-(@cust_2, @table_2, '2025-10-25', '12:30', 2, N'Confirmed');
+(@cust_1, @table_3, '2025-10-30', '19:00', N'Pending'),
+(@cust_2, @table_2, '2025-10-25', '12:30', N'Confirmed');
 
 SELECT @res1 = reservation_id FROM reservation WHERE customer_id = @cust_1 AND table_id = @table_3;
 SELECT @res2 = reservation_id FROM reservation WHERE customer_id = @cust_2 AND table_id = @table_2;
@@ -221,11 +224,11 @@ VALUES
 SELECT @import1 = import_id FROM [import] WHERE supplier_id = @sup_1 AND emp_id = @emp_chef AND status = N'Completed';
 SELECT @import2 = import_id FROM [import] WHERE supplier_id = @sup_2 AND emp_id = @emp_chef AND status = N'Pending';
 
-INSERT INTO import_detail (import_id, ingredient_id, quantity, unit_price)
+INSERT INTO import_detail (import_id, ingredient_id, quantity, unit_price, total_price)
 VALUES
-(@import1, @ing_beef, 20, 175000.00),
-(@import1, @ing_lettuce, 50, 12000.00),
-(@import2, @ing_shrimp, 10, 155000.00);
+(@import1, @ing_beef, 20, 175000.00, 3250000.00),
+(@import1, @ing_lettuce, 50, 12000.00, 600000.00),
+(@import2, @ing_shrimp, 10, 155000.00, 1550000.00);
 
 ------------------------------------------------------------
 -- 17) order

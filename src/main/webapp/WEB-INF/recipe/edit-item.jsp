@@ -63,6 +63,7 @@
                 <form method="post" action="${pageContext.request.contextPath}/recipe" class="w-100">
                     <input type="hidden" name="action" value="edit_item" />
                     <input type="hidden" name="recipe_item_id" value="${currentItem.recipeItemId}" />
+                    <input type="hidden" name="recipe_id" value="${currentItem.recipeId}">
 
                     <!-- Ingredient -->
                     <div class="form-row-box row">
@@ -74,7 +75,7 @@
                                 <option value="">-- Select ingredient --</option>
                                 <c:forEach var="ing" items="${ingredients}">
                                     <option value="${ing.ingredientId}"
-                                        <c:if test="${ing.ingredientId == currentItem.ingredientId}">selected</c:if>>
+                                            <c:if test="${ing.ingredientId == currentItem.ingredientId}">selected</c:if>>
                                         ${ing.ingredientName}
                                     </option>
                                 </c:forEach>
