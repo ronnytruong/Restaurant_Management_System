@@ -81,7 +81,7 @@
 
                     <c:if test="${not alreadyProcessed}">
                         <form method="post" action="<c:url value='inventory-report'/>" class="mt-4 d-flex justify-content-end">
-                            <input type="hidden" name="action" value="finalize">
+                            <input type="hidden" name="action" value="record">
                             <input type="hidden" name="date" value="${reportDate}">
                             <button type="submit" class="btn btn-primary"><i class="bi bi-clipboard-check"></i> Finalize &amp; Deduct Stock</button>
                         </form>

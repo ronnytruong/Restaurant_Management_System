@@ -87,9 +87,7 @@ public class ImportServlet extends HttpServlet {
 
             if (id > 0) {
                 request.setAttribute("currentImport", importDAO.getElementByID(id));
-
-                List<Import> detailItems = importDAO.getImportDetails(id);
-                request.setAttribute("importDetails", detailItems);
+                request.setAttribute("importDetails", importDAO.getImportDetails(id));
                 request.setAttribute("ingredientList", ingredientDAO.getAll());
             }
         } else {

@@ -177,7 +177,6 @@ public class ImportDAO extends DBContext {
                 );
             }
         } catch (SQLException ex) {
-            Logger.getLogger(ImportDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
 
         return null;

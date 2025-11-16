@@ -145,3 +145,4 @@ INSERT INTO order_item (order_id, menu_item_id, unit_price, quantity) VALUES
 INSERT INTO ingredient_usage (usage_date, ingredient_id, quantity_used, stock_before, stock_after, created_by) VALUES
 (GETDATE(), 1, 1.00, 25.00, 24.00, 1),
 (GETDATE(), 3, 0.60, 40.00, 39.40, 1);
+

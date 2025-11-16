@@ -257,3 +257,4 @@ CREATE TABLE ingredient_usage (
     CONSTRAINT FK_IngredientUsage_Employee FOREIGN KEY (created_by)
         REFERENCES employee(emp_id)
 );
+

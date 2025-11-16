@@ -1,9 +1,6 @@
 package dao;
 
 import db.DBContext;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.Date;
@@ -13,14 +10,13 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.sql.Types;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import model.DailyUsageSummary;
 import model.IngredientUsageReport;
+import model.UsageDayItem;
 
 /**
  * Provides data access helpers for daily kitchen usage reports.
@@ -28,7 +24,6 @@ import model.IngredientUsageReport;
 public class InventoryReportDAO extends DBContext {
 
     private static final Logger LOGGER = Logger.getLogger(InventoryReportDAO.class.getName());
-    private static final DateTimeFormatter FILE_TIMESTAMP_FORMAT = DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss");
 
     public List<IngredientUsageReport> calculateDailyUsage(LocalDate reportDate) {
         List<IngredientUsageReport> results = new ArrayList<>();
@@ -47,14 +42,15 @@ public class InventoryReportDAO extends DBContext {
                 + "JOIN ingredient AS ing ON ri.ingredient_id = ing.ingredient_id "
                 + "WHERE CAST(o.order_date AS DATE) = ? "
                 + "AND LOWER(o.status) = LOWER(N'Completed') "
+                + "AND (oi.status IS NULL OR LOWER(oi.status) <> LOWER(N'Deleted')) "
                 + "AND (r.status IS NULL OR LOWER(r.status) <> LOWER(N'Deleted')) "
                 + "AND (ri.status IS NULL OR LOWER(ri.status) <> LOWER(N'Deleted')) "
                 + "GROUP BY ri.ingredient_id, ing.ingredient_name, ing.unit "
                 + "ORDER BY ing.ingredient_name";
 
-        try ( PreparedStatement ps = getConnection().prepareStatement(sql)) {
+        try (PreparedStatement ps = getConnection().prepareStatement(sql)) {
             ps.setDate(1, Date.valueOf(reportDate));
-            try ( ResultSet rs = ps.executeQuery()) {
+            try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     int ingredientId = rs.getInt("ingredient_id");
                     String ingredientName = rs.getNString("ingredient_name");
@@ -86,9 +82,9 @@ public class InventoryReportDAO extends DBContext {
                 + "WHERE CAST(o.order_date AS DATE) = ? "
                 + "AND LOWER(o.status) = LOWER(N'Completed')";
 
-        try ( PreparedStatement ps = getConnection().prepareStatement(sql)) {
+        try (PreparedStatement ps = getConnection().prepareStatement(sql)) {
             ps.setDate(1, Date.valueOf(reportDate));
-            try ( ResultSet rs = ps.executeQuery()) {
+            try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
                     summary.setReportDate(reportDate);
                     summary.setCompletedOrders(rs.getInt("order_count"));
@@ -109,9 +105,9 @@ public class InventoryReportDAO extends DBContext {
 
         String sql = "SELECT COUNT(usage_id) AS total FROM ingredient_usage WHERE usage_date = ?";
 
-        try ( PreparedStatement ps = getConnection().prepareStatement(sql)) {
+        try (PreparedStatement ps = getConnection().prepareStatement(sql)) {
             ps.setDate(1, Date.valueOf(reportDate));
-            try ( ResultSet rs = ps.executeQuery()) {
+            try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
                     return rs.getInt("total") > 0;
                 }
@@ -138,9 +134,9 @@ public class InventoryReportDAO extends DBContext {
                 + "WHERE iu.usage_date = ? "
                 + "ORDER BY ing.ingredient_name";
 
-        try ( PreparedStatement ps = getConnection().prepareStatement(sql)) {
+        try (PreparedStatement ps = getConnection().prepareStatement(sql)) {
             ps.setDate(1, Date.valueOf(reportDate));
-            try ( ResultSet rs = ps.executeQuery()) {
+            try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     IngredientUsageReport report = new IngredientUsageReport();
                     report.setIngredientId(rs.getInt("ingredient_id"));
@@ -185,7 +181,7 @@ public class InventoryReportDAO extends DBContext {
         String sql = "INSERT INTO ingredient_usage (usage_date, ingredient_id, quantity_used, stock_before, stock_after, created_by) "
                 + "VALUES (?, ?, ?, ?, ?, ?)";
 
-        try ( PreparedStatement ps = conn.prepareStatement(sql)) {
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
             conn.setAutoCommit(false);
 
             int inserted = 0;
@@ -223,53 +219,113 @@ public class InventoryReportDAO extends DBContext {
         }
     }
 
-    public String exportUsageReport(LocalDate reportDate, List<IngredientUsageReport> items, String processedByName) {
-        if (reportDate == null || items == null || items.isEmpty()) {
-            return "";
+    public int countUsageDays(String keyword) {
+        if (keyword == null) {
+            keyword = "";
+        }
+        keyword = keyword.trim();
+        String keywordLower = keyword.toLowerCase();
+
+        String sql = "SELECT COUNT(*) AS total\n"
+                + "FROM (\n"
+                + "    SELECT usage_date\n"
+                + "    FROM ingredient_usage iu\n"
+                + "    LEFT JOIN employee e ON iu.created_by = e.emp_id\n"
+                + "    WHERE (CONVERT(VARCHAR(10), iu.usage_date, 120) LIKE ?\n"
+                + "       OR LOWER(e.emp_name) LIKE ?)\n"
+                + "    GROUP BY usage_date\n"
+                + ") AS usage_days";
+
+        try (PreparedStatement ps = getConnection().prepareStatement(sql)) {
+            ps.setString(1, "%" + keyword + "%");
+            ps.setString(2, "%" + keywordLower + "%");
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt("total");
+                }
+            }
+        } catch (SQLException ex) {
+            LOGGER.log(Level.SEVERE, "Unable to count usage days", ex);
         }
 
-        String directoryPath = "../../../export/stockUsage";
-        File directory = new File(directoryPath);
-        if (!directory.exists() && !directory.mkdirs()) {
-            LOGGER.warning("Unable to create export directory for stock usage report");
-            return "";
+        return 0;
+    }
+
+    public List<UsageDayItem> getUsageHistory(int page, int maxElements, String keyword) {
+        List<UsageDayItem> list = new ArrayList<>();
+
+        if (page <= 0) {
+            page = 1;
+        }
+        if (keyword == null) {
+            keyword = "";
+        }
+        keyword = keyword.trim();
+        String keywordLower = keyword.toLowerCase();
+
+        String sql = "SELECT usage_date,\n"
+                + "       COUNT(DISTINCT ingredient_id) AS ingredient_count,\n"
+                + "       SUM(quantity_used) AS total_usage,\n"
+                + "       MAX(e.emp_name) AS processed_by,\n"
+                + "       COALESCE(CONVERT(VARCHAR(19), MIN(created_at), 120), '') AS processed_at\n"
+                + "FROM ingredient_usage iu\n"
+                + "LEFT JOIN employee e ON iu.created_by = e.emp_id\n"
+                + "WHERE (CONVERT(VARCHAR(10), iu.usage_date, 120) LIKE ?\n"
+                + "   OR LOWER(e.emp_name) LIKE ?)\n"
+                + "GROUP BY usage_date\n"
+                + "ORDER BY usage_date DESC\n"
+                + "OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
+
+        try (PreparedStatement ps = getConnection().prepareStatement(sql)) {
+            ps.setString(1, "%" + keyword + "%");
+            ps.setString(2, "%" + keywordLower + "%");
+            ps.setInt(3, (page - 1) * maxElements);
+            ps.setInt(4, maxElements);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    LocalDate usageDate = rs.getDate("usage_date").toLocalDate();
+                    int ingredientCount = rs.getInt("ingredient_count");
+                    double totalUsage = rs.getDouble("total_usage");
+                    String processedBy = rs.getString("processed_by");
+                    String processedAt = rs.getString("processed_at");
+
+                    list.add(new UsageDayItem(usageDate, ingredientCount, totalUsage, processedBy, processedAt));
+                }
+            }
+        } catch (SQLException ex) {
+            LOGGER.log(Level.SEVERE, "Unable to load usage history", ex);
         }
 
-        String fileName = "usage_" + reportDate + "_" + LocalDateTime.now().format(FILE_TIMESTAMP_FORMAT) + ".txt";
-        File targetFile = new File(directory, fileName);
+        return list;
+    }
 
-        DailyUsageSummary summary = getDailySummary(reportDate);
-        double totalUsage = items.stream().mapToDouble(IngredientUsageReport::getQuantityUsed).sum();
+    public double getAvailableStock(int ingredientId) {
+        String sql = "WITH imported AS (\n"
+                + "    SELECT SUM(CASE WHEN imp.status IS NULL OR LOWER(imp.status) IN (LOWER(N'Completed'), LOWER(N'Active')) THEN CAST(id.quantity AS DECIMAL(18,2)) ELSE 0 END) AS total_imported\n"
+                + "    FROM import_detail id\n"
+                + "    JOIN import imp ON id.import_id = imp.import_id\n"
+                + "    WHERE id.ingredient_id = ?\n"
+                + "), usage_cte AS (\n"
+                + "    SELECT SUM(quantity_used) AS total_used\n"
+                + "    FROM ingredient_usage\n"
+                + "    WHERE ingredient_id = ?\n"
+                + ")\n"
+                + "SELECT COALESCE(imported.total_imported, 0) - COALESCE(usage_cte.total_used, 0) AS available\n"
+                + "FROM imported CROSS JOIN usage_cte";
 
-        StringBuilder content = new StringBuilder();
-        content.append("Inventory Usage Report\n");
-        content.append("Report date: ").append(reportDate).append('\n');
-        if (processedByName != null && !processedByName.isBlank()) {
-            content.append("Processed by: ").append(processedByName).append('\n');
-        }
-        content.append("Completed orders: ").append(summary.getCompletedOrders()).append('\n');
-        content.append("Menu items prepared: ").append(summary.getItemsPrepared()).append('\n');
-        content.append(String.format("Total ingredient usage: %.2f\n", totalUsage));
-        content.append("----------------------------------------\n");
-        content.append(String.format("%-30s %-10s %-15s %-15s %-15s\n", "Ingredient", "Unit", "Before", "Used", "After"));
-        content.append("----------------------------------------\n");
-
-        for (IngredientUsageReport item : items) {
-            content.append(String.format("%-30s %-10s %-15.2f %-15.2f %-15.2f\n",
-                    item.getIngredientName(),
-                    item.getUnit(),
-                    item.getStockBefore(),
-                    item.getQuantityUsed(),
-                    item.getStockAfter()));
-        }
-
-        try ( FileWriter writer = new FileWriter(targetFile)) {
-            writer.write(content.toString());
-        } catch (IOException ex) {
-            LOGGER.log(Level.SEVERE, "Unable to export stock usage report", ex);
-            return "";
+        try (PreparedStatement ps = getConnection().prepareStatement(sql)) {
+            ps.setInt(1, ingredientId);
+            ps.setInt(2, ingredientId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getDouble("available");
+                }
+            }
+        } catch (SQLException ex) {
+            LOGGER.log(Level.SEVERE, "Unable to calculate available stock", ex);
         }
 
-        return targetFile.getAbsolutePath();
+        return 0;
     }
 }
