@@ -3,6 +3,8 @@
  */
 package model;
 
+import java.time.LocalDate;
+
 /**
  *
  * @author TruongBinhTrong
@@ -16,6 +18,9 @@ public class Ingredient {
     private String unit;
     private double totalQuantity;
     private String status;
+    private LocalDate expirationDate;
+    private boolean expired;
+    private boolean expiringSoon;
 
     public Ingredient() {
     }
@@ -92,5 +97,29 @@ public class Ingredient {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public LocalDate getExpirationDate() {
+        return expirationDate;
+    }
+
+    public void setExpirationDate(LocalDate expirationDate) {
+        this.expirationDate = expirationDate;
+    }
+
+    public boolean isExpired() {
+        return expired;
+    }
+
+    public void setExpired(boolean expired) {
+        this.expired = expired;
+    }
+
+    public boolean isExpiringSoon() {
+        return expiringSoon;
+    }
+
+    public void setExpiringSoon(boolean expiringSoon) {
+        this.expiringSoon = expiringSoon;
     }
 }

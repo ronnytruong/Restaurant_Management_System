@@ -44,11 +44,11 @@ INSERT INTO [table] (table_number, table_capacity, status) VALUES
 ---------------------------------------------------------
 -- 6. Insert Ingredients
 ---------------------------------------------------------
-INSERT INTO ingredient (ingredient_name, unit, type_id, status) VALUES
-('Beef Ribeye', 'kg', 1, 'Active'),
-('Tiger Shrimp', 'kg', 2, 'Active'),
-('Romaine Lettuce', 'kg', 3, 'Active'),
-('House Marinade', 'l', 4, 'Active');
+INSERT INTO ingredient (ingredient_name, unit, type_id, expiration_date, status) VALUES
+('Beef Ribeye', 'kg', 1, DATEADD(DAY, 10, GETDATE()), 'Active'),
+('Tiger Shrimp', 'kg', 2, DATEADD(DAY, 7, GETDATE()), 'Active'),
+('Romaine Lettuce', 'kg', 3, DATEADD(DAY, 5, GETDATE()), 'Active'),
+('House Marinade', 'l', 4, NULL, 'Active');
 
 ---------------------------------------------------------
 -- 7. Insert Suppliers
@@ -142,7 +142,7 @@ INSERT INTO order_item (order_id, menu_item_id, unit_price, quantity) VALUES
 ---------------------------------------------------------
 -- 18. Insert Ingredient Usage Log
 ---------------------------------------------------------
-INSERT INTO ingredient_usage (usage_date, ingredient_id, quantity_used, stock_before, stock_after, created_by) VALUES
-(GETDATE(), 1, 1.00, 25.00, 24.00, 1),
-(GETDATE(), 3, 0.60, 40.00, 39.40, 1);
+INSERT INTO ingredient_usage (usage_date, ingredient_id, quantity_used, stock_before, stock_after, note, created_by) VALUES
+(GETDATE(), 1, 1.00, 25.00, 24.00, N'Mẫu ghi chú tồn kho', 1),
+(GETDATE(), 3, 0.60, 40.00, 39.40, NULL, 1);
 
