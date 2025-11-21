@@ -67,6 +67,16 @@
                         </td>
                     </tr>
 
+                    <tr>
+                        <th>
+                            <label for="expirationDate">Expiration date</label>
+                        </th>
+                        <td>
+                            <input type="date" id="expirationDate" name="expirationDate" class="form-control" aria-describedby="expirationHelp" min="${today}">
+                            <small id="expirationHelp" class="text-muted">Optional. Leave blank if the ingredient does not expire.</small>
+                        </td>
+                    </tr>
+
 
 
 

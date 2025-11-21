@@ -79,6 +79,7 @@ CREATE TABLE ingredient (
     ingredient_id INT IDENTITY(1,1) NOT NULL,
     ingredient_name NVARCHAR(100) NOT NULL,
 	unit NVARCHAR(20) NOT NULL,
+    expiration_date DATE NULL,
     type_id INT NOT NULL,
     status NVARCHAR(20) NOT NULL DEFAULT 'Active',
     CONSTRAINT PK_ingredient PRIMARY KEY (ingredient_id),
@@ -250,6 +251,7 @@ CREATE TABLE ingredient_usage (
     quantity_used DECIMAL(18,2) NOT NULL,
     stock_before DECIMAL(18,2) NOT NULL,
     stock_after DECIMAL(18,2) NOT NULL,
+    note NVARCHAR(255) NULL,
     created_by INT NULL,
     created_at DATETIME NOT NULL DEFAULT GETDATE(),
     CONSTRAINT FK_IngredientUsage_Ingredient FOREIGN KEY (ingredient_id)
@@ -257,3 +259,4 @@ CREATE TABLE ingredient_usage (
     CONSTRAINT FK_IngredientUsage_Employee FOREIGN KEY (created_by)
         REFERENCES employee(emp_id)
 );
+
