@@ -7,6 +7,8 @@
 <%@page import="model.Table"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<c:set var="title" value="Dashboard - Yummy"/>
+<c:set var="dashboard_cssjs" value="dashboard"/>
 
 <%
     Table selected = (Table) request.getAttribute("selectedTable");

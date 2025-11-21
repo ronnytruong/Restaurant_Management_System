@@ -6,6 +6,8 @@
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
+<c:set var="title" value="Dashboard - Yummy"/>
+<c:set var="dashboard_cssjs" value="dashboard"/>
 
 <%@include file="/WEB-INF/include/headerDashboard.jsp" %>
 
