@@ -238,6 +238,9 @@ public class EmployeeDAO extends DBContext {
     }
 
     public int delete(int id) {
+        
+        if (id == 1) return -1;
+        
         try {
             String query = "UPDATE Employee SET status = 'Deleted' WHERE emp_id = ?";
             return this.executeQuery(query, new Object[]{id});
@@ -248,6 +251,9 @@ public class EmployeeDAO extends DBContext {
     }
 
     public int ban(int id) {
+        
+        if (id == 1) return -1;
+        
         try {
             String query = "UPDATE Employee SET status = 'Banned' WHERE emp_id = ?";
             return this.executeQuery(query, new Object[]{id});

@@ -171,7 +171,7 @@ public class OrderDAO extends DBContext {
         return null;
     }
 
-    public int add(int reservationId, int empId, Integer voucherId, String paymentMethod) {
+    public int add(Integer reservationId, Integer empId, Integer voucherId, String paymentMethod) {
         try {
             String query = "INSERT INTO [order]\n"
                     + "(reservation_id, emp_id, voucher_id, order_date, order_time, payment_method, status)\n"

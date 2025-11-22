@@ -167,7 +167,7 @@ WHERE status <> 'deleted';
 CREATE TABLE [order] (
     order_id INT IDENTITY(1,1) NOT NULL,
     reservation_id INT NULL,
-    emp_id INT NOT NULL,
+    emp_id INT NULL,
     voucher_id INT NULL,
     order_date DATE NOT NULL DEFAULT CAST(GETDATE() AS DATE),
     order_time TIME NOT NULL DEFAULT CAST(GETDATE() AS TIME),

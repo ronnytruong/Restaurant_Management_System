@@ -32,7 +32,7 @@
                         <td><input type="text" name="empName" id="empName" class="form-control" required></td>
                     </tr>
                     <tr>
-                        <th><label for="roleId">Role ID</label></th>
+                        <th><label for="roleId">Role</label></th>
                         <td>
                             <select name="roleId" id="roleId" class="form-select" required>
                                 <c:forEach var="role" items="${rolesList}">

@@ -17,6 +17,7 @@
             </div>
             <div class="actions d-flex flex-column flex-md-row gap-2 align-items-md-center justify-content-md-end">
                 <div class="filters d-flex flex-wrap gap-2 justify-content-end">
+                    <%--
                     <form action="<c:url value="role">
                               <c:param name="page" value="1"/>
                           </c:url>" method="get" class="search-box input-group">
@@ -27,7 +28,7 @@
                     </form>
                     <a class="btn btn-primary add-btn" href="<c:url value="role">
                            <c:param name="view" value="add"/>
-                       </c:url>"><i class="bi bi-plus-circle"></i>Add</a>
+                       </c:url>"><i class="bi bi-plus-circle"></i>Add</a>--%>
 
                 </div>
             </div>
@@ -40,7 +41,7 @@
                         <th width="5%" scope="col">ID</th>
                         <th width="30%" scope="col">Name</th>
                         <th scope="col">Description</th>
-                        <th width="20%"scope="col" class="text-end">Actions</th>
+<!--                        <th width="20%"scope="col" class="text-end">Actions</th>-->
                     </tr>
                 </thead>
                 <tbody>
@@ -57,7 +58,7 @@
                                     <td><c:out value="${role.name}"/></td>
                                     <td><c:out value="${role.description}"/></td>
 
-                                    <td class="text-end">
+<%--                                    <td class="text-end">
                                         <div class="action-button-group d-flex justify-content-end gap-2">
                                             <a class="btn btn-outline-secondary btn-icon btn-edit"
                                                title="Edit" aria-label="Edit"
@@ -73,7 +74,7 @@
                                                 <i class="bi bi-x-circle"></i>
                                             </button>
                                         </div>
-                                    </td>
+                                    </td>--%>
                                 </tr>
                             </c:forEach>
                         </c:otherwise>

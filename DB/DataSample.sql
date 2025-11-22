@@ -31,8 +31,8 @@ INSERT INTO role (role_name, description, status) VALUES
 ---------------------------------------------------------
 INSERT INTO customer (customer_account, password, customer_name, gender, dob, phone_number, email, address, status)
 VALUES
-('alice01', 'alicepass', 'Alice Nguyen', 'Female', '1992-04-10', '0905000001', 'alice@example.com', '12 Garden St', 'Active'),
-('bob02', 'bobpass', 'Bob Tran', 'Male', '1989-09-22', '0905000002', 'bob@example.com', '34 River Rd', 'Active');
+('alice01', 'c20ad4d76fe97759aa27a0c99bff6710', 'Alice Nguyen', 'Female', '1992-04-10', '0905000001', 'alice@example.com', '12 Garden St', 'Active'),
+('bob02', 'c20ad4d76fe97759aa27a0c99bff6710', 'Bob Tran', 'Male', '1989-09-22', '0905000002', 'bob@example.com', '34 River Rd', 'Active');
 
 ---------------------------------------------------------
 -- 5. Insert Tables
@@ -62,10 +62,10 @@ INSERT INTO supplier (supplier_name, phone_number, email, address, contact_perso
 ---------------------------------------------------------
 INSERT INTO employee (emp_account, password, emp_name, gender, dob, phone_number, email, address, role_id, status)
 VALUES
-('admin', 'admin123', 'Lan Manager', 'Female', '1988-01-15', '0909000001', 'lan.manager@rms.com', '101 Central Blvd', 1, 'Active'),
-('chef', 'chef123', 'Khoa Chef', 'Male', '1990-06-20', '0909000002', 'khoa.chef@rms.com', '55 Kitchen Ln', 4, 'Active'),
-('waiter', 'waiter123', 'My Waiter', 'Female', '1995-03-05', '0909000003', 'my.waiter@rms.com', '78 Service Rd', 3, 'Active'),
-('cashier', 'cashier123', 'Son Cashier', 'Male', '1993-11-12', '0909000004', 'son.cashier@rms.com', '43 Billing Sq', 5, 'Active');
+('admin', 'c20ad4d76fe97759aa27a0c99bff6710', 'Lan Manager', 'Female', '1988-01-15', '0909000001', 'lan.manager@rms.com', '101 Central Blvd', 1, 'Active'),
+('chef', 'c20ad4d76fe97759aa27a0c99bff6710', 'Khoa Chef', 'Male', '1990-06-20', '0909000002', 'khoa.chef@rms.com', '55 Kitchen Ln', 4, 'Active'),
+('waiter', 'c20ad4d76fe97759aa27a0c99bff6710', 'My Waiter', 'Female', '1995-03-05', '0909000003', 'my.waiter@rms.com', '78 Service Rd', 3, 'Active'),
+('cashier', 'c20ad4d76fe97759aa27a0c99bff6710', 'Son Cashier', 'Male', '1993-11-12', '0909000004', 'son.cashier@rms.com', '43 Billing Sq', 5, 'Active');
 
 ---------------------------------------------------------
 -- 9. Insert Recipes
@@ -94,9 +94,9 @@ VALUES
 ---------------------------------------------------------
 -- 12. Insert Reservation
 ---------------------------------------------------------
-INSERT INTO reservation (customer_id, table_id, reservation_date, reservation_time, party_size, status)
+INSERT INTO reservation (customer_id, table_id, reservation_date, reservation_time, status)
 VALUES
-(1, 1, GETDATE(), '19:00', 4, 'Confirmed');
+(1, 1, GETDATE(), '19:00', 'Confirmed');
 
 ---------------------------------------------------------
 -- 13. Insert Import Record
@@ -122,7 +122,7 @@ INSERT INTO recipe_item (recipe_id, ingredient_id, quantity, unit, note, status)
 (1, 4, 0.05, 'l', 'Marinade per portion', 'Active'),
 (2, 2, 0.12, 'kg', 'Shrimp per roll set', 'Active'),
 (2, 3, 0.20, 'kg', 'Vegetables per roll set', 'Active'),
-(3, 4, 0.00, 'l', 'No usage', 'Active');
+(3, 4, 0.50, 'l', 'No usage', 'Active');
 
 ---------------------------------------------------------
 -- 16. Insert Order
