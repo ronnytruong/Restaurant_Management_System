@@ -4,7 +4,6 @@
  */
 package controller;
 
-
 import static constant.Constants.*;
 import dao.IngredientDAO;
 import dao.RecipeDAO;
@@ -40,7 +39,7 @@ public class RecipeServlet extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
-        try (PrintWriter out = response.getWriter()) {
+        try ( PrintWriter out = response.getWriter()) {
             /* TODO output your page here. You may use following sample code. */
             out.println("<!DOCTYPE html>");
             out.println("<html>");
@@ -97,7 +96,7 @@ public class RecipeServlet extends HttpServlet {
                 id = -1;
             }
             request.setAttribute("currentRecipe", recipeDAO.getElementByID(id));
-        } 
+        }
 //        else if (view.equalsIgnoreCase("add-item")) {
 //            namepage = "add-item";
 //            int id;
@@ -219,10 +218,16 @@ public class RecipeServlet extends HttpServlet {
                 } catch (NumberFormatException e) {
                     ingredientId = -1;
                 }
-
-                if (!isValidInteger(recipeId, false, false, true) 
+                
+                try {
+                    quantity = Double.parseDouble(request.getParameter("quantity"));
+                } catch (NumberFormatException e) {
+                    quantity = -1;
+                }
+                
+                if (!isValidInteger(recipeId, false, false, true)
                         || !isValidInteger(ingredientId, false, false, true)
-                        || quantity < 0) {
+                        || quantity <= 0) {
                     popupStatus = false;
                     popupMessage = "Add item failed. Input invalid.";
                 } else {
@@ -240,7 +245,7 @@ public class RecipeServlet extends HttpServlet {
                 String unit = request.getParameter("unit");
                 String note = request.getParameter("note");
                 String status = "Active";
-                
+
                 try {
                     recipeItemId = Integer.parseInt(request.getParameter("recipe_item_id"));
                 } catch (NumberFormatException e) {
@@ -252,15 +257,15 @@ public class RecipeServlet extends HttpServlet {
                     ingredientId = -1;
                 }
 
-                
-                RecipeItem existing = recipeDAO.getRecipeItemById(recipeItemId);
-                if (existing != null && existing.getStatus() != null) {
-                    status = existing.getStatus();
+                try {
+                    quantity = Double.parseDouble(request.getParameter("quantity"));
+                } catch (NumberFormatException e) {
+                    quantity = -1;
                 }
 
-                if (!isValidInteger(recipeItemId, false, false, true) 
+                if (!isValidInteger(recipeItemId, false, false, true)
                         || !isValidInteger(ingredientId, false, false, true)
-                        || quantity < 0) {
+                        || quantity <= 0) {
                     popupStatus = false;
                     popupMessage = "Edit item failed. Input invalid.";
                 } else {
@@ -298,24 +303,24 @@ public class RecipeServlet extends HttpServlet {
         if ("add_item".equalsIgnoreCase(action)
                 || "edit_item".equalsIgnoreCase(action)
                 || "delete_item".equalsIgnoreCase(action)) {
-            
+
             int recipeId;
             try {
                 recipeId = Integer.parseInt(request.getParameter("recipe_id"));
             } catch (NumberFormatException e) {
                 recipeId = -1;
             }
-            
+
             if (recipeId > 0) {
                 response.sendRedirect(request.getContextPath() + "/recipe?view=view&id=" + recipeId);
             } else {
                 response.sendRedirect(request.getContextPath() + "/recipe");
             }
         } else {
-            
+
             response.sendRedirect(request.getContextPath() + "/recipe");
         }
-        
+
     }
 
     private boolean isValidString(String str, int limitLength) {

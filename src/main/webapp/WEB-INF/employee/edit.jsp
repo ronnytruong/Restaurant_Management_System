@@ -59,7 +59,7 @@
 
                             <tr>
                                 <th>
-                                    <label for="roleId">Role ID</label>
+                                    <label for="roleId">Role</label>
                                 </th>
                                 <td>
                                     <select name="roleId" id="roleId" class="form-control" required>

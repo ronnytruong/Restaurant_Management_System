@@ -16,6 +16,14 @@
                 <div>
                     <h1 class="section-title mb-1">My Order list</h1>
                 </div>
+                <div class="actions d-flex flex-column flex-md-row gap-2 align-items-md-center justify-content-md-end">
+                    <div class="filters d-flex flex-wrap gap-2 justify-content-end">
+                        <a class="btn btn-primary add-btn" href="<c:url value="myOrder">
+                               <c:param name="view" value="addOrder"/>
+                           </c:url>"><i class="bi bi-plus-circle"></i>Add</a>
+
+                    </div>
+                </div>
             </div>
 
             <div class="table-responsive px-4 pb-2">
@@ -50,14 +58,17 @@
 
                                         <td class="text-end">
                                             <div class="action-button-group d-flex justify-content-end gap-2">
+                                                <a class="btn btn-outline-success btn-icon btn-view"
+                                                   title="View details" aria-label="View details"
+                                                   href="<c:url value="myOrder">
+                                                       <c:param name="view" value="detail"/>
+                                                       <c:param name="orderId" value="${order.orderId}"/>
+                                                   </c:url>">
+                                                    <i class="bi bi-eye"></i>
+                                                </a>
                                                 <form action="<c:url value="myOrder">
                                                           <c:param name="orderId" value="${order.orderId}"/>
                                                       </c:url>" method="post">
-                                                    <button class="btn btn-outline-success btn-icon btn-view"
-                                                            title="View details" aria-label="View details"
-                                                            type="submit" name="action" value="detail">
-                                                        <i class="bi bi-eye"></i>
-                                                    </button>
                                                     <c:if test="${order.status eq 'Pending'}">
                                                         <button class="btn btn-outline-danger btn-icon btn-delete"
                                                                 title="Cancel" aria-label="Cancel"

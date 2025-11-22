@@ -69,7 +69,7 @@
                                                </c:url>">
                                                 <i class="bi bi-eye"></i>
                                             </a>
-                                            <c:if test="${!(order.status eq 'Cancelled' or order.status eq 'Approved' or order.status eq 'Rejected' or order.status eq 'Completed')}">
+                                            <c:if test="${!(order.status eq 'Cancel' or order.status eq 'Approved' or order.status eq 'Rejected' or order.status eq 'Completed')}">
                                                 <form action="<c:url value="order">
                                                           <c:param name="id" value="${order.orderId}"/>
                                                       </c:url>" method="post">

@@ -1,2 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Context docBase="D:\CacLopFPT\Ki5_SE1902\SWP\Restaurant_Management_System\target\SWP391_RMS-1" path="/SWP391_RMS"/>
+<Context docBase="D:\CacLopFPT\Ki5_SE1902\SWP\Restaurant_Management_System\target\SWP391_RMS-1" path="/SWP391_RMS">
+  <Resources>
+    <PreResources base="D:\CacLopFPT\Ki5_SE1902\SWP\Restaurant_Management_System\upload_files\menu" className="org.apache.catalina.webresources.DirResourceSet" webAppMount="/images/menu"/>
+  </Resources>
+</Context>

@@ -156,7 +156,7 @@
             </div>
             <div class="col-md-2">
                 <label class="form-label">Quantity</label>
-                <input name="quantity" type="number" step="0.01" class="form-control" required />
+                <input name="quantity" type="number" min="0.01" step="0.01" class="form-control" required />
             </div>
             <div class="col-md-2">
                 <label class="form-label">Unit</label>
@@ -194,7 +194,7 @@
                     </div>
                     <div class="mb-2">
                         <label class="form-label">Quantity</label>
-                        <input id="edit_quantity" name="quantity" type="number" step="0.01" class="form-control" />
+                        <input id="edit_quantity" name="quantity" type="number" min="0.01" step="0.01" class="form-control" />
                     </div>
                     <div class="mb-2">
                         <label class="form-label">Unit</label>

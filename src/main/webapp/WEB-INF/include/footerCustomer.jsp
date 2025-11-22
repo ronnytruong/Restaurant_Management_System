@@ -115,5 +115,14 @@
 
 </body>
 
+<script>
+    function showDeletePopup(id) {
+        document.getElementById("hiddenInputIdDelete").value = id;
+        document.getElementById("idForDeletePopup").textContent = "Are you sure you want to delete the object with id = " + id + "?";
+        var myModal = new bootstrap.Modal(document.getElementById('deletePopup'));
+        myModal.show();
+    }
+</script>
+
 </html>
 

@@ -106,6 +106,26 @@ public class ReservationDAO extends DBContext {
         return 0;
     }
 
+    public List<Reservation> getAllByCustomerId(int customerId) {
+        List<Reservation> list = new ArrayList<>();
+
+        try {
+            String sql = "SELECT reservation_id, customer_id, table_id, reservation_date, reservation_time, status\n"
+                    + "FROM     reservation\n"
+                    + "WHERE  (customer_id = ?) AND (LOWER(status) = 'pending' OR\n"
+                    + "                  LOWER(status) = 'approved')\n"
+                    + "ORDER BY reservation_id DESC";
+            ResultSet rs = this.executeSelectionQuery(sql,
+                    new Object[]{customerId});
+            while (rs.next()) {
+                list.add(extract(rs));
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(ReservationDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return list;
+    }
+
     /* ===================== LIST (CUSTOMER) ===================== */
     public List<Reservation> getByCustomer(int customerId, int page, String keyword) {
         List<Reservation> list = new ArrayList<>();

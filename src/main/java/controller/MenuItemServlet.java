@@ -29,7 +29,7 @@ public class MenuItemServlet extends HttpServlet {
     private final RecipeDAO recipeDAO = new RecipeDAO();
 
 //use absolute path
-private static final String EXTERNAL_UPLOAD_DIR_PATH = "D:\\[AAA]source code[AAA]\\Restaurant_Management_System\\upload_files\\menu";
+private static final String EXTERNAL_UPLOAD_DIR_PATH = "../../upload_files/menu";
 private static final String UPLOAD_URL_PREFIX = "images/menu/";
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -137,27 +137,27 @@ private static final String UPLOAD_URL_PREFIX = "images/menu/";
                         popupStatus = false;
                         popupMessage = "Price must be between 5.000 and 5.000.000 VND.";
                     } else {
-String uploadPath = EXTERNAL_UPLOAD_DIR_PATH;
+                        String tempWebAppPath = request.getServletContext().getRealPath("/");
+// 2. Nối đường dẫn tương đối và chuyển nó thành đường dẫn tuyệt đối chuẩn tắc.
+String uploadPath = new File(tempWebAppPath, EXTERNAL_UPLOAD_DIR_PATH).getCanonicalPath();
                         String newImageUrl = existingImageUrl;
                         Part filePart = request.getPart("imageFile");
                         String fileName = (filePart != null && filePart.getSubmittedFileName() != null)
                                 ? Paths.get(filePart.getSubmittedFileName()).getFileName().toString()
                                 : "";
-
                         if (!fileName.isEmpty()) {
-                        
-                            File uploadDir = new File(EXTERNAL_UPLOAD_DIR_PATH);
+                                                    // Đảm bảo thư mục vật lý vĩnh viễn tồn tại
+                            File uploadDir = new File(uploadPath);
                             if (!uploadDir.exists()) {
-                                uploadDir.mkdirs();
+                                if (!uploadDir.mkdirs()) {
+                                    throw new IOException("Failed to create directory: " + uploadPath + ". Check permissions.");
+                                }
                             }
-
-                         String uniqueFileName = System.currentTimeMillis() + "_" + fileName;
-
-  filePart.write(uploadPath + File.separator + uniqueFileName);
-    
-
-    // to serve files from EXTERNAL_UPLOAD_DIR_PATH under the UPLOAD_URL_PREFIX.
-    newImageUrl = UPLOAD_URL_PREFIX + uniqueFileName;
+                           String uniqueFileName = System.currentTimeMillis() + "_" + fileName;
+                           String fullFilePath = uploadPath + File.separator + uniqueFileName;
+               
+                           filePart.write(fullFilePath); 
+                                                   newImageUrl = UPLOAD_URL_PREFIX + uniqueFileName;
                         }
 
                         Category category = categoryDAO.getElementByID(categoryId);
