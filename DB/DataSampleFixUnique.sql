@@ -93,11 +93,11 @@ INSERT INTO [table] (table_number, table_capacity, status) VALUES
 SELECT @table_a1 = table_id FROM [table] WHERE table_number = 'A1';
 SELECT @table_b2 = table_id FROM [table] WHERE table_number = 'B2';
 
-INSERT INTO ingredient (ingredient_name, unit, type_id, status) VALUES
-('Beef Ribeye', 'kg', @type_meat, 'Active'),
-('Tiger Shrimp', 'kg', @type_sea, 'Active'),
-('Romaine Lettuce', 'kg', @type_veg, 'Active'),
-('House Marinade', 'l', @type_spice, 'Active');
+INSERT INTO ingredient (ingredient_name, unit, type_id, expiration_date, status) VALUES
+('Beef Ribeye', 'kg', @type_meat, DATEADD(DAY, 10, GETDATE()), 'Active'),
+('Tiger Shrimp', 'kg', @type_sea, DATEADD(DAY, 7, GETDATE()), 'Active'),
+('Romaine Lettuce', 'kg', @type_veg, DATEADD(DAY, 5, GETDATE()), 'Active'),
+('House Marinade', 'l', @type_spice, NULL, 'Active');
 
 SELECT @ing_beef = ingredient_id FROM ingredient WHERE ingredient_name = 'Beef Ribeye';
 SELECT @ing_shrimp = ingredient_id FROM ingredient WHERE ingredient_name = 'Tiger Shrimp';
@@ -145,8 +145,8 @@ INSERT INTO voucher (voucher_code, voucher_name, discount_type, discount_value, 
 
 SELECT @voucher_welcome = voucher_id FROM voucher WHERE voucher_code = 'WELCOME15';
 
-INSERT INTO reservation (customer_id, table_id, reservation_date, reservation_time, party_size, status) VALUES
-(@cust_alice, @table_a1, CAST(GETDATE() AS DATE), '19:00', 4, 'Confirmed');
+INSERT INTO reservation (customer_id, table_id, reservation_date, reservation_time, status) VALUES
+(@cust_alice, @table_a1, CAST(GETDATE() AS DATE), '19:00', 'Confirmed');
 
 SELECT @reservation_today = reservation_id FROM reservation WHERE customer_id = @cust_alice AND table_id = @table_a1;
 
@@ -177,9 +177,9 @@ INSERT INTO order_item (order_id, menu_item_id, unit_price, quantity) VALUES
 (@order_completed, @item_roll, 45000, 3),
 (@order_completed, @item_coffee, 30000, 2);
 
-INSERT INTO ingredient_usage (usage_date, ingredient_id, quantity_used, stock_before, stock_after, created_by) VALUES
-(CAST(GETDATE() AS DATE), @ing_beef, 1.00, 25.00, 24.00, @emp_admin),
-(CAST(GETDATE() AS DATE), @ing_lettuce, 0.60, 40.00, 39.40, @emp_admin);
+INSERT INTO ingredient_usage (usage_date, ingredient_id, quantity_used, stock_before, stock_after, note, created_by) VALUES
+(CAST(GETDATE() AS DATE), @ing_beef, 1.00, 25.00, 24.00, N'Điều chỉnh test', @emp_admin),
+(CAST(GETDATE() AS DATE), @ing_lettuce, 0.60, 40.00, 39.40, NULL, @emp_admin);
 
 COMMIT TRANSACTION;
 GO

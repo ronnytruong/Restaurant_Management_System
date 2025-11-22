@@ -19,6 +19,16 @@
         <div class="container px-4 py-3">
             <c:choose>
                 <c:when test="${not empty currentIngredient}">
+                    <c:if test="${currentIngredient.expired}">
+                        <div class="alert alert-danger" role="alert">
+                            This ingredient expired on <strong>${currentIngredient.expirationDate}</strong>. Please discontinue use or update the expiration date.
+                        </div>
+                    </c:if>
+                    <c:if test="${not currentIngredient.expired && currentIngredient.expiringSoon}">
+                        <div class="alert alert-warning" role="alert">
+                            This ingredient will expire on <strong>${currentIngredient.expirationDate}</strong>. Please review the remaining stock.
+                        </div>
+                    </c:if>
                     <form method="post" action="<c:url value='ingredient'/>">
                         <%-- Hidden field for ID required for POST request --%>
                         <input type="hidden" name="id" value="${currentIngredient.ingredientId}">
@@ -73,6 +83,21 @@
                                         <option value="Box" <c:if test="${currentIngredient.unit == 'Box'}">selected</c:if>>Box</option>
                                         <option value="Piece" <c:if test="${currentIngredient.unit == 'Piece'}">selected</c:if>>Piece</option>
                                     </select>
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <th>
+                                    <label for="expirationDate">Expiration date</label>
+                                </th>
+                                <td>
+                                    <input type="date"
+                                           id="expirationDate"
+                                           name="expirationDate"
+                                           class="form-control"
+                                           value="${currentIngredient.expirationDate != null ? currentIngredient.expirationDate : ''}"
+                                           aria-describedby="expirationHelp">
+                                    <small id="expirationHelp" class="text-muted">Optional. Leave blank to keep it unset.</small>
                                 </td>
                             </tr>
 

@@ -150,9 +150,21 @@
         <form method="post" action="${pageContext.request.contextPath}/recipe" class="row g-2">
             <input type="hidden" name="action" value="add_item" />
             <input type="hidden" name="recipe_id" value="${currentRecipe.recipeId}" />
-            <div class="col-md-3">
-                <label class="form-label">Ingredient ID</label>
-                <input name="ingredient_id" type="number" class="form-control" required />
+            <div class="form-row-box row">
+                <div class="col-md-3 form-label-col">
+                    <label class="form-label mb-0">Ingredient Name</label>
+                </div>
+                <div class="col-md-9 form-input-col">
+                    <select name="ingredient_id" class="form-select" required>
+                        <option value="">-- Select ingredient --</option>
+                        <c:forEach var="ing" items="${ingredients}">
+                            <option value="${ing.ingredientId}">${ing.ingredientName}</option>
+                        </c:forEach>
+                    </select>
+                    <c:if test="${empty ingredients}">
+                        <div class="form-note">No ingredients available. Please add ingredients first.</div>
+                    </c:if>
+                </div>
             </div>
             <div class="col-md-2">
                 <label class="form-label">Quantity</label>
@@ -188,9 +200,21 @@
                     <input type="hidden" name="action" value="edit_item"/>
                     <input type="hidden" id="edit_recipe_item_id" name="recipe_item_id" value=""/>
                     <input type="hidden" id="edit_recipe_id" name="recipe_id" value="${currentRecipe.recipeId}" />
-                    <div class="mb-2">
-                        <label class="form-label">Ingredient ID</label>
-                        <input id="edit_ingredient_id" name="ingredient_id" type="number" class="form-control" required />
+                    <div class="form-row-box row">
+                        <div class="col-md-3 form-label-col">
+                            <label class="form-label mb-0">Ingredient Name</label>
+                        </div>
+                        <div class="col-md-9 form-input-col">
+                            <select id="edit_ingredient_id" name="ingredient_id" class="form-select" required>
+                                <option value="">-- Select ingredient --</option>
+                                <c:forEach var="ing" items="${ingredients}">
+                                    <option value="${ing.ingredientId}">${ing.ingredientName}</option>
+                                </c:forEach>
+                            </select>
+                            <c:if test="${empty ingredients}">
+                                <div class="form-note">No ingredients available. Please add ingredients first.</div>
+                            </c:if>
+                        </div>
                     </div>
                     <div class="mb-2">
                         <label class="form-label">Quantity</label>

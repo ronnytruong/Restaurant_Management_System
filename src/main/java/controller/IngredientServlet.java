@@ -15,6 +15,8 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.util.List;
 import model.Ingredient;
 
@@ -96,6 +98,9 @@ public String addEDtoEverything(String str) {
             keyword = "";
         }
 
+        LocalDate today = LocalDate.now();
+        request.setAttribute("today", today);
+
         if (searchKeyword != null && !searchKeyword.trim().isEmpty()) {
 
             ingredients = ingredientDAO.search(searchKeyword);
@@ -164,6 +169,7 @@ public String addEDtoEverything(String str) {
                 String name = request.getParameter("ingredientName");
                 String unit = request.getParameter("unit");
                 int typeId;
+                LocalDate expirationDate = parseExpirationDate(request.getParameter("expirationDate"));
                 
 
                 try {
@@ -178,7 +184,7 @@ public String addEDtoEverything(String str) {
                 }
                 //end
                 if (passValidation == true) {
-                    if (ingredientDAO.add(name, typeId, unit) >= 1) {
+                    if (ingredientDAO.add(name, typeId, unit, expirationDate) >= 1) {
                     } else {
                         passValidation = false;
                     }
@@ -189,6 +195,7 @@ public String addEDtoEverything(String str) {
                 int typeId;
                 String name = request.getParameter("ingredientName");
                 String unit = request.getParameter("unit");
+                LocalDate expirationDate = parseExpirationDate(request.getParameter("expirationDate"));
 
 
                 try {
@@ -212,7 +219,7 @@ public String addEDtoEverything(String str) {
                 }
                 //end
                 if (passValidation == true) {
-                    int checkError = ingredientDAO.edit(id, name, typeId, unit);
+                    int checkError = ingredientDAO.edit(id, name, typeId, unit, expirationDate);
 
                     if (checkError >= 1) {
 
@@ -266,6 +273,18 @@ public String addEDtoEverything(String str) {
 
         response.sendRedirect(request.getContextPath() + "/ingredient?" + "status=" + (passValidation ? "success" : "fail") + "&lastAction=" + addEDtoEverything(action));
 
+    }
+
+    private LocalDate parseExpirationDate(String rawDate) {
+        if (rawDate == null || rawDate.isBlank()) {
+            return null;
+        }
+
+        try {
+            return LocalDate.parse(rawDate.trim());
+        } catch (DateTimeParseException ex) {
+            return null;
+        }
     }
 
     @Override

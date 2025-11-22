@@ -15,6 +15,7 @@ public class IngredientUsageReport {
     private Integer processedBy;
     private String processedByName;
     private LocalDateTime processedAt;
+    private String note;
 
     public IngredientUsageReport() {
     }
@@ -96,5 +97,13 @@ public class IngredientUsageReport {
 
     public void setProcessedAt(LocalDateTime processedAt) {
         this.processedAt = processedAt;
+    }
+
+    public String getNote() {
+        return note;
+    }
+
+    public void setNote(String note) {
+        this.note = note;
     }
 }

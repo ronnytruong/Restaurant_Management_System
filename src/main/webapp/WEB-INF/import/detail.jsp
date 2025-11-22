@@ -190,7 +190,7 @@
                                 </div>
 
                                 <div class="d-flex gap-2 justify-content-end mt-auto">
-                                    <button type="submit" class="btn btn-success" id="saveDetailButton" disabled data-import-completed="${importCompleted}">Add line item</button>
+                                    <button type="submit" class="btn btn-success" id="saveDetailButton" disabled data-import-completed="${importCompleted}">Add item</button>
                                 </div>
                             </form>
                         </div>
